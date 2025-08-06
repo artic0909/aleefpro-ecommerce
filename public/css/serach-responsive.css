@@ -1,0 +1,9 @@
+.initial-hide{
+  display: none !important;
+}
+
+@media (max-width: 991px) {
+  .initial-hide {
+    display: inline-block !important;
+  }
+}
