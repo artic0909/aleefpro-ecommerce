@@ -15,6 +15,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
 
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Open+Sans&family=Lobster&family=Oswald&family=Montserrat&family=Raleway&family=Playfair+Display&family=Indie+Flower&family=Bebas+Neue&family=Pacifico&family=Dancing+Script&family=Great+Vibes&family=Permanent+Marker&family=Courier+Prime&family=Shadows+Into+Light&family=Amatic+SC&family=Caveat&family=Architects+Daughter&family=Anton&family=Baloo+2&family=Fredoka&family=Quicksand&family=Teko&family=Zilla+Slab&family=Yanone+Kaffeesatz&family=Rubik&family=Titillium+Web&family=Fira+Sans&family=Cabin&display=swap" rel="stylesheet">
+
+
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
         integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
@@ -28,6 +32,8 @@
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/serach-responsive.css') }}" rel="stylesheet">
@@ -36,6 +42,28 @@
 
 
     <style>
+        #logoTextPreview {
+            position: absolute;
+            top: 110px;
+            /* adjust as needed */
+            left: 180px;
+            /* adjust as needed */
+            width: 200px;
+            /* set max width of text area */
+            height: 100px;
+            /* or auto, but fixed height helps with scaling */
+            overflow: hidden;
+            /* hide anything outside the box */
+            text-overflow: ellipsis;
+            /* optional for single line */
+            word-wrap: break-word;
+            /* allow wrapping */
+            white-space: normal;
+            /* allow multiple lines */
+            border: 2px dashed orange;
+            padding: 5px;
+        }
+
         .cap-container {
             border: 1px solid #ccc;
             position: relative;
@@ -381,9 +409,12 @@
                     <div class="border-bottom mt-3" id="screenShootArea">
                         <div class="cap-container" id="capWrapper">
                             <img id="capImage" src="{{ asset('storage/' . $product->front_customize) }}" class="img-fluid" alt="Cap" />
-                            <div id="logoContainer" class="logo-box" data-x="0" data-y="0" data-angle="0">
-                                <div id="rotateHandle"></div>
+                            <div id="logoContainer" class="logo-box" data-x="0" data-y="0" data-angle="0" overflow="hidden">
+                                <div id="rotateHandle" style="cursor: grab;"></div>
                                 <img id="uploadedLogo" src="" alt="Logo Preview" />
+                                <div id="textLogoPreview" style="position: absolute; display: none; font-size: 24px;">
+                                    Sample
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -410,18 +441,126 @@
                             <label><input type="radio" name="logo_placement" value="back" />
                                 Back</label>
                         </div>
+                    </div>
 
-                        <div class="col-md-12 form-group controls">
+                    <h6 class="section-title position-relative text-uppercase mb-3">
+                        <span class="bg-secondary pr-3">Logo Type</span>
+                    </h6>
+
+                    <div class="row">
+
+                        <div class="col-md-6 form-group">
+                            <label><input type="radio" name="logo_type" value="image" checked />
+                                Add Logo</label>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label><input type="radio" name="logo_type" value="text" />
+                                Add Text</label>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 form-group controls" id="logoInput">
                             <label for="logoInput">Upload Logo</label>
                             <input type="file" class="form-control" id="logoUploader" name="company_logo" accept="image/*" />
                             <small class="text-muted">Upload high quality logo</small>
                         </div>
+
+                        <div class="col-md-12 form-group controls" id="textInput">
+                            <label for="logoInput">Add Text</label>
+
+                            <!-- Font Selector -->
+                            <select name="font_name" id="fontSelector" class="form-control mb-3">
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Lobster">Lobster</option>
+                                <option value="Oswald">Oswald</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="Raleway">Raleway</option>
+                                <option value="Playfair Display">Playfair Display</option>
+                                <option value="Indie Flower">Indie Flower</option>
+                                <option value="Bebas Neue">Bebas Neue</option>
+                                <option value="Pacifico">Pacifico</option>
+                                <option value="Dancing Script">Dancing Script</option>
+                                <option value="Great Vibes">Great Vibes</option>
+                                <option value="Permanent Marker">Permanent Marker</option>
+                                <option value="Courier Prime">Courier Prime</option>
+                                <option value="Shadows Into Light">Shadows Into Light</option>
+                                <option value="Amatic SC">Amatic SC</option>
+                                <option value="Caveat">Caveat</option>
+                                <option value="Architects Daughter">Architects Daughter</option>
+                                <option value="Anton">Anton</option>
+                                <option value="Baloo 2">Baloo 2</option>
+                                <option value="Fredoka">Fredoka</option>
+                                <option value="Quicksand">Quicksand</option>
+                                <option value="Teko">Teko</option>
+                                <option value="Zilla Slab">Zilla Slab</option>
+                                <option value="Yanone Kaffeesatz">Yanone Kaffeesatz</option>
+                                <option value="Rubik">Rubik</option>
+                                <option value="Titillium Web">Titillium Web</option>
+                                <option value="Fira Sans">Fira Sans</option>
+                                <option value="Cabin">Cabin</option>
+                            </select>
+
+                            <!-- Text input -->
+                            <input type="text" class="form-control mb-3" name="company_text_logo" id="textInputField" placeholder="Enter Text Here" />
+
+                            <!-- Color Picker -->
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Color</span>
+                                </div>
+                                <input type="color" class="form-control" name="company_text_color_code" id="colorPicker" value="#ff0000">
+                            </div>
+
+                            <!-- Font Size -->
+                            <div class="form-group mb-3">
+                                <label for="fontSizeSlider">Font Size</label>
+                                <input type="range" class="form-control-range" id="fontSizeSlider" min="12" max="100" value="24">
+                            </div>
+
+
+                            <!-- Output -->
+                            <div class="form-group">
+                                <label for="output">Your Customize Output</label>
+                                <div id="outputPreview" style="border: 1px solid #ccc; padding: 15px; font-size: 24px; text-transform: none;">
+                                    <!-- Preview will show here -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
 
                         <div class="col-md-12 form-group controls">
                             <label for="product_customize_image">Upload Liveshoot</label>
                             <input type="file" class="form-control" id="product_customize_image" name="product_customize_image" accept="image/*" />
                             <small class="text-muted">Upload the dowloaded preview</small>
                         </div>
+
+
+                        <div class="col-md-6 form-group">
+                            <label>Print Quality</label>
+                            <select name="print_quality" id="print_quality" class="form-control">
+                                <option value="" selected>Select Print Quality</option>
+                                <option value="print">Print</option>
+                                <option value="embroidery">Embroidery</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label>Logo Size</label>
+                            <select name="logo_size" id="logo_size" class="form-control">
+                                <option value="" selected>Select Logo Size</option>
+                            </select>
+                        </div>
+
+
 
                         <div class="col-md-6 form-group">
                             <label>Product Name</label>
@@ -638,36 +777,68 @@
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
     <script>
         const capImage = document.getElementById("capImage");
         const logoContainer = document.getElementById("logoContainer");
         const uploadedLogo = document.getElementById("uploadedLogo");
+        const textLogoPreview = document.getElementById("textLogoPreview");
 
-        // Cap side toggle
+        const companyTextLogoInput = document.querySelector("input[name='company_text_logo']");
+        const colorPicker = document.querySelector("input[name='company_text_color_code']");
+        const fontSelector = document.getElementById("fontSelector");
+        const fontSizeSlider = document.getElementById("fontSizeSlider");
+
+        // === Cap Side Toggle ===
         document.querySelectorAll("input[name='logo_placement']").forEach((radio) => {
             radio.addEventListener("change", function() {
-                capImage.src =
-                    this.value === "front" ?
+                capImage.src = this.value === "front" ?
                     "{{ asset('storage/' . $product->front_customize) }}" :
                     "{{ asset('storage/' . $product->back_customize) }}";
             });
         });
 
+        // === Logo Upload Preview ===
+        document.getElementById("logoUploader").addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedLogo.src = evt.target.result;
+                    uploadedLogo.style.display = "block";
+                    textLogoPreview.style.display = "none";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-        document
-            .getElementById("logoUploader")
-            .addEventListener("change", function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(evt) {
-                        uploadedLogo.src = evt.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+        // === Text Logo Realtime Preview ===
+        function updateTextLogo() {
+            const text = companyTextLogoInput.value;
+            const font = fontSelector.value;
+            const color = colorPicker.value;
+            const size = fontSizeSlider.value;
 
+            if (text.trim() === "") {
+                textLogoPreview.style.display = "none";
+                return;
+            }
 
+            textLogoPreview.textContent = text;
+            textLogoPreview.style.fontFamily = font;
+            textLogoPreview.style.color = color;
+            textLogoPreview.style.fontSize = `${size}px`;
+
+            textLogoPreview.style.display = "block";
+            uploadedLogo.style.display = "none";
+        }
+
+        companyTextLogoInput.addEventListener("input", updateTextLogo);
+        colorPicker.addEventListener("input", updateTextLogo);
+        fontSelector.addEventListener("change", updateTextLogo);
+        fontSizeSlider.addEventListener("input", updateTextLogo);
+
+        // === Drag and Resize for logoContainer ===
         interact("#logoContainer")
             .draggable({
                 modifiers: [
@@ -679,11 +850,8 @@
                 listeners: {
                     move(event) {
                         const target = event.target;
-                        const x =
-                            (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
-                        const y =
-                            (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
-
+                        const x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+                        const y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
                         const angle = parseFloat(target.getAttribute("data-angle")) || 0;
 
                         target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
@@ -719,7 +887,7 @@
                 },
                 modifiers: [
                     interact.modifiers.restrictEdges({
-                        outer: "#capWrapper",
+                        outer: "#capWrapper"
                     }),
                     interact.modifiers.restrictSize({
                         min: {
@@ -727,14 +895,14 @@
                             height: 30
                         },
                         max: {
-                            width: 200,
-                            height: 200
+                            width: 300,
+                            height: 300
                         },
                     }),
                 ],
             });
 
-
+        // === Rotation ===
         const rotateHandle = document.getElementById("rotateHandle");
         let rotating = false;
 
@@ -749,9 +917,7 @@
             const rect = logoContainer.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-            const angle =
-                (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) /
-                Math.PI;
+            const angle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
 
             logoContainer.setAttribute("data-angle", angle);
             const x = parseFloat(logoContainer.getAttribute("data-x")) || 0;
@@ -764,6 +930,8 @@
             rotating = false;
         });
     </script>
+
+
 
     <script>
         document.getElementById('ssButton').addEventListener('click', function() {
@@ -837,6 +1005,96 @@
             }
         });
     </script>
+
+
+    <script>
+        $(document).ready(function() {
+            const logoSizeOptions = {
+                print: [{
+                        value: 'front_3x3',
+                        text: 'Front : 3" x 3"'
+                    },
+                    {
+                        value: 'back_12x12',
+                        text: 'Back : 12" x 12"'
+                    }
+                ],
+                embroidery: [{
+                        value: 'front_2_5x2_5',
+                        text: 'Front : 2.5" x 2.5"'
+                    },
+                    {
+                        value: 'back_10x10',
+                        text: 'Back : 10" x 10"'
+                    }
+                ]
+            };
+
+            $('#print_quality').on('change', function() {
+                const selectedQuality = $(this).val();
+                const $logoSize = $('#logo_size');
+
+                $logoSize.empty().append('<option value="">Select Logo Size</option>');
+
+                if (logoSizeOptions[selectedQuality]) {
+                    logoSizeOptions[selectedQuality].forEach(option => {
+                        $logoSize.append(
+                            $('<option></option>').val(option.value).text(option.text)
+                        );
+                    });
+                }
+            });
+        });
+    </script>
+
+
+    <!-- hide / show -->
+    <script>
+        $(document).ready(function() {
+            // Initially show logo section and hide text section
+            $('#logoInput').show();
+            $('#textInput').hide();
+
+            // Handle radio button changes
+            $('input[name="logo_type"]').on('change', function() {
+                if ($(this).val() === 'image') {
+                    $('#logoInput').show();
+                    $('#textInput').hide();
+                } else if ($(this).val() === 'text') {
+                    $('#logoInput').hide();
+                    $('#textInput').show();
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function() {
+            function updatePreview() {
+                const font = $('#fontSelector').val();
+                const text = $('#textInputField').val();
+                const color = $('#colorPicker').val();
+
+                $('#outputPreview').text(text);
+                $('#outputPreview').css({
+                    'font-family': font,
+                    'color': color
+                });
+            }
+
+            // Bind change events
+            $('#fontSelector').on('change', updatePreview);
+            $('#textInputField').on('input', updatePreview);
+            $('#colorPicker').on('input', updatePreview);
+
+            // Initialize on page load
+            updatePreview();
+        });
+    </script>
+
+
+
 
 
 

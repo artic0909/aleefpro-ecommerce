@@ -10,6 +10,9 @@ class CustomEnquiry extends Model
         'company_logo',
         'product_customize_image',
         'logo_placement',
+        'logo_type',
+        'logo_size',
+        'print_quality',
         'product_name',
         'product_code',
         'price',
@@ -24,6 +27,9 @@ class CustomEnquiry extends Model
         'detail_enquiry',
         'enquiry_date',
         'remark',
+        'font_name',
+        'company_text_logo',
+        'company_text_color_code',
     ];
 
     protected $casts = [

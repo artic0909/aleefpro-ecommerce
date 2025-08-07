@@ -842,6 +842,9 @@ class CustomerController extends Controller
             'company_logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'product_customize_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'logo_placement'           => 'required|string|max:255',
+            'logo_type'                => 'required|string|in:image,text',
+            'logo_size'                => 'required|string|max:255',
+            'print_quality'            => 'required|string|max:255',
             'product_name'             => 'required|string|max:255',
             'product_code'             => 'required|string|max:255',
             'price'                    => 'required|numeric',
@@ -854,12 +857,24 @@ class CustomerController extends Controller
             'customer_mobile'          => 'required|string|max:15',
             'customer_address'         => 'required|string',
             'detail_enquiry'           => 'nullable|string',
+            'font_name'                => 'nullable|string',
+            'company_text_logo'        => 'nullable|string',
+            'company_text_color_code'  => 'nullable|string',
         ]);
+
+        // Conditionally nullify fields based on logo_type
+        if ($validated['logo_type'] === 'image') {
+            $validated['font_name'] = null;
+            $validated['company_text_logo'] = null;
+            $validated['company_text_color_code'] = null;
+        } elseif ($validated['logo_type'] === 'text') {
+            $validated['company_logo'] = null;
+        }
 
         // Upload files
         $attachments = [];
 
-        if ($request->hasFile('company_logo')) {
+        if ($request->hasFile('company_logo') && $validated['logo_type'] === 'image') {
             $file = $request->file('company_logo');
             $filename = time() . '_company_' . $file->getClientOriginalName();
             $path = $file->storeAs('enquiry/company_logos', $filename, 'public');
@@ -889,12 +904,10 @@ class CustomerController extends Controller
             ];
         }
 
-
         $validated['enquiry_date'] = now();
 
         $enquiry = CustomEnquiry::create($validated);
 
-        // Prepare data for mail view
         $mailData = [
             'product_name'     => $validated['product_name'],
             'product_code'     => $validated['product_code'],
@@ -912,31 +925,16 @@ class CustomerController extends Controller
 
             'company_logo' => $validated['company_logo'] ?? null,
             'product_customize_image' => $validated['product_customize_image'] ?? null,
-            'logo_placement' => $validated['logo_placement']
+            'logo_placement' => $validated['logo_placement'],
+            'logo_type' => $validated['logo_type'],
+            'logo_size' => $validated['logo_size'],
+            'print_quality' => $validated['print_quality'],
+            'font_name' => $validated['font_name'],
+            'company_text_logo' => $validated['company_text_logo'],
+            'company_text_color_code' => $validated['company_text_color_code'],
         ];
 
-        if ($validated['company_logo']) {
-            $attachments[] = [
-                'file' => storage_path('app/public/' . $validated['company_logo']),
-                'options' => [
-                    'as' => basename($validated['company_logo']),
-                    'mime' => 'image/webp'
-                ]
-            ];
-        }
-
-        if ($validated['product_customize_image']) {
-            $attachments[] = [
-                'file' => storage_path('app/public/' . $validated['product_customize_image']),
-                'options' => [
-                    'as' => basename($validated['product_customize_image']),
-                    'mime' => 'image/webp'
-                ]
-            ];
-        }
-
-
-        // Send mail with attachments
+        // Send mail to customer
         Mail::to($validated['customer_email'])->send(new CustomizeEnquiryRecieverMail($mailData, $attachments));
 
         // Send mail to admin
@@ -944,6 +942,8 @@ class CustomerController extends Controller
 
         return redirect()->back()->with('success', 'Customization enquiry submitted and email sent successfully.');
     }
+
+
     public function searchProducts(Request $request)
     {
 

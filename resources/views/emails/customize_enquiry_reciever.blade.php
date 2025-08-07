@@ -29,6 +29,8 @@
                                             <th>Category</th>
                                             <th>Color</th>
                                             <th>Size</th>
+                                            <th>Logo Size</th>
+                                            <th>Print Quality</th>
                                             <th>Rate</th>
                                             <th>Quantity</th>
                                             <th>Total</th>
@@ -41,6 +43,8 @@
                                             <td>{{ $data['main_sub_category'] }}</td>
                                             <td>{{ $data['product_color'] ?? '-' }}</td>
                                             <td>{{ $data['enquiry_size'] ?? '-' }}</td>
+                                            <td>{{ $data['logo_size'] ?? '-' }}</td>
+                                            <td>{{ $data['print_quality'] ?? '-' }}</td>
                                             <td>₹{{ number_format($data['product_rate'], 2) }}</td>
                                             <td>{{ $data['product_quantity'] }}</td>
                                             <td>₹{{ number_format($data['total_amount'], 2) }}</td>
@@ -49,6 +53,12 @@
                                 </table>
 
                                 <h4 style="margin-top:30px;">Logo Placement : {{$data['logo_placement']}}</h4>
+                                <h4>Logo Type : {{$data['logo_type']}}</h4>
+                                @if($data['logo_type'] == 'text')
+                                <h4>Font Name : {{$data['font_name']}}</h4>
+                                <h4>Logo Text : {{$data['company_text_logo']}}</h4>
+                                <h4>Logo Color Code : {{$data['company_text_color_code']}}</h4>
+                                @endif
                                 <br>
 
                                 <h4 style="margin-top:30px;">Customer Information</h4>

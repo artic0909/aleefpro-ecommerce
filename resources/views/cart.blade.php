@@ -373,13 +373,19 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div class="d-flex justify-content-evenly" style="width: 100%; gap: 40px">
 
-                        <form action="{{ route('customer.cart.enquiry') }}" method="POST" style="width: 100%" id="cartEnquiryForm">
-                            @csrf
+                            <form action="{{ route('customer.cart.enquiry') }}" method="POST" style="width: 100%" id="cartEnquiryForm">
+                                @csrf
+                                <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
+                                    Send Enquiry
+                                </button>
+                            </form>
+
                             <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
-                                Send Enquiry
+                                Buy Now
                             </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
