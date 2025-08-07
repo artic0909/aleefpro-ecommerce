@@ -55,6 +55,8 @@ Route::middleware(['auth:customers'])->group(function () {
     Route::get('/customer/product-customize/{mainSlug}/{subSlug}/{productSlug}', [CustomerController::class, 'productCustomizationEnquiryView'])->name('customer.product.customize');
     Route::post('/customer/product-customize/send', [CustomerController::class, 'productCustomizationEnquirySend'])->name('customer.product.customize.send');
 
+    Route::post('/customer/checkout/process', [CustomerController::class, 'process'])->name('customer.checkout.process');
+
 
 
 

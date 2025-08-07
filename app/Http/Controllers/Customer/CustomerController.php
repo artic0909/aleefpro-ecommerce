@@ -38,6 +38,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Stripe\Stripe;
+use Stripe\Charge;
+use App\Models\Order;
 use Carbon\Carbon;
 
 class CustomerController extends Controller
@@ -986,5 +989,36 @@ class CustomerController extends Controller
 
         $filePath = storage_path('app/public/' . $catelogue->catelogue);
         return response()->download($filePath);
+    }
+
+
+    // Payment
+    public function process(Request $request)
+    {
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        try {
+            // create Stripe charge
+            $charge = Charge::create([
+                'amount' => $request->amount,
+                'currency' => 'usd',
+                'source' => $request->stripeToken, // from Stripe.js (coming below)
+                'description' => 'Cart Purchase',
+            ]);
+
+            // Save order
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'payment_id' => $charge->id,
+                'amount' => $charge->amount / 100,
+                'currency' => $charge->currency,
+                'payment_status' => $charge->status,
+                'cart_details' => json_encode(session('cartItems')),
+            ]);
+
+            return redirect()->back()->with('success', 'Payment Successful!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

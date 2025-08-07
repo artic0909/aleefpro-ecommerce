@@ -373,6 +373,9 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <div id="card-element" class="form-control mb-3" style="height: 80px;"></div>
+
                         <div class="d-flex justify-content-evenly" style="width: 100%; gap: 40px">
 
                             <form action="{{ route('customer.cart.enquiry') }}" method="POST" style="width: 100%" id="cartEnquiryForm">
@@ -382,13 +385,19 @@
                                 </button>
                             </form>
 
-                            <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
-                                Buy Now
-                            </button>
+                            <form action="{{ route('customer.checkout.process') }}" method="POST" style="width: 100%" id="payment-form">
+                                @csrf
+
+                                <input type="hidden" name="amount" value="{{ $totalAmount * 100 }}"> <!-- cents -->
+                                <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">Buy Now</button>
+                            </form>
+
                         </div>
                     </div>
                 </div>
             </div>
+
+
             <div class="col-lg-4">
                 <h5 class="section-title position-relative text-uppercase mb-3">
                     <span class="bg-secondary pr-3">Criteria</span>
@@ -582,6 +591,37 @@
             );
         }
     </script>
+
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe("{{ config('services.stripe.key') }}");
+        const elements = stripe.elements();
+
+        const card = elements.create('card');
+        card.mount('#card-element');
+
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const {
+                token,
+                error
+            } = await stripe.createToken(card);
+            if (error) {
+                alert(error.message);
+            } else {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'stripeToken');
+                hiddenInput.setAttribute('value', token.id);
+                form.appendChild(hiddenInput);
+                form.submit();
+            }
+        });
+    </script>
+
 
     <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
