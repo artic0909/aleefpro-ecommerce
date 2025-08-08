@@ -40,16 +40,16 @@
                                 <td>{{ $product['product_code'] }}</td>
                                 <td>{{ $product['product_color'] }}</td>
                                 <td>{{ $product['enquiry_size'] }}</td>
-                                <td align="center">₹{{ number_format($product['product_rate'], 2) }}</td>
+                                <td align="center">${{ number_format($product['product_rate'], 2) }}</td>
                                 <td align="center">{{ $product['product_quantity'] }}</td>
-                                <td align="center">₹{{ number_format($product['total_amount'], 2) }}</td>
+                                <td align="center">${{ number_format($product['total_amount'], 2) }}</td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
 
                     <p style="font-size: 16px; color: #333; margin-top: 20px;">
-                        <strong>Total Enquiry Amount: ₹{{ number_format($data['overall_amount'], 2) }}</strong>
+                        <strong>Total Enquiry Amount: ${{ number_format($data['overall_amount'], 2) }}</strong>
                     </p>
 
                     <div style="margin: 30px 0; text-align: center;">

@@ -45,9 +45,9 @@
                                             <td>{{ $data['enquiry_size'] ?? '-' }}</td>
                                             <td>{{ $data['logo_size'] ?? '-' }}</td>
                                             <td>{{ $data['print_quality'] ?? '-' }}</td>
-                                            <td>₹{{ number_format($data['product_rate'], 2) }}</td>
+                                            <td>${{ number_format($data['product_rate'], 2) }}</td>
                                             <td>{{ $data['product_quantity'] }}</td>
-                                            <td>₹{{ number_format($data['total_amount'], 2) }}</td>
+                                            <td>${{ number_format($data['total_amount'], 2) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

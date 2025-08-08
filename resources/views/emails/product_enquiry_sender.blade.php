@@ -41,9 +41,9 @@
                                             <td>{{ $data['main_sub_category'] }}</td>
                                             <td>{{ $data['product_color'] }}</td>
                                             <td>{{ $data['enquiry_size'] }}</td>
-                                            <td>₹{{ number_format($data['product_rate'], 2) }}</td>
+                                            <td>${{ number_format($data['product_rate'], 2) }}</td>
                                             <td>{{ $data['product_quantity'] }}</td>
-                                            <td>₹{{ number_format($data['total_amount'], 2) }}</td>
+                                            <td>${{ number_format($data['total_amount'], 2) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
