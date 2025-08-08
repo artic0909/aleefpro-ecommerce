@@ -413,27 +413,21 @@
                             <input type="hidden" name="stripeToken" id="stripeToken">
 
                             @php
-                            $customer = Auth::user()->customer;
-                            $hasAddress = $customer && !empty($customer->address);
-                            $hasCartItems = isset($cartItems) && count($cartItems) > 0;
+                            $hasCartItems = $cartItems->count() > 0;
                             @endphp
 
-                            @if($hasAddress && $hasCartItems)
+                            @if($hasCartItems)
                             <!-- Buy Now -->
                             <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
                                 Buy Now
                             </button>
-                            @elseif(!$hasCartItems)
+                            @else
                             <!-- Continue Shopping -->
                             <a href="/product-categories" class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
                                 Continue Shopping
                             </a>
-                            @elseif(!$hasAddress)
-                            <!-- Add Address -->
-                            <a href="/customer/profile" class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
-                                Add Address
-                            </a>
                             @endif
+
 
 
                             <p class="mt-2">You want to change the address? <span><a href="/customer/profile">Click Here</a></span></p>
