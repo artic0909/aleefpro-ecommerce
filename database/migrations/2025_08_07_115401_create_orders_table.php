@@ -13,12 +13,25 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
+
+            // Foreign key to customers table
+            $table->foreignId('customer_id')
+                ->constrained('customers')
+                ->onDelete('cascade');
+
+            // Product details in JSON
+            $table->json('product_details')->comment('product_name, product_code, product_color, product_rate, product_size, product_quantity, total_amount');
+
+            // Overall order amount
+            $table->decimal('overall_amount', 10, 2);
+
+            // Payment details
             $table->string('payment_id')->nullable();
             $table->decimal('amount', 10, 2);
-            $table->string('currency')->default('usd');
-            $table->string('payment_status')->default('pending');
-            $table->json('cart_details');
+            $table->string('currency', 10)->default('USD');
+            $table->string('payment_status', 50)->default('pending');
+            $table->date('order_date')->nullable();
+
             $table->timestamps();
         });
     }

@@ -270,6 +270,11 @@
                         </div>
 
                         <div class="control-group">
+                           <textarea name="address" class="form-control" id="address" rows="6" id="address" placeholder="Enter your full address"></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+
+                        <div class="control-group">
                             <input type="text" class="form-control" id="password" placeholder="Password" name="password"
                                 required="required" data-validation-required-message="Please enter your password" />
                             <p class="help-block text-danger"></p>

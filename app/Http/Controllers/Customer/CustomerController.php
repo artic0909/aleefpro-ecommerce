@@ -76,6 +76,7 @@ class CustomerController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:customers,email',
             'mobile'   => 'required',
+            'address'  => 'required',
             'password' => 'required|string|min:6',
         ]);
 
@@ -84,6 +85,7 @@ class CustomerController extends Controller
                 'name'     => $validated['name'],
                 'email'    => $validated['email'],
                 'mobile'   => $validated['mobile'],
+                'address'  => $validated['address'],
                 'password' => bcrypt($validated['password']),
             ]);
 
@@ -620,10 +622,11 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:customers,email,' . $customer->id,
             'mobile' => 'required|string|max:15',
+            'address' => 'required|string',
         ]);
 
         try {
-            $customer->update($request->only('name', 'email', 'mobile'));
+            $customer->update($request->only('name', 'email', 'mobile', 'address'));
 
             return redirect()->back()->with('success', 'Profile updated successfully.');
         } catch (QueryException $e) {
@@ -997,24 +1000,64 @@ class CustomerController extends Controller
     {
         Stripe::setApiKey(config('services.stripe.secret'));
 
+        $customerId = Auth::guard('customers')->id();
+        $customerEmail = Auth::guard('customers')->user()->email;
+        $customerName = Auth::guard('customers')->user()->name;
+
+        // Fetch cart items
+        $cartItems = Cart::with('product')->where('customer_id', $customerId)->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->back()->with('error', 'Your cart is empty.');
+        }
+
+        // Build product details & calculate amount
+        $productDetails = [];
+        $overallAmount = 0;
+
+        foreach ($cartItems as $item) {
+            $product = $item->product;
+            $totalAmount = $product->selling_price * $item->quantity;
+
+            $productDetails[] = [
+                'product_name'     => $product->product_name,
+                'product_code'     => $product->product_code,
+                'product_color'    => $item->color,
+                'product_rate'     => $product->selling_price,
+                'product_size'     => $item->size,
+                'product_quantity' => $item->quantity,
+                'total_amount'     => $totalAmount,
+            ];
+
+            $overallAmount += $totalAmount;
+        }
+
         try {
-            // create Stripe charge
+            // Stripe requires amount in cents
+            $amountInCents = intval($overallAmount * 100);
+
+            // Create Stripe charge
             $charge = Charge::create([
-                'amount' => $request->amount,
-                'currency' => 'usd',
-                'source' => $request->stripeToken, // from Stripe.js (coming below)
-                'description' => 'Cart Purchase',
+                'amount'      => $amountInCents,
+                'currency'    => 'usd',
+                'source'      => $request->stripeToken,
+                'description' => 'Cart Purchase by ' . $customerName,
             ]);
 
             // Save order
-            $order = Order::create([
-                'user_id' => Auth::id(),
-                'payment_id' => $charge->id,
-                'amount' => $charge->amount / 100,
-                'currency' => $charge->currency,
-                'payment_status' => $charge->status,
-                'cart_details' => json_encode(session('cartItems')),
+            Order::create([
+                'customer_id'     => $customerId,
+                'product_details' => $productDetails,
+                'overall_amount'  => $overallAmount,
+                'payment_id'      => $charge->id,
+                'amount'          => $charge->amount / 100,
+                'currency'        => $charge->currency,
+                'payment_status'  => $charge->status,
+                'order_date'      => now(),
             ]);
+
+            // Clear cart
+            Cart::where('customer_id', $customerId)->delete();
 
             return redirect()->back()->with('success', 'Payment Successful!');
         } catch (\Exception $e) {

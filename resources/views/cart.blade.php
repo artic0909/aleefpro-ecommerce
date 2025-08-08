@@ -374,25 +374,16 @@
                             </tbody>
                         </table>
 
-                        <div id="card-element" class="form-control mb-3" style="height: 80px;"></div>
 
-                        <div class="d-flex justify-content-evenly" style="width: 100%; gap: 40px">
 
-                            <form action="{{ route('customer.cart.enquiry') }}" method="POST" style="width: 100%" id="cartEnquiryForm">
-                                @csrf
-                                <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
-                                    Send Enquiry
-                                </button>
-                            </form>
 
-                            <form action="{{ route('customer.checkout.process') }}" method="POST" style="width: 100%" id="payment-form">
-                                @csrf
+                        <form action="{{ route('customer.cart.enquiry') }}" method="POST" style="width: 100%" id="cartEnquiryForm">
+                            @csrf
+                            <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
+                                Send Enquiry
+                            </button>
+                        </form>
 
-                                <input type="hidden" name="amount" value="{{ $totalAmount * 100 }}"> <!-- cents -->
-                                <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">Buy Now</button>
-                            </form>
-
-                        </div>
                     </div>
                 </div>
             </div>
@@ -402,6 +393,54 @@
                 <h5 class="section-title position-relative text-uppercase mb-3">
                     <span class="bg-secondary pr-3">Criteria</span>
                 </h5>
+
+                <div class="bg-light p-30 mb-5">
+                    <div class="border-bottom">
+                        <h5 class="mb-3">Checkout Process</h5>
+                        <form action="{{ route('customer.checkout.process') }}" method="POST" id="payment-form" style="max-width: 500px;">
+                            @csrf
+
+                            <div class="mb-3">
+                                <label for="card-element" class="form-label">Card Details</label>
+                                <div id="card-element" class="form-control" style="height: 55px;"></div>
+                                <div id="card-errors" role="alert" class="text-danger mt-2"></div>
+
+                                <p class="m-0 p-0">You can pay via Debit/Credit Card</p>
+
+                            </div>
+
+                            <!---- Hidden token field ---->
+                            <input type="hidden" name="stripeToken" id="stripeToken">
+
+                            @php
+                            $customer = Auth::user()->customer;
+                            $hasAddress = $customer && !empty($customer->address);
+                            $hasCartItems = isset($cartItems) && count($cartItems) > 0;
+                            @endphp
+
+                            @if($hasAddress && $hasCartItems)
+                            <!-- Buy Now -->
+                            <button class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
+                                Buy Now
+                            </button>
+                            @elseif(!$hasCartItems)
+                            <!-- Continue Shopping -->
+                            <a href="/product-categories" class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
+                                Continue Shopping
+                            </a>
+                            @elseif(!$hasAddress)
+                            <!-- Add Address -->
+                            <a href="/customer/profile" class="btn btn-block btn-primary2 font-weight-bold py-3 w-full">
+                                Add Address
+                            </a>
+                            @endif
+
+
+                            <p class="mt-2">You want to change the address? <span><a href="/customer/profile">Click Here</a></span></p>
+                        </form>
+                    </div>
+                </div>
+
                 <div class="bg-light p-30 mb-5">
                     <div class="border-bottom">
                         <h6 class="mb-3">Products</h6>
@@ -597,26 +636,42 @@
     <script>
         const stripe = Stripe("{{ config('services.stripe.key') }}");
         const elements = stripe.elements();
-
-        const card = elements.create('card');
+        const card = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a'
+                }
+            }
+        });
         card.mount('#card-element');
 
+        // Handle real-time validation
+        card.on('change', function(event) {
+            const displayError = document.getElementById('card-errors');
+            displayError.textContent = event.error ? event.error.message : '';
+        });
+
+        // Form submit
         const form = document.getElementById('payment-form');
-        form.addEventListener('submit', async (event) => {
+        form.addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const {
                 token,
                 error
             } = await stripe.createToken(card);
+
             if (error) {
-                alert(error.message);
+                document.getElementById('card-errors').textContent = error.message;
             } else {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.setAttribute('type', 'hidden');
-                hiddenInput.setAttribute('name', 'stripeToken');
-                hiddenInput.setAttribute('value', token.id);
-                form.appendChild(hiddenInput);
+                document.getElementById('stripeToken').value = token.id;
                 form.submit();
             }
         });

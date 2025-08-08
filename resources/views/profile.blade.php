@@ -310,6 +310,11 @@
                             <input type="text" class="form-control" name="mobile" id="mobile" value="{{$customer->mobile}}" />
                             <p class="help-block text-danger"></p>
                         </div>
+                        <div class="control-group">
+                            <label for="mobile" class="form-label">Full Address</label>
+                            <textarea name="address" class="form-control" id="address" rows="6" placeholder="Enter your full address">{{$customer->address}}</textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
 
                         <div style="width: 100% !important; text-align: center;">
                             <button class="btn w-full btn-primary2 py-2 px-4" type="submit" style="width: 100%;">Update Profile</button>
