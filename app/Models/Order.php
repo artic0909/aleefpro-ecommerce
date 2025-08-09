@@ -9,6 +9,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
+        'order_id',
         'customer_id',
         'product_details',
         'overall_amount',
@@ -16,6 +17,7 @@ class Order extends Model
         'amount',
         'currency',
         'payment_status',
+        'shipment_status',
         'order_date',
     ];
 

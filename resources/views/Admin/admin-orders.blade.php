@@ -5,7 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Users</title>
+    <title>Orders</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{ asset('./Admin/vendors/feather/feather.css') }}">
     <link rel="stylesheet" href="{{ asset('./Admin/vendors/ti-icons/css/themify-icons.css') }}">
@@ -198,14 +198,14 @@
 
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/all-users">
-                            <i class="icon-paper menu-icon active-color"></i>
+                            <i class="icon-paper menu-icon"></i>
                             <span class="menu-title">Users</span>
                         </a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link nav-active" href="/admin/all-partners">
-                            <i class="icon-paper menu-icon"></i>
+                            <i class="icon-paper menu-icon active-color"></i>
                             <span class="menu-title active-color">Partners</span>
                         </a>
                     </li>
@@ -233,32 +233,61 @@
                     <div class="row">
                         <div class="card col-12">
                             <div class="card-body">
-                                <h4 class="card-title">All Users</h4>
+                                <h4 class="card-title">All Orders</h4>
 
                                 <div class="table-responsive">
                                     <table class="table table-hover">
                                         <thead>
                                             <tr>
                                                 <th>SL</th>
-                                                <th>User Name</th>
-                                                <th>Email ID</th>
-                                                <th>Mobile Number</th>
-                                                <th>Call</th>
-                                                <th>Mail</th>
-                                                <th>Delete</th>
+                                                <th>Order ID</th>
+                                                <th>Order Date</th>
+                                                <th>Customers Details</th>
+                                                <th>Overall Amount</th>
+                                                <th>Payment Status</th>
+                                                <th>Shipment Status</th>
+                                                <th>Product Details</th>
+                                                <th>Delivery Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($users as $user)
+                                            @foreach($orders as $order)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{$user->name}}</td>
-                                                <td>{{$user->email}}</td>
-                                                <td>{{$user->mobile}}</td>
 
-                                                <td><a href="tel:{{$user->mobile}}" class="btn btn-warning">Call</a></td>
-                                                <td><a href="mailto:{{$user->email}}" class="btn btn-success">Mail</a></td>
-                                                <td><button data-bs-toggle="modal" data-bs-target="#scrollDeleteModal{{ $user->id }}" class="btn btn-danger">Delete</button></td>
+                                                <td>{{ $order->order_id }}</td>
+                                                <td>{{ $order->order_date }}</td>
+                                                <td>
+                                                    <p class="m-0 p-0">Name: {{ $order->customer->name }}</p>
+                                                    <p class="m-0 p-0">Email: {{ $order->customer->email }}</p>
+                                                    <p class="m-0 p-0">Phone: {{ $order->customer->phone }}</p>
+                                                </td>
+
+                                                <td>$ {{ $order->overall_amount }}</td>
+
+                                                <td>
+                                                    <p class="m-0 badge 
+                                                            {{ $order->payment_status == 'succeeded' ? 'badge-success' : 
+                                                            ($order->payment_status == 'pending' ? 'badge-warning' : 'badge-danger') }}" style="font-size: 1rem;">
+                                                        {{ ucfirst($order->payment_status) }}
+                                                    </p>
+                                                </td>
+
+                                                <td>
+                                                    <p class="m-0 badge
+    {{ $order->shipment_status == 'delivered' ? 'badge-success' : 
+       ($order->shipment_status == 'pending' ? 'badge-warning' : 
+       ($order->shipment_status == 'outForDelivery' ? 'badge-primary' : 'badge-danger')) }}"
+                                                        style="font-size: 1rem;">
+                                                        {{ ucfirst($order->shipment_status) }}
+                                                    </p>
+
+                                                </td>
+
+
+
+                                                <td><button data-bs-toggle="modal" data-bs-target="#scrollDetailsModal{{ $order->id }}" class="btn btn-primary">Product Details</button></td>
+                                                <td><button data-bs-toggle="modal" data-bs-target="#scrollDeleteModal{{ $order->id }}" class="btn btn-warning">Status Update</button></td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -273,31 +302,84 @@
 
 
 
+                <!-- Update Modal -->
+                @foreach($orders as $order)
+                <div class="modal fade" id="scrollDetailsModal{{ $order->id }}" tabindex="-1" aria-labelledby="scrollDetailsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <form action="" method="POST" class="modal-content" enctype="multipart/form-data">
 
-                <!-- Delete Modal -->
-                @foreach($users as $user)
-                <div class="modal fade" id="scrollDeleteModal{{ $user->id }}" tabindex="-1" aria-labelledby="scrollDeleteModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form action="{{route('admin.user.delete', $user->id)}}" method="POST" class="modal-content" enctype="multipart/form-data">
-                            @csrf
-                            @method('DELETE')
                             <div class="modal-body">
-                                <div>
-                                    <h2 class="text-danger">You want to this User?</h2>
-                                    <p>{{ $user->name }}</p>
-                                    <p>{{ $user->email }}</p>
-                                    <p>{{ $user->mobile }}</p>
+                                <div style="overflow-y: auto;">
+                                    <h2 class="text-success" style="text-align: center; font-weight: bold;">Product Details</h2>
+
+                                    <table class="table">
+                                        <thead>
+                                            <tr style="text-align: center;">
+                                                <th>Product Name</th>
+                                                <th>Code</th>
+                                                <th>Color</th>
+                                                <th>Rate</th>
+                                                <th>Size</th>
+                                                <th>Quantity</th>
+                                                <th>Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($order->product_details as $product)
+                                            <tr style="text-align: center;">
+                                                <td>{{ $product['product_name'] }}</td>
+                                                <td>{{ $product['product_code'] }}</td>
+                                                <td>{{ $product['product_color'] }}</td>
+                                                <td>${{ $product['product_rate'] }}</td>
+                                                <td>{{ $product['product_size'] }}</td>
+                                                <td>{{ $product['product_quantity'] }}</td>
+                                                <td>${{ $product['total_amount'] }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
 
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-danger">Delete</button>
                             </div>
                         </form>
                     </div>
                 </div>
                 @endforeach
+
+
+                <!-- Status Update Modal -->
+                @foreach($orders as $order)
+                <div class="modal fade" id="scrollDeleteModal{{ $order->id }}" tabindex="-1" aria-labelledby="scrollDeleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form action="{{ route('admin.orders.shipment-status', $order->id) }}" method="POST" class="modal-content" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            <div class="modal-body">
+                                <div>
+                                    <h2 class="text-success mb-2" style="text-align: center; font-weight: bold;">Update Status</h2>
+
+                                    <label for="shipment_status" class="mb-2">Shipment Status<span class="text-danger">*</span></label>
+
+                                    <select name="shipment_status" class="form-control text-black" id="">
+                                        <option class="text-dark" value="pending" {{ $order->shipment_status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option class="text-dark" value="outForDelivery" {{ $order->shipment_status == 'outForDelivery' ? 'selected' : '' }}>Out For Delivery</option>
+                                        <option class="text-dark" value="delivered" {{ $order->shipment_status == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+
 
 
 

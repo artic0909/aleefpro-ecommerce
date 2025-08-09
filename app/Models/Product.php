@@ -24,6 +24,7 @@ class Product extends Model
         'slug',
         'front_customize',
         'back_customize',
+        'stock_status',
     ];
 
     protected $casts = [

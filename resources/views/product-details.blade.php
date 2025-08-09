@@ -400,31 +400,38 @@
             </div>
           </div>
 
-
-          <div class="d-flex align-items-center mb-4 pt-2">
-
-
-
-            <!-- Quantity -->
-            <div class="input-group quantity mr-3" style="width: 130px">
-              <div class="input-group-btn">
-                <button type="button" class="btn btn-primary2 btn-minus">
-                  <i class="fa fa-minus"></i>
-                </button>
-              </div>
-              <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" value="20" />
-              <div class="input-group-btn">
-                <button type="button" class="btn btn-primary2 btn-plus">
-                  <i class="fa fa-plus"></i>
-                </button>
-              </div>
+          <!-- Quantity -->
+          <div class="input-group quantity mr-3" style="width: 130px">
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-primary2 btn-minus">
+                <i class="fa fa-minus"></i>
+              </button>
             </div>
+            <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" value="20" />
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-primary2 btn-plus">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center mb-4 pt-2 mt-3">
+
+
+
 
 
             <!-- Add to Cart Button -->
+            @if($product->stock_status == 'out_of_stock')
+            <span class="btn btn-primary2 px-3">
+              <i class="fa fa-times-circle me-1"></i> Sold Out
+            </span>
+            @else
             <button type="submit" class="btn btn-primary2 px-3">
               <i class="fa fa-shopping-cart mr-1"></i>
             </button>
+            @endif
+
 
             &nbsp;&nbsp;&nbsp;
             <a href="{{ route('customer.product.enquiry', [
@@ -443,6 +450,9 @@
    ]) }}" class="btn btn-primary2 px-3">
               <i class="fa fa-pen-to-square mr-1"></i> Customize
             </a>
+
+
+
           </div>
 
           <!-- others things -->

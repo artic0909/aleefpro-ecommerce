@@ -121,4 +121,10 @@ Route::middleware(['auth:admins'])->group(function () {
     Route::post('/admin/catelog', [AdminController::class, 'catelogueAdd'])->name('admin.catelog.store');
     Route::put('/admin/catalogue/update/{id}', [AdminController::class, 'catelogUpdate'])->name('admin.catelog.update');
 
+    // Orders
+    Route::get('/admin/orders', [AdminController::class, 'ordersView'])->name('admin.orders');
+    Route::put('/admin/orders/{id}/shipment-status', [AdminController::class, 'shipmentStatusUpdate'])->name('admin.orders.shipment-status');
+
+
+
 });

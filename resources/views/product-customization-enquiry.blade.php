@@ -544,7 +544,7 @@
                         </div>
 
 
-                        <div class="col-md-6 form-group">
+                        <div class="col-md-12 form-group">
                             <label>Print Quality</label>
                             <select name="print_quality" id="print_quality" class="form-control">
                                 <option value="" selected>Select Print Quality</option>
@@ -553,11 +553,28 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6 form-group">
+                        <div class="col-md-12 form-group">
                             <label>Logo Size</label>
-                            <select name="logo_size" id="logo_size" class="form-control">
-                                <option value="" selected>Select Logo Size</option>
-                            </select>
+                            <p id="logo_size_instruction" style="color: red;"></p>
+
+                            <div class="row">
+                                <div class="col-md-12 form-group d-flex" style="align-items: center;">
+                                    <input type="number" class="form-control" id="logo_width" placeholder="Width" required>
+                                    &nbsp;&nbsp;X&nbsp;&nbsp;
+                                    <input type="number" class="form-control" id="logo_height" placeholder="Height" required>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <select id="logo_height_unit" class="form-control" >
+                                        <option value="" selected>Select Unit</option required>
+                                        <option value="cm">CM</option>
+                                        <option value="inch">INCH</option>
+                                        <option value="mm">MM</option>
+                                        <option value="meter">METER</option>
+                                        <option value="feet">FEET</option>
+                                    </select>
+
+                                    <input type="hidden" name="logo_size" id="showLogoSize" class="form-control">
+                                </div>
+                            </div>
                         </div>
 
 
@@ -1007,45 +1024,6 @@
     </script>
 
 
-    <script>
-        $(document).ready(function() {
-            const logoSizeOptions = {
-                print: [{
-                        value: 'front_3x3',
-                        text: 'Front : 3" x 3"'
-                    },
-                    {
-                        value: 'back_12x12',
-                        text: 'Back : 12" x 12"'
-                    }
-                ],
-                embroidery: [{
-                        value: 'front_2_5x2_5',
-                        text: 'Front : 2.5" x 2.5"'
-                    },
-                    {
-                        value: 'back_10x10',
-                        text: 'Back : 10" x 10"'
-                    }
-                ]
-            };
-
-            $('#print_quality').on('change', function() {
-                const selectedQuality = $(this).val();
-                const $logoSize = $('#logo_size');
-
-                $logoSize.empty().append('<option value="">Select Logo Size</option>');
-
-                if (logoSizeOptions[selectedQuality]) {
-                    logoSizeOptions[selectedQuality].forEach(option => {
-                        $logoSize.append(
-                            $('<option></option>').val(option.value).text(option.text)
-                        );
-                    });
-                }
-            });
-        });
-    </script>
 
 
     <!-- hide / show -->
@@ -1094,6 +1072,48 @@
     </script>
 
 
+    <!-- Logo Size -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const printQuality = document.getElementById("print_quality");
+            const logoInstruction = document.getElementById("logo_size_instruction");
+
+            const widthInput = document.getElementById("logo_width");
+            const heightInput = document.getElementById("logo_height");
+            const unitSelect = document.getElementById("logo_height_unit");
+            const showLogoSize = document.getElementById("showLogoSize");
+
+            // Instruction change based on Print Quality selection
+            printQuality.addEventListener("change", function() {
+                if (this.value === "print") {
+                    logoInstruction.textContent = "Max sizes front: 3X3 Inch, back: 12X12 Inch";
+                } else if (this.value === "embroidery") {
+                    logoInstruction.textContent = "Max sizes front: 2.5X2.5 Inch, back: 10X10 Inch";
+                } else {
+                    logoInstruction.textContent = "";
+                }
+            });
+
+            // Function to update logo size field
+            function updateLogoSize() {
+                const width = widthInput.value.trim();
+                const height = heightInput.value.trim();
+                const unit = unitSelect.value;
+
+                if (width && height && unit) {
+                    showLogoSize.value = `${width}X${height} ${unit}`;
+                } else {
+                    showLogoSize.value = "";
+                }
+            }
+
+            // Trigger update on input changes
+            [widthInput, heightInput, unitSelect].forEach(el => {
+                el.addEventListener("input", updateLogoSize);
+                el.addEventListener("change", updateLogoSize);
+            });
+        });
+    </script>
 
 
 

@@ -9,6 +9,7 @@ use App\Mail\CustomerCartEnquiryRecieverMail;
 use App\Mail\CustomerPasswordResetOtpMail;
 use App\Mail\CustomizeEnquiryRecieverMail;
 use App\Mail\CustomizeEnquirySenderMail;
+use App\Mail\OrderPlacedMail;
 use App\Mail\ProductEnquiryMail;
 use App\Mail\ProductEnquiryMailSender;
 use App\Mail\UpdatePasswordMail;
@@ -1045,7 +1046,7 @@ class CustomerController extends Controller
             ]);
 
             // Save order
-            Order::create([
+            $order  = Order::create([
                 'customer_id'     => $customerId,
                 'product_details' => $productDetails,
                 'overall_amount'  => $overallAmount,
@@ -1053,8 +1054,19 @@ class CustomerController extends Controller
                 'amount'          => $charge->amount / 100,
                 'currency'        => $charge->currency,
                 'payment_status'  => $charge->status,
+                'shipment_status' => 'pending',
                 'order_date'      => now(),
             ]);
+
+
+            // Now update with unique order_id
+            $order->update([
+                'order_id' => 'ORD-ALP-' . $order->id
+            ]);
+
+            // Order Placed Email
+            Mail::to($customerEmail)->send(new OrderPlacedMail($order));
+            Mail::to('saklindeveloper@gmail.com')->send(new OrderPlacedMail($order));
 
             // Clear cart
             Cart::where('customer_id', $customerId)->delete();

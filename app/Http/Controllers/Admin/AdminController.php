@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OutForDeliveryMail;
+use App\Mail\ProductDeliveredMail;
 use App\Models\About;
 use App\Models\Admin;
 use App\Models\Blog;
@@ -17,6 +19,7 @@ use App\Models\ProductEnquiry;
 use App\Models\Offer;
 use App\Models\Partner;
 use App\Models\Contact;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ScrollBanners;
 use App\Models\Size;
@@ -30,6 +33,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -505,6 +509,7 @@ class AdminController extends Controller
             'size_chart_image' => 'nullable|image',
             'front_customize' => 'nullable|image',
             'back_customize' => 'nullable|image',
+            'stock_status' => 'required|in:stock,out_of_stock',
         ]);
 
 
@@ -570,6 +575,7 @@ class AdminController extends Controller
             'slug' => Str::slug($request->product_name),
             'front_customize' => $frontCustomizePath,
             'back_customize' => $backCustomizePath,
+            'stock_status' => $request->stock_status,
         ]);
 
         return back()->with('success', 'Product updated successfully.');
@@ -1182,5 +1188,34 @@ class AdminController extends Controller
         $catelogue->save();
 
         return back()->with('success', 'Catelogue updated successfully!');
+    }
+
+    // Orders ==============================================================>
+    public function ordersView()
+    {
+
+        $orders = Order::with('customer')->get();
+
+        return view('admin.admin-orders', compact('orders'));
+    }
+
+    public function shipmentStatusUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'shipment_status' => 'required|string'
+        ]);
+
+        $order = Order::findOrFail($id);
+        $order->shipment_status = $request->shipment_status;
+        $order->save();
+
+        // Send emails based on the updated status
+        if ($request->shipment_status === 'outForDelivery') {
+            Mail::to($order->customer->email)->send(new OutForDeliveryMail($order));
+        } elseif ($request->shipment_status === 'delivered') {
+            Mail::to($order->customer->email)->send(new ProductDeliveredMail($order));
+        }
+
+        return back()->with('success', 'Order status updated successfully!');
     }
 }

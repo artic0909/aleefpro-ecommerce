@@ -252,6 +252,7 @@
                                                 <th>Actual Price</th>
                                                 <th>Selling Price</th>
                                                 <th>Size Chart</th>
+                                                <th>Stock Status</th>
                                                 <th>Description</th>
                                                 <th>Information</th>
                                                 <th>Edit</th>
@@ -287,6 +288,16 @@
                                                 <td>{{$product->selling_price}}</td>
 
                                                 <td><img src="{{ asset('storage/' . $product->size_chart_image) }}" class="img-fluid" alt=""></td>
+
+                                                <td>
+                                                    <p class="m-0 badge 
+    {{ $product->stock_status === 'stock' ? 'badge-success' : 'badge-danger' }}"
+                                                        style="text-transform: capitalize;">
+                                                        {{ str_replace('_', ' ', $product->stock_status) }}
+                                                    </p>
+
+                                                </td>
+
                                                 <td><button data-bs-toggle="modal" data-bs-target="#scrollDescriptionModal{{ $product->id }}" class="btn btn-warning">Desccription</button></td>
                                                 <td><button data-bs-toggle="modal" data-bs-target="#scrollInfoModal{{ $product->id }}" class="btn btn-info">Info</button></td>
                                                 <td><button data-bs-toggle="modal" data-bs-target="#scrollEditModal{{$product->id}}" class="btn btn-success">Edit</button></td>
@@ -443,6 +454,18 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
+
+                                <div class="mt-3 mb-3">
+                                    <label for="image" class="form-label">Stock Status Update<span class="text-danger">*</span></label>
+                                    <select name="stock_status" class="form-control" id="">
+                                        <option value="stock" {{ $product->stock_status == 'stock' ? 'selected' : '' }}>In Stock</option>
+                                        <option value="out_of_stock" {{ $product->stock_status == 'out_of_stock' ? 'selected' : '' }}>Out Of Stock</option>
+                                    </select>
+
+                                </div>
+
+
+
                                 <div class="">
                                     <!-- show all images -->
                                     @php
