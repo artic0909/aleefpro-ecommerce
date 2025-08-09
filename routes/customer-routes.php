@@ -46,6 +46,7 @@ Route::middleware(['auth:customers'])->group(function () {
     Route::post('/customer/submit-cart-enquiry', [CustomerController::class, 'submitCartEnquiry'])->name('customer.cart.enquiry');
 
     Route::get('/customer/profile', [CustomerController::class, 'profileView'])->name('customer.profile');
+    Route::get('/customer/orders', [CustomerController::class, 'ordersView'])->name('customer.profile.orders');
     Route::post('/customer/profile/update', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
     Route::post('/customer/profile/update-password', [CustomerController::class, 'updatePassword'])->name('customer.profile.update-password');
 
@@ -56,6 +57,8 @@ Route::middleware(['auth:customers'])->group(function () {
     Route::post('/customer/product-customize/send', [CustomerController::class, 'productCustomizationEnquirySend'])->name('customer.product.customize.send');
 
     Route::post('/customer/checkout/process', [CustomerController::class, 'process'])->name('customer.checkout.process');
+
+
 
 
 

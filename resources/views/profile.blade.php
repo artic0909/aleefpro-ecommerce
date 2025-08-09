@@ -99,6 +99,9 @@
                             <a href="/customer/profile" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-gear"></i> Profile
                             </a>
+                            <a href="/customer/orders" class="dropdown-item" type="button">
+                                <i class="fa-solid fa-gear"></i> Orders
+                            </a>
                             <a href="{{ route('customer.logout') }}" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-power-off"></i> Logout
                             </a>

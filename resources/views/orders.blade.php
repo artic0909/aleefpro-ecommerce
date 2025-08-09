@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Reset Password</title>
+    <title>{{$customer->name}} | Manage Orders</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -18,6 +18,10 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <!-- Libraries Stylesheet -->
     <link href="{{ asset('lib/animate/animate.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet" />
@@ -30,26 +34,19 @@
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/serach-responsive.css') }}" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('./img/logo1.webp') }}" />
+
     <style>
-        .custom-success-popup,
-        .custom-error-popup {
+        .custom-success-popup {
             position: fixed;
             top: 20px;
             right: 20px;
+            background-color: #4CAF50;
+            color: white;
             padding: 15px 20px;
             border-radius: 5px;
-            color: white;
-            z-index: 9999;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
             animation: fadeInOut 4s ease-in-out forwards;
-        }
-
-        .custom-success-popup {
-            background-color: #4CAF50;
-        }
-
-        .custom-error-popup {
-            background-color: #f44336;
         }
 
         @keyframes fadeInOut {
@@ -73,6 +70,7 @@
             }
         }
     </style>
+
 </head>
 
 <body>
@@ -119,7 +117,6 @@
 
                     &nbsp;
 
-
                     <div class="btn-group">
                         <div id="google_translate_element" class="btn btn-sm btn-light"></div>
 
@@ -140,11 +137,17 @@
                                     </div>
                                 </div>
                             </form>
-
-                            <a href="" class="btn px-0">
+                            @auth('customers')
+                            <a href="/customer/cart" class="btn px-0">
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span class="badge text-danger border border-warning rounded-circle">{{$cartCount}}</span>
+                            </a>
+                            @else
+                            <a href="/customer/cart" class="btn px-0">
                                 <i class="fas fa-shopping-cart text-primary"></i>
                                 <span class="badge text-danger border border-warning rounded-circle">0</span>
                             </a>
+                            @endauth
                         </div>
 
 
@@ -244,19 +247,24 @@
                                 <i class="fas fa-user text-primary"></i>
                                 <span class="badge text-success" style="padding-bottom: 2px">✔</span>
                             </button>
+
+                            <a href="/customer/cart" class="btn px-0 ml-3">
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle"
+                                    style="padding-bottom: 2px">{{$cartCount}}</span>
+                            </a>
                             @else
                             <a href="/customer/login" class="btn px-0">
                                 <i class="fas fa-user text-primary"></i>
                                 <span class="badge text-warning" style="padding-bottom: 2px">X</span>
                             </a>
-                            @endauth
-
 
                             <a href="/customer/cart" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle"
                                     style="padding-bottom: 2px">0</span>
                             </a>
+                            @endauth
                         </div>
                     </div>
                 </nav>
@@ -266,14 +274,14 @@
     <!-- Navbar End -->
 
 
-
     <!-- Breadcrumb Start -->
     <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
                     <a class="breadcrumb-item text-dark" href="/">Aleef Pro</a>
-                    <span class="breadcrumb-item active">Reset Your Password</span>
+                    <a class="breadcrumb-item text-dark" href="#" style="text-transform: capitalize;">{{$customer->name}}</a>
+                    <span class="breadcrumb-item active">Manage Orders</span>
                 </nav>
             </div>
         </div>
@@ -283,87 +291,93 @@
 
     <!-- Contact Start -->
     <div class="container-fluid">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Login
-                Now</span></h2>
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Orders History</span></h2>
         <div class="row px-xl-5">
-            <div class="col-lg-7 mb-5">
-                <div class="contact-form bg-light p-30">
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
+
+            <div class="col-lg-12 mb-5">
+                <div class="contact-form bg-light p-30" style="overflow-y: auto;">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>SL</th>
+                                <th>Order ID</th>
+                                <th>Order Date</th>
+                                <th>Product Details</th>
+                                <th>Overall Amount</th>
+                                <th>Payment Status</th>
+                                <th>Shipment Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($orders as $order)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+
+                                <td>{{ $order->order_id }}</td>
+                                <td>{{ $order->order_date }}</td>
+                                @foreach($order->product_details as $product)
+                            
+                                <td>{{ $product['product_name'] }}</td>
+                                <td>{{ $product['product_code'] }}</td>
+                                <td>{{ $product['product_color'] }}</td>
+                                <td>${{ $product['product_rate'] }}</td>
+                                <td>{{ $product['product_size'] }}</td>
+                                <td>{{ $product['product_quantity'] }}</td>
+                                <td>${{ $product['total_amount'] }}</td>
+                        
                             @endforeach
-                        </ul>
-                    </div>
-                    @endif
 
-                    <form action="{{route('customer.send-otp')}}" method="POST" novalidate="novalidate" id="emailForm">
-                        @csrf
+                            <td>$ {{ $order->overall_amount }}</td>
 
-                        <div class="control-group">
-                            <input type="email" class="form-control" id="otpEmail" name="email" placeholder="Your Email"
-                                required="required" data-validation-required-message="Please enter your email" />
-                            <p class="help-block text-danger"></p>
-                        </div>
+                            <td>
+                                <p class="m-0 badge 
+                                                            {{ $order->payment_status == 'succeeded' ? 'badge-success' : 
+                                                            ($order->payment_status == 'pending' ? 'badge-warning' : 'badge-danger') }}" style="font-size: 1rem;">
+                                    {{ ucfirst($order->payment_status) }}
+                                </p>
+                            </td>
 
-                        <div style="width: 100%; text-align: right;">
-                            <button class="btn btn-primary2 py-2 px-4 font-weight-bold" type="submit" style="text-align:right;">
-                                SEND OTP</button>
-                        </div>
+                            <td>
+                                <p class="m-0 badge
+    {{ $order->shipment_status == 'delivered' ? 'badge-success' : 
+       ($order->shipment_status == 'pending' ? 'badge-warning' : 
+       ($order->shipment_status == 'outForDelivery' ? 'badge-primary' : 'badge-danger')) }}"
+                                    style="font-size: 1rem;">
+                                    {{ ucfirst($order->shipment_status) }}
+                                </p>
 
-
-                    </form>
-
-                    <form action="{{route('customer.reset-password.post')}}" method="POST" style="margin-top: 15px;">
-                        @csrf
-
-                        <div class="control-group" style="margin-bottom: 10px;">
-                            <input type="text" name="otp" class="form-control" placeholder="Enter the OTP" required>
-                        </div>
-
-                        <div class="control-group" style="margin-bottom: 10px;">
-                            <input type="email" name="email" class="form-control" placeholder="Enter email" required>
-                        </div>
-
-                        <div class="control-group" style="margin-bottom: 10px;">
-                            <input type="password" name="new_password" class="form-control" placeholder="Enter new password" required>
-                        </div>
-
-                        <div class="control-group" style="margin-bottom: 10px;">
-                            <input type="password" name="new_password_confirmation" class="form-control" placeholder="Confirm new password" required>
-                        </div>
-
-                        <div>
-                            <button class="btn btn-primary2 py-2 px-4 font-weight-bold" type="submit" style="width: 100%;">
-                                Reset Password
-                            </button>
-                        </div>
-                    </form>
+                            </td>
 
 
 
-
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-                @foreach($socials as $social)
-                <div class="bg-light p-30 mt-4">
-                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>{{$social->address}}</p>
-                    <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>{{$social->email}}</p>
-                    <p class="mb-2"><i class="fa fa-phone text-primary mr-3"></i>{{$social->mobile}}</p>
-                </div>
-                @endforeach
             </div>
-            <div class="col-lg-5 mb-5">
-                <div class="bg-light p-30 mb-30">
-                    <iframe style="width: 100%; height: 250px;"
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
-                        frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
-                </div>
 
-            </div>
         </div>
     </div>
     <!-- Contact End -->
+
+
+
+    @if ($errors->any())
+    <div class="alert alert-danger" id="errorsShowHere">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    @if (session('success'))
+    <div id="successPopup" class="custom-success-popup">
+        {{ session('success') }}
+    </div>
+    @endif
 
 
     <!-- Footer Start -->
@@ -433,38 +447,23 @@
     @endforeach
     <!-- Footer End -->
 
-
-    @if (session('success'))
-    <div id="successPopup" class="custom-success-popup">
-        {{ session('success') }}
-    </div>
-    @endif
-
-    @if (session('error'))
-    <div id="errorPopup" class="custom-error-popup">
-        {{ session('error') }}
-    </div>
-    @endif
-
-
-
-
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary2 back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
 
-
-
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const successPopup = document.getElementById('successPopup');
-            const errorPopup = document.getElementById('errorPopup');
-
-            if (successPopup) setTimeout(() => successPopup.remove(), 4000);
-            if (errorPopup) setTimeout(() => errorPopup.remove(), 4000);
+            const popup = document.getElementById('successPopup');
+            if (popup) {
+                setTimeout(() => {
+                    popup.remove();
+                }, 4000); // Matches CSS animation duration
+            }
         });
     </script>
+
+
+
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

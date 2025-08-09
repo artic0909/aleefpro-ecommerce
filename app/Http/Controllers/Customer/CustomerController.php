@@ -1076,4 +1076,23 @@ class CustomerController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
+    // Order History
+    public function ordersView()
+    {
+        $maincategories = MainCategory::with('subCategory')->get();
+        $subCategories = SubCategory::with('products', 'mainCategory')->get();
+        $offers = Offer::all();
+        $partners = Partner::all();
+        $socials = Social::all();
+        $abouts = About::all();
+        $customer = Auth::guard('customers')->user();
+
+        $customerId = Auth::guard('customers')->id();
+        $cartCount = Cart::where('customer_id', $customerId)->count();
+
+
+        $orders = Order::where('customer_id', auth()->user()->id)->get();
+        return view('orders', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'customer', 'orders'));
+    }
 }

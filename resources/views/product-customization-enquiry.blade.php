@@ -202,6 +202,9 @@
                             <a href="/customer/profile" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-gear"></i> Profile
                             </a>
+                            <a href="/customer/orders" class="dropdown-item" type="button">
+                                <i class="fa-solid fa-gear"></i> Orders
+                            </a>
                             <a href="{{ route('customer.logout') }}" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-power-off"></i> Logout
                             </a>
@@ -563,7 +566,7 @@
                                     &nbsp;&nbsp;X&nbsp;&nbsp;
                                     <input type="number" class="form-control" id="logo_height" placeholder="Height" required>
                                     &nbsp;&nbsp;&nbsp;&nbsp;
-                                    <select id="logo_height_unit" class="form-control" >
+                                    <select id="logo_height_unit" class="form-control">
                                         <option value="" selected>Select Unit</option required>
                                         <option value="cm">CM</option>
                                         <option value="inch">INCH</option>

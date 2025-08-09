@@ -36,7 +36,6 @@
     <link href="css/serach-responsive.css" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('./img/logo1.webp') }}" />
     <style>
-   
         #google_translate_element {
             display: inline-block;
             margin-left: 10px;
@@ -58,7 +57,7 @@
         }
 
         .goog-te-gadget .goog-te-combo {
-            
+
             padding: 4px 10px;
             color: #000;
             font-size: 14px;
@@ -104,6 +103,9 @@
                             @auth('customers')
                             <a href="/customer/profile" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-gear"></i> Profile
+                            </a>
+                            <a href="/customer/orders" class="dropdown-item" type="button">
+                                <i class="fa-solid fa-gear"></i> Orders
                             </a>
                             <a href="{{ route('customer.logout') }}" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-power-off"></i> Logout

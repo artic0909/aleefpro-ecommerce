@@ -58,6 +58,9 @@
                             <a href="/customer/profile" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-gear"></i> Profile
                             </a>
+                            <a href="/customer/orders" class="dropdown-item" type="button">
+                                <i class="fa-solid fa-gear"></i> Orders
+                            </a>
                             <a href="{{ route('customer.logout') }}" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-power-off"></i> Logout
                             </a>
@@ -270,7 +273,7 @@
                         </div>
 
                         <div class="control-group">
-                           <textarea name="address" class="form-control" id="address" rows="6" id="address" placeholder="Enter your full address"></textarea>
+                            <textarea name="address" class="form-control" id="address" rows="6" id="address" placeholder="Enter your full address"></textarea>
                             <p class="help-block text-danger"></p>
                         </div>
 
