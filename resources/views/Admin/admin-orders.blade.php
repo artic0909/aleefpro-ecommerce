@@ -137,6 +137,13 @@
                     </li>
 
                     <li class="nav-item">
+                        <a class="nav-link nav-active" href="/admin/orders">
+                            <i class="icon-paper menu-icon active-color"></i>
+                            <span class="menu-title active-color">Orders</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link" href="/admin/colors">
                             <i class="icon-paper menu-icon"></i>
                             <span class="menu-title">Add Colors</span>
@@ -204,9 +211,9 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link nav-active" href="/admin/all-partners">
-                            <i class="icon-paper menu-icon active-color"></i>
-                            <span class="menu-title active-color">Partners</span>
+                        <a class="nav-link" href="/admin/all-partners">
+                            <i class="icon-paper menu-icon"></i>
+                            <span class="menu-title">Partners</span>
                         </a>
                     </li>
 
@@ -234,6 +241,11 @@
                         <div class="card col-12">
                             <div class="card-body">
                                 <h4 class="card-title">All Orders</h4>
+                                <div class="d-flex justify-content-end gap-4">
+                                    <a href="{{ route('admin.orders.export.pending') }}" class="btn btn-warning card-title">Pending Export</a>
+                                    <a href="{{ route('admin.orders.export.out_for_delivery') }}" class="btn btn-primary text-white card-title">Out for Delivery</a>
+                                    <a href="{{ route('admin.orders.export.delivered') }}" class="btn btn-success text-white card-title">Delivered</a>
+                                </div>
 
                                 <div class="table-responsive">
                                     <table class="table table-hover">
@@ -252,15 +264,15 @@
                                         </thead>
                                         <tbody>
                                             @foreach($orders as $order)
-                                            <tr>
+                                            <tr style="font-weight: bold;">
                                                 <td>{{ $loop->iteration }}</td>
 
                                                 <td>{{ $order->order_id }}</td>
                                                 <td>{{ $order->order_date }}</td>
                                                 <td>
-                                                    <p class="m-0 p-0">Name: {{ $order->customer->name }}</p>
+                                                    <p class="m-0 p-0" style="text-transform: capitalize;">Name: {{ $order->customer->name }}</p>
                                                     <p class="m-0 p-0">Email: {{ $order->customer->email }}</p>
-                                                    <p class="m-0 p-0">Phone: {{ $order->customer->phone }}</p>
+                                                    <p class="m-0 p-0">Phone: {{ $order->customer->mobile }}</p>
                                                 </td>
 
                                                 <td>$ {{ $order->overall_amount }}</td>

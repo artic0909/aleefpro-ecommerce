@@ -1092,7 +1092,7 @@ class CustomerController extends Controller
         $cartCount = Cart::where('customer_id', $customerId)->count();
 
 
-        $orders = Order::where('customer_id', auth()->user()->id)->get();
+        $orders = Order::where('customer_id', Auth::id())->get();
         return view('orders', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'customer', 'orders'));
     }
 }

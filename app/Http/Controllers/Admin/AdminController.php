@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Response;
 
 class AdminController extends Controller
 {
@@ -1217,5 +1218,200 @@ class AdminController extends Controller
         }
 
         return back()->with('success', 'Order status updated successfully!');
+    }
+
+    public function exportPendingOrders()
+    {
+        $orders = Order::where('shipment_status', 'pending')
+            ->with('customer')
+            ->get();
+
+        $csvFileName = 'pending_orders_' . date('Ymd') . '.csv';
+
+        $callback = function () use ($orders) {
+            $handle = fopen('php://output', 'w');
+
+            // CSV Header
+            fputcsv($handle, [
+                'Customer Name',
+                'Customer Email',
+                'Order Date',
+                'Product Details',
+                'Overall Order Amount',
+                'Payment Status',
+                'Shipment Status'
+            ]);
+
+            foreach ($orders as $order) {
+                // Handle array or JSON
+                $products = is_array($order->product_details)
+                    ? $order->product_details
+                    : json_decode($order->product_details, true);
+
+                // Merge products into one string
+                $productDetails = '';
+                if (is_array($products)) {
+                    foreach ($products as $product) {
+                        $productDetails .= sprintf(
+                            "Name: %s, Code: %s, Color: %s, Rate: %s, Size: %s, Quantity: %s, Total: %s\n",
+                            $product['product_name'] ?? '',
+                            $product['product_code'] ?? '',
+                            $product['product_color'] ?? '',
+                            $product['product_rate'] ?? '',
+                            $product['product_size'] ?? '',
+                            $product['product_quantity'] ?? '',
+                            $product['total_amount'] ?? ''
+                        );
+                    }
+                    // Remove last newline
+                    $productDetails = trim($productDetails);
+                }
+
+                fputcsv($handle, [
+                    optional($order->customer)->name,
+                    optional($order->customer)->email,
+                    $order->order_date,
+                    $productDetails,
+                    $order->overall_amount,
+                    $order->payment_status,
+                    $order->shipment_status
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return Response::stream($callback, 200, [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename={$csvFileName}"
+        ]);
+    }
+
+    public function exportOutForDeliveryOrders()
+    {
+        $orders = Order::where('shipment_status', 'outForDelivery')
+            ->with('customer')
+            ->get();
+
+        $csvFileName = 'out_for_delivery_orders_' . date('Ymd') . '.csv';
+
+        $callback = function () use ($orders) {
+            $handle = fopen('php://output', 'w');
+
+            // CSV Header
+            fputcsv($handle, [
+                'Customer Name',
+                'Customer Email',
+                'Order Date',
+                'Product Details',
+                'Overall Order Amount',
+                'Payment Status',
+                'Shipment Status'
+            ]);
+
+            foreach ($orders as $order) {
+                $products = is_array($order->product_details)
+                    ? $order->product_details
+                    : json_decode($order->product_details, true);
+
+                $productDetails = '';
+                if (is_array($products)) {
+                    foreach ($products as $product) {
+                        $productDetails .= sprintf(
+                            "Name: %s, Code: %s, Color: %s, Rate: %s, Size: %s, Quantity: %s, Total: %s\n",
+                            $product['product_name'] ?? '',
+                            $product['product_code'] ?? '',
+                            $product['product_color'] ?? '',
+                            $product['product_rate'] ?? '',
+                            $product['product_size'] ?? '',
+                            $product['product_quantity'] ?? '',
+                            $product['total_amount'] ?? ''
+                        );
+                    }
+                    $productDetails = trim($productDetails);
+                }
+
+                fputcsv($handle, [
+                    optional($order->customer)->name,
+                    optional($order->customer)->email,
+                    $order->order_date,
+                    $productDetails,
+                    $order->overall_amount,
+                    $order->payment_status,
+                    $order->shipment_status
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return Response::stream($callback, 200, [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename={$csvFileName}"
+        ]);
+    }
+
+    public function exportDeliveredOrders()
+    {
+        $orders = Order::where('shipment_status', 'delivered')
+            ->with('customer')
+            ->get();
+
+        $csvFileName = 'delivered_orders_' . date('Ymd') . '.csv';
+
+        $callback = function () use ($orders) {
+            $handle = fopen('php://output', 'w');
+
+            // CSV Header
+            fputcsv($handle, [
+                'Customer Name',
+                'Customer Email',
+                'Order Date',
+                'Product Details',
+                'Overall Order Amount',
+                'Payment Status',
+                'Shipment Status'
+            ]);
+
+            foreach ($orders as $order) {
+                $products = is_array($order->product_details)
+                    ? $order->product_details
+                    : json_decode($order->product_details, true);
+
+                $productDetails = '';
+                if (is_array($products)) {
+                    foreach ($products as $product) {
+                        $productDetails .= sprintf(
+                            "Name: %s, Code: %s, Color: %s, Rate: %s, Size: %s, Quantity: %s, Total: %s\n",
+                            $product['product_name'] ?? '',
+                            $product['product_code'] ?? '',
+                            $product['product_color'] ?? '',
+                            $product['product_rate'] ?? '',
+                            $product['product_size'] ?? '',
+                            $product['product_quantity'] ?? '',
+                            $product['total_amount'] ?? ''
+                        );
+                    }
+                    $productDetails = trim($productDetails);
+                }
+
+                fputcsv($handle, [
+                    optional($order->customer)->name,
+                    optional($order->customer)->email,
+                    $order->order_date,
+                    $productDetails,
+                    $order->overall_amount,
+                    $order->payment_status,
+                    $order->shipment_status
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return Response::stream($callback, 200, [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename={$csvFileName}"
+        ]);
     }
 }

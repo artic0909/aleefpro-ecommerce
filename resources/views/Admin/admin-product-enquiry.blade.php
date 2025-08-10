@@ -137,6 +137,13 @@
                     </li>
 
                     <li class="nav-item">
+                        <a class="nav-link" href="/admin/orders">
+                            <i class="icon-paper menu-icon"></i>
+                            <span class="menu-title">Orders</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link" href="/admin/colors">
                             <i class="icon-paper menu-icon"></i>
                             <span class="menu-title">Add Colors</span>

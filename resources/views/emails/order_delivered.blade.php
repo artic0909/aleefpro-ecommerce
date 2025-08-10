@@ -504,34 +504,6 @@
                 </div>
             </div>
 
-            <div class="tracking-container">
-                <div class="section-title">
-                    <i>📌</i> Delivery Tracking
-                </div>
-                <div class="tracking-steps">
-                    <div class="tracking-step step-completed">
-                        <div class="step-icon">✓</div>
-                        <div class="step-text">Order Placed</div>
-                    </div>
-                    <div class="tracking-step step-completed">
-                        <div class="step-icon">✓</div>
-                        <div class="step-text">Processing</div>
-                    </div>
-                    <div class="tracking-step step-completed">
-                        <div class="step-icon">✓</div>
-                        <div class="step-text">Shipped</div>
-                    </div>
-                    <div class="tracking-step step-completed">
-                        <div class="step-icon">✓</div>
-                        <div class="step-text">Out for Delivery</div>
-                    </div>
-                    <div class="tracking-step step-completed">
-                        <div class="step-icon">✓</div>
-                        <div class="step-text">Delivered</div>
-                    </div>
-                </div>
-            </div>
-
             <div class="section">
                 <div class="section-title">
                     <i>📝</i> Order Summary

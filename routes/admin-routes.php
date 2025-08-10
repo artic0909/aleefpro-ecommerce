@@ -124,6 +124,9 @@ Route::middleware(['auth:admins'])->group(function () {
     // Orders
     Route::get('/admin/orders', [AdminController::class, 'ordersView'])->name('admin.orders');
     Route::put('/admin/orders/{id}/shipment-status', [AdminController::class, 'shipmentStatusUpdate'])->name('admin.orders.shipment-status');
+    Route::get('/admin/orders/export-pending', [AdminController::class, 'exportPendingOrders'])->name('admin.orders.export.pending');
+    Route::get('/admin/orders/export-out-for-delivery', [AdminController::class, 'exportOutForDeliveryOrders'])->name('admin.orders.export.out_for_delivery');
+    Route::get('/admin/orders/export-delivered', [AdminController::class, 'exportDeliveredOrders'])->name('admin.orders.export.delivered');
 
 
 

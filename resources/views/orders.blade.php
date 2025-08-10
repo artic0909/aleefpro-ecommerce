@@ -311,45 +311,44 @@
                         <tbody>
                             @foreach($orders as $order)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td>{{$loop->iteration}}</td>
+                                <td>{{$order->order_id}}</td>
+                                <td>{{$order->order_date}}</td>
 
-                                <td>{{ $order->order_id }}</td>
-                                <td>{{ $order->order_date }}</td>
-                                @foreach($order->product_details as $product)
-                            
-                                <td>{{ $product['product_name'] }}</td>
-                                <td>{{ $product['product_code'] }}</td>
-                                <td>{{ $product['product_color'] }}</td>
-                                <td>${{ $product['product_rate'] }}</td>
-                                <td>{{ $product['product_size'] }}</td>
-                                <td>{{ $product['product_quantity'] }}</td>
-                                <td>${{ $product['total_amount'] }}</td>
-                        
-                            @endforeach
+                                <!-- product Details -->
+                                <td>
+                                    @foreach($order->product_details as $product)
+                                    <div>
+                                        <p class="m-0">Product Name: {{ $product['product_name'] }}</p>
+                                        <p class="m-0">Code: {{ $product['product_code'] }}</p>
+                                        <p class="m-0">Color: {{ $product['product_color'] }}</p>
+                                        <p class="m-0">Rate: ${{ $product['product_rate'] }}</p>
+                                        <p class="m-0">Size: {{ $product['product_size'] }}</p>
+                                        <p class="m-0">Quantity: {{ $product['product_quantity'] }}</p>
+                                        <p class="m-0">Total: ${{ $product['total_amount'] }}</p>
+                                    </div>
+                                    @endforeach
+                                </td>
 
-                            <td>$ {{ $order->overall_amount }}</td>
-
-                            <td>
-                                <p class="m-0 badge 
+                                <td>${{ $order->overall_amount }}</td>
+                                                                                <td>
+                                                    <p class="m-0 badge 
                                                             {{ $order->payment_status == 'succeeded' ? 'badge-success' : 
                                                             ($order->payment_status == 'pending' ? 'badge-warning' : 'badge-danger') }}" style="font-size: 1rem;">
-                                    {{ ucfirst($order->payment_status) }}
-                                </p>
-                            </td>
+                                                        {{ ucfirst($order->payment_status) }}
+                                                    </p>
+                                                </td>
 
-                            <td>
-                                <p class="m-0 badge
+                                                <td>
+                                                    <p class="m-0 badge
     {{ $order->shipment_status == 'delivered' ? 'badge-success' : 
        ($order->shipment_status == 'pending' ? 'badge-warning' : 
        ($order->shipment_status == 'outForDelivery' ? 'badge-primary' : 'badge-danger')) }}"
-                                    style="font-size: 1rem;">
-                                    {{ ucfirst($order->shipment_status) }}
-                                </p>
+                                                        style="font-size: 1rem;">
+                                                        {{ ucfirst($order->shipment_status) }}
+                                                    </p>
 
-                            </td>
-
-
-
+                                                </td>
                             </tr>
                             @endforeach
                         </tbody>
