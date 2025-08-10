@@ -379,7 +379,7 @@
               @php $sizes = explode(',', $product->sizes); @endphp
               @foreach ($sizes as $index => $size)
               <div class="custom-control custom-radio custom-control-inline">
-                <input type="radio" class="custom-control-input" id="size-{{ $index }}" name="size" value="{{ trim($size) }}">
+                <input type="radio" class="custom-control-input" id="size-{{ $index }}" name="size" value="{{ trim($size) }}" required>
                 <label class="custom-control-label" for="size-{{ $index }}">{{ strtoupper(trim($size)) }}</label>
               </div>
               @endforeach
@@ -395,7 +395,7 @@
               @php $colors = explode(',', $product->colors); @endphp
               @foreach ($colors as $index => $color)
               <div class="custom-control custom-radio custom-control-inline">
-                <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ trim($color) }}">
+                <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ trim($color) }}" required>
                 <label class="custom-control-label" for="color-{{ $index }}">{{ ucfirst(trim($color)) }}</label>
               </div>
               @endforeach
@@ -410,7 +410,7 @@
                 <i class="fa fa-minus"></i>
               </button>
             </div>
-            <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" value="20" />
+            <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" min="20" value="20" required/>
             <div class="input-group-btn">
               <button type="button" class="btn btn-primary2 btn-plus">
                 <i class="fa fa-plus"></i>
