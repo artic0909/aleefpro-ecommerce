@@ -299,6 +299,7 @@
                                                 <th>Colors</th>
                                                 <th>Actual Price</th>
                                                 <th>Selling Price</th>
+                                                <th>Min Purchase</th>
                                                 <th>Size Chart</th>
                                                 <th>Stock Status</th>
                                                 <th>Description</th>
@@ -334,6 +335,7 @@
                                                 <td>{{$product->colors}}</td>
                                                 <td>{{$product->actual_price}}</td>
                                                 <td>{{$product->selling_price}}</td>
+                                                <td>{{$product->min_purchase}}</td>
 
                                                 <td><img src="{{ asset('storage/' . $product->size_chart_image) }}" class="img-fluid" alt=""></td>
 
@@ -443,7 +445,7 @@
                                 <div class="mt-3">
                                     <label class="form-label">Colors<span class="text-danger">*</span></label> <br>
                                     @foreach ($colors as $color)
-                                    <input type="checkbox" class="color-checkbox" value="{{ $color->color }}" style="scale: 1.2;">&nbsp;
+                                    <input type="radio" name="colorr" class="color-checkbox" value="{{ $color->color }}" style="scale: 1.2;">&nbsp;
                                     <label class="form-label mr-2">{{ $color->color }}</label>
                                     @endforeach
                                 </div>
@@ -461,6 +463,11 @@
                                 <div class="mt-3">
                                     <label for="selling_price" class="form-label">Selling Price<span class="text-danger">*</span></label>
                                     <input type="text" name="selling_price" id="selling_price" class="form-control" required>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label for="min_purchase" class="form-label">Min Purchase<span class="text-danger">*</span></label>
+                                    <input type="number" name="min_purchase" id="min_purchase" class="form-control" min="1" value="1" required>
                                 </div>
 
                                 <div class="mt-3">
@@ -621,7 +628,7 @@
                                     $selectedColors = explode(',', $product->colors);
                                     @endphp
                                     @foreach ($colors as $color)
-                                    <input type="checkbox"
+                                    <input type="radio" name="colorr"
                                         class="color-checkbox-{{ $product->id }}"
                                         value="{{ $color->color }}"
                                         style="scale: 1.2;"
@@ -643,6 +650,11 @@
                                 <div class="mt-3">
                                     <label for="selling_price" class="form-label">Selling Price<span class="text-danger">*</span></label>
                                     <input type="text" name="selling_price" id="selling_price" value="{{ $product->selling_price }}" class="form-control">
+                                </div>
+
+                                <div class="mt-3">
+                                    <label for="min_purchase" class="form-label">Min Purchase<span class="text-danger">*</span></label>
+                                    <input type="number" name="min_purchase" id="min_purchase" class="form-control" min="1" value="{{ $product->min_purchase }}">
                                 </div>
 
                                 <div class="mt-3">

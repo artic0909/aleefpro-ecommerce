@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Response;
 
 class AdminController extends Controller
@@ -438,6 +439,7 @@ class AdminController extends Controller
             'size_chart_image' => 'nullable|image',
             'front_customize' => 'nullable|image',
             'back_customize' => 'nullable|image',
+            'min_purchase' => 'nullable|integer|min:1',
         ]);
 
         $imagePaths = [];
@@ -487,19 +489,32 @@ class AdminController extends Controller
             'slug' => Str::slug($request->product_name),
             'front_customize' => $frontCustomizePath,
             'back_customize' => $backCustomizePath,
+            'min_purchase' => $request->min_purchase,
         ]);
 
         return back()->with('success', 'Product saved successfully.');
     }
 
+
     public function editProduct(Request $request, $id)
     {
         $product = Product::findOrFail($id);
 
+        // Validate with unique rules and custom messages
         $request->validate([
             'sub_category_id' => 'required|exists:sub_categories,id',
-            'product_name' => 'required|string|max:255',
-            'product_code' => 'required|string|max:255',
+            'product_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('products', 'product_name')->ignore($product->id),
+            ],
+            'product_code' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('products', 'product_code')->ignore($product->id),
+            ],
             'images.*' => 'nullable|image',
             'sizes' => 'nullable|string',
             'colors' => 'nullable|string',
@@ -511,9 +526,13 @@ class AdminController extends Controller
             'front_customize' => 'nullable|image',
             'back_customize' => 'nullable|image',
             'stock_status' => 'required|in:stock,out_of_stock',
+            'min_purchase' => 'nullable|integer|min:1',
+        ], [
+            'product_name.unique' => 'A product with this name already exists.',
+            'product_code.unique' => 'A product with this code already exists.',
         ]);
 
-
+        // Handle images
         if ($request->hasFile('images')) {
             $oldImages = json_decode($product->images ?? '[]', true);
             foreach ($oldImages as $oldImage) {
@@ -530,7 +549,7 @@ class AdminController extends Controller
             $imagePaths = json_decode($product->images ?? '[]', true);
         }
 
-
+        // Size chart
         $sizeChartPath = $product->size_chart_image;
         if ($request->hasFile('size_chart_image')) {
             if ($sizeChartPath) {
@@ -541,6 +560,7 @@ class AdminController extends Controller
             $sizeChartPath = $file->storeAs('products/size_charts', $filename, 'public');
         }
 
+        // Front customize
         $frontCustomizePath = $product->front_customize;
         if ($request->hasFile('front_customize')) {
             if ($frontCustomizePath) {
@@ -551,6 +571,7 @@ class AdminController extends Controller
             $frontCustomizePath = $file->storeAs('products/front_customize', $filename, 'public');
         }
 
+        // Back customize
         $backCustomizePath = $product->back_customize;
         if ($request->hasFile('back_customize')) {
             if ($backCustomizePath) {
@@ -561,6 +582,7 @@ class AdminController extends Controller
             $backCustomizePath = $file->storeAs('products/back_customize', $filename, 'public');
         }
 
+        // Update product
         $product->update([
             'sub_category_id' => $request->sub_category_id,
             'product_name' => $request->product_name,
@@ -577,10 +599,12 @@ class AdminController extends Controller
             'front_customize' => $frontCustomizePath,
             'back_customize' => $backCustomizePath,
             'stock_status' => $request->stock_status,
+            'min_purchase' => $request->min_purchase,
         ]);
 
         return back()->with('success', 'Product updated successfully.');
     }
+
 
     public function deleteProduct($id)
     {
@@ -1195,7 +1219,10 @@ class AdminController extends Controller
     public function ordersView()
     {
 
-        $orders = Order::with('customer')->get();
+        $orders = Order::with('customer')
+            ->orderBy('id', 'desc')
+            ->get();
+
 
         return view('admin.admin-orders', compact('orders'));
     }

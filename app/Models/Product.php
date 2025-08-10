@@ -25,6 +25,7 @@ class Product extends Model
         'front_customize',
         'back_customize',
         'stock_status',
+        'min_purchase',
     ];
 
     protected $casts = [

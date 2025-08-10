@@ -2,25 +2,30 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <title>{{$customer->name}} | Manage Orders</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
+    <meta charset="utf-8" />
+    <title>{{$product->product_name}}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="Aleef Pro">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $product->product_name }} - Aleef Pro">
+    <meta name="twitter:description" content="{{ Str::limit(strip_tags($product->description), 160) }}">
+    <meta name="twitter:image" content="{{ asset('storage/' . str_replace('\/', '/', $images[0] ?? 'img/default.png')) }}">
+
+
 
     <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+    <link href="img/favicon.ico" rel="icon" />
 
     <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
 
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" />
 
     <!-- Libraries Stylesheet -->
     <link href="{{ asset('lib/animate/animate.min.css') }}" rel="stylesheet" />
@@ -36,17 +41,25 @@
     <link rel="shortcut icon" href="{{ asset('./img/logo1.webp') }}" />
 
     <style>
-        .custom-success-popup {
+        .custom-success-popup,
+        .custom-error-popup {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #4CAF50;
-            color: white;
             padding: 15px 20px;
             border-radius: 5px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            color: white;
             z-index: 9999;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             animation: fadeInOut 4s ease-in-out forwards;
+        }
+
+        .custom-success-popup {
+            background-color: #4CAF50;
+        }
+
+        .custom-error-popup {
+            background-color: #f44336;
         }
 
         @keyframes fadeInOut {
@@ -70,6 +83,8 @@
             }
         }
     </style>
+
+
 
 </head>
 
@@ -117,6 +132,7 @@
 
                     &nbsp;
 
+
                     <div class="btn-group">
                         <div id="google_translate_element" class="btn btn-sm btn-light"></div>
 
@@ -137,6 +153,7 @@
                                     </div>
                                 </div>
                             </form>
+
                             @auth('customers')
                             <a href="/customer/cart" class="btn px-0">
                                 <i class="fas fa-shopping-cart text-primary"></i>
@@ -236,7 +253,7 @@
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="/" class="nav-item nav-link">Home</a>
-                            <a href="/product-categories" class="nav-item nav-link">Products</a>
+                            <a href="/product-categories" class="nav-item nav-link active">Products</a>
                             <a href="/blogs" class="nav-item nav-link">Blogs</a>
                             <a href="/contact" class="nav-item nav-link">Contact</a>
                         </div>
@@ -274,106 +291,299 @@
     <!-- Navbar End -->
 
 
-    <!-- Breadcrumb Start -->
-    <div class="container-fluid">
+
+    <!-- Shop Detail Start -->
+    <div class="container-fluid pb-5">
         <div class="row px-xl-5">
-            <div class="col-12">
-                <nav class="breadcrumb bg-light mb-30">
-                    <a class="breadcrumb-item text-dark" href="/">Aleef Pro</a>
-                    <a class="breadcrumb-item text-dark" href="#" style="text-transform: capitalize;">{{$customer->name}}</a>
-                    <span class="breadcrumb-item active">Manage Orders</span>
-                </nav>
-            </div>
-        </div>
-    </div>
-    <!-- Breadcrumb End -->
+            <div class="col-lg-5 mb-30">
+                <div id="product-carousel" class="carousel slide" data-ride="carousel">
+                    @php
+                    $images = json_decode($product->images, true);
+                    @endphp
 
-
-    <!-- Contact Start -->
-    <div class="container-fluid">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Orders History</span></h2>
-        <div class="row px-xl-5">
-
-            <div class="col-lg-12 mb-5">
-                <div class="contact-form bg-light p-30" style="overflow-y: auto;">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Order ID</th>
-                                <th>Order Date</th>
-                                <th>Product Details</th>
-                                <th>Overall Amount</th>
-                                <th>Payment Status</th>
-                                <th>Shipment Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($orders as $order)
-                            <tr class="text-dark">
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{$order->order_id}}</td>
-                                <td>{{$order->order_date}}</td>
-
-                                <!-- product Details -->
-                                <td>
-                                    @foreach($order->product_details as $product)
-                                    <div>
-                                        <p class="m-0"><a href="{{ route('customer.product.details.code', $product['product_code']) }}" class="text-dark">Name: {{ $product['product_name'] }} Code: {{ $product['product_code'] }}</a></p>
-                                        <p class="m-0"></p>
-
-                                    </div>
-                                    @endforeach
-                                </td>
-
-                                <td>${{ $order->overall_amount }}</td>
-                                <td>
-                                    <p class="m-0 badge 
-                                                            {{ $order->payment_status == 'succeeded' ? 'badge-success' : 
-                                                            ($order->payment_status == 'pending' ? 'badge-warning' : 'badge-danger') }}" style="font-size: 1rem;">
-                                        {{ ucfirst($order->payment_status) }}
-                                    </p>
-                                </td>
-
-                                <td>
-                                    <p class="m-0 badge
-    {{ $order->shipment_status == 'delivered' ? 'badge-success' : 
-       ($order->shipment_status == 'pending' ? 'badge-warning' : 
-       ($order->shipment_status == 'outForDelivery' ? 'badge-primary' : 'badge-danger')) }}"
-                                        style="font-size: 1rem;">
-                                        {{ ucfirst($order->shipment_status) }}
-                                    </p>
-
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="carousel-inner bg-light">
+                        @foreach ($images as $key => $img)
+                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                            <img class="w-100 h-100" src="{{ asset('storage/' . str_replace('\/', '/', $img)) }}" alt="{{ $product->product_name }}" />
+                        </div>
+                        @endforeach
+                    </div>
+                    <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
+                        <i class="fa fa-2x fa-angle-left text-dark"></i>
+                    </a>
+                    <a class="carousel-control-next" href="#product-carousel" data-slide="next">
+                        <i class="fa fa-2x fa-angle-right text-dark"></i>
+                    </a>
                 </div>
             </div>
 
+            <form action="{{ route('customer.cart.add') }}" method="POST" class="col-lg-7 h-auto mb-30">
+                @csrf
+
+                <div class="h-100 bg-light p-30">
+
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                    <h3>{{$product->product_name}}</h3>
+                    <div class="d-flex mb-3">
+                        <div class="text-primary mr-2">
+                            <small class="fas fa-star"></small>
+                            <small class="fas fa-star"></small>
+                            <small class="fas fa-star"></small>
+                            <small class="fas fa-star-half-alt"></small>
+                            <small class="far fa-star"></small>
+                        </div>
+                    </div>
+                    <h3 class="font-weight-semi-bold mb-4">${{$product->selling_price}}</h3>
+                    <h6 class="text-muted"><del>${{ $product->actual_price }}</del></h6>
+
+
+                    <!-- Size -->
+                    <div class="d-flex mb-3">
+                        <strong class="text-dark mr-3">Sizes:</strong>
+                        <div>
+                            @php $sizes = explode(',', $product->sizes); @endphp
+                            @foreach ($sizes as $index => $size)
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" class="custom-control-input" id="size-{{ $index }}" name="size" value="{{ trim($size) }}" required>
+                                <label class="custom-control-label" for="size-{{ $index }}">{{ strtoupper(trim($size)) }}</label>
+                            </div>
+                            @endforeach
+
+
+                        </div>
+                    </div>
+
+                    <!-- Color -->
+                    <div class="d-flex mb-4">
+                        <strong class="text-dark mr-3">Colors:</strong>
+                        <div>
+                            @php $colors = explode(',', $product->colors); @endphp
+                            @foreach ($colors as $index => $color)
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" class="custom-control-input" id="color-{{ $index }}" name="color" value="{{ trim($color) }}" required>
+                                <label class="custom-control-label" for="color-{{ $index }}">{{ ucfirst(trim($color)) }}</label>
+                            </div>
+                            @endforeach
+
+                        </div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="input-group quantity mr-3" style="width: 130px">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-primary2 btn-minus">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                        <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" min="{{$product->min_purchase}}" value="{{$product->min_purchase}}" required />
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-primary2 btn-plus">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Error message --}}
+                    @error('quantity')
+                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                    @enderror
+
+                    <div class="d-flex align-items-center mb-4 pt-2 mt-3" style="flex-wrap: wrap;">
+
+
+
+
+
+                        <!-- Add to Cart Button -->
+                        @if($product->stock_status == 'out_of_stock')
+                        <span class="btn btn-primary2 px-3 mb-2">
+                            <i class="fa fa-times-circle me-1"></i> Sold Out
+                        </span>
+                        @else
+                        <button type="submit" class="btn btn-primary2 px-3 mb-2">
+                            <i class="fa fa-shopping-cart mr-1"></i>
+                        </button>
+                        @endif
+
+
+                        &nbsp;&nbsp;&nbsp;
+                        <a href="{{ route('customer.product.enquiry', [
+       'mainSlug' => $product->subCategory->mainCategory->slug,
+       'subSlug' => $product->subCategory->slug,
+       'productSlug' => $product->slug
+   ]) }}" class="btn btn-primary2 px-3 mb-2">
+                            <i class="fa fa-info-circle mr-1"></i> Enquiry
+                        </a>
+
+                        &nbsp;&nbsp;&nbsp;
+                        <a href="{{ route('customer.product.customize', [
+       'mainSlug' => $product->subCategory->mainCategory->slug,
+       'subSlug' => $product->subCategory->slug,
+       'productSlug' => $product->slug
+   ]) }}" class="btn btn-primary2 px-3 mb-2">
+                            <i class="fa fa-pen-to-square mr-1"></i> Customize
+                        </a>
+
+                        &nbsp;&nbsp;&nbsp;
+                        <a href="#sizeChart" class="btn btn-primary2 px-3 mb-2">Size Chart</a>
+
+
+                    </div>
+
+                    <!-- others things -->
+                    <div class="d-flex pt-2">
+                        <strong class="text-dark mr-2">Share on:</strong>
+                        <div class="d-inline-flex">
+                            <a class="text-dark px-2" href="">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a class="text-dark px-2" href="">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a class="text-dark px-2" href="">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a class="text-dark px-2" href="">
+                                <i class="fab fa-pinterest"></i>
+                            </a>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </form>
+
+
+
+
+        </div>
+        <div class="row px-xl-5" id="sizeChart">
+            <div class="col">
+                <div class="bg-light p-30">
+                    <div class="nav nav-tabs mb-4">
+                        <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">Description</a>
+                        <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-2">Information</a>
+                        <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">Size Chart</a>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="tab-pane-1">
+                            <h4 class="mb-3">Product Description</h4>
+                            <p>{{ $product->description }}</p>
+
+                        </div>
+                        <div class="tab-pane fade" id="tab-pane-2">
+                            <h4 class="mb-3">Additional Information</h4>
+                            <p>{{ $product->information }}</p>
+
+                        </div>
+                        <div class="tab-pane fade" id="tab-pane-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 class="mb-4">Our Standard Size Chart</h4>
+
+                                    <img src="{{ asset('storage/' . $product->size_chart_image) }}" class="img-fluid" alt="Size Chart" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <!-- Contact End -->
+    <!-- Shop Detail End -->
+
+    <!-- Products Start -->
+    <div class="container-fluid py-5">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">
+            <span class="bg-secondary pr-3">You May Also Like</span>
+        </h2>
+        <div class="row px-xl-5">
+            <div class="col">
+                <div class="owl-carousel related-carousel">
+                    @foreach($allProducts as $product)
+                    @php
+                    $images = json_decode($product->images, true);
+                    $firstImage = isset($images[0]) ? str_replace('\/', '/', $images[0]) : null;
+                    @endphp
+                    <div class="product-item bg-org">
+                        <div class="product-img position-relative overflow-hidden">
+
+                            <a href="{{ route('customer.product-details', [
+       'mainSlug' => $product->subCategory->mainCategory->slug,
+       'subSlug' => $product->subCategory->slug,
+       'productSlug' => $product->slug
+   ]) }}">
+                                @if ($firstImage)
+                                <img class="img-fluid w-100" src="{{ asset('storage/' . $firstImage) }}" alt="" />
+                                @endif
+                            </a>
+
+                        </div>
+                        <div class="text-center py-4">
+                            <a class="h5 text-decoration-none text-white" href="{{ route('customer.product-details', [
+       'mainSlug' => $product->subCategory->mainCategory->slug,
+       'subSlug' => $product->subCategory->slug,
+       'productSlug' => $product->slug
+   ]) }}">{{$product->product_name}}</a>
+                            <div class="d-flex align-items-center justify-content-center mt-2">
+                                <h5 class="text-white">${{$product->selling_price}}</h5>
+                                <h6 class="text-blue ml-2"><del>${{$product->actual_price}}</del></h6>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center mb-1">
+                                <small class="fa fa-star text-white mr-1"></small>
+                                <small class="fa fa-star text-white mr-1"></small>
+                                <small class="fa fa-star text-white mr-1"></small>
+                                <small class="fa fa-star text-white mr-1"></small>
+                                <small class="fa fa-star text-white mr-1"></small>
+
+                            </div>
+
+                            <div class="product-actions mt-3" style="display: flex; justify-content: space-evenly; padding: 10px; gap: 30px;">
+
+                                <a class="btn btn-outline-dark btn-square" style="width: 100%;" href="{{ route('customer.product.customize', [
+       'mainSlug' => $product->subCategory->mainCategory->slug,
+       'subSlug' => $product->subCategory->slug,
+       'productSlug' => $product->slug
+   ]) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+
+                                <a class="btn btn-outline-dark btn-square" style="width: 100%;" href="{{ route('customer.product-details', [
+       'mainSlug' => $product->subCategory->mainCategory->slug,
+       'subSlug' => $product->subCategory->slug,
+       'productSlug' => $product->slug
+   ]) }}"><i class="fa-solid fa-circle-info"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Products End -->
 
 
-
-    @if ($errors->any())
-    <div class="alert alert-danger" id="errorsShowHere">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
+    <!-- Offer Start -->
+    <div class="container-fluid pt-5 pb-3">
+        <div class="row px-xl-5">
+            @foreach($offers as $offer)
+            <div class="col-md-6">
+                <div class="product-offer mb-30" style="height: 300px">
+                    <img class="img-fluid" src="{{ asset('storage/' . $offer->image) }}" alt="" />
+                    <div class="offer-text">
+                        <h6 class="text-white text-uppercase">Save {{$offer->offer_percentage}}</h6>
+                        <h3 class="text-white mb-3">Special Offer</h3>
+                        <a href="{{$offer->link}}" class="btn btn-primary2">Shop Now</a>
+                    </div>
+                </div>
+            </div>
             @endforeach
-        </ul>
+        </div>
     </div>
-    @endif
-
-    @if (session('success'))
-    <div id="successPopup" class="custom-success-popup">
-        {{ session('success') }}
-    </div>
-    @endif
-
+    <!-- Offer End -->
 
     <!-- Footer Start -->
     @foreach($socials as $social)
@@ -442,12 +652,6 @@
     @endforeach
     <!-- Footer End -->
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-primary2 back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
-    @if(!empty($error))
-    <div class="alert alert-danger">{{ $error }}</div>
-    @endif
 
 
 
@@ -463,6 +667,11 @@
     </div>
     @endif
 
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary2 back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const successPopup = document.getElementById('successPopup');
@@ -474,26 +683,37 @@
     </script>
 
 
+    <!-- Size Chart -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const popup = document.getElementById('successPopup');
-            if (popup) {
-                setTimeout(() => {
-                    popup.remove();
-                }, 4000); // Matches CSS animation duration
-            }
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelector('.btn.btn-primary2[href="#sizeChart"]').addEventListener("click", function(e) {
+                e.preventDefault(); // prevent default jump
+
+                // Activate the tab
+                document.querySelector('.nav-link[href="#tab-pane-3"]').click();
+
+                // Scroll to the size chart section
+                const sizeChartSection = document.querySelector('#sizeChart');
+                if (sizeChartSection) {
+                    sizeChartSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
     </script>
 
 
-
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('lib/easing/easing.min.js') }}"></script>
     <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
-
 
 
     <!-- Template Javascript -->

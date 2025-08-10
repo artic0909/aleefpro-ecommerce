@@ -410,7 +410,7 @@
                 <i class="fa fa-minus"></i>
               </button>
             </div>
-            <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" min="20" value="20" required/>
+            <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" min="{{$product->min_purchase}}" value="{{$product->min_purchase}}" required />
             <div class="input-group-btn">
               <button type="button" class="btn btn-primary2 btn-plus">
                 <i class="fa fa-plus"></i>
@@ -418,7 +418,12 @@
             </div>
           </div>
 
-          <div class="d-flex align-items-center mb-4 pt-2 mt-3">
+          {{-- Error message --}}
+          @error('quantity')
+          <small class="text-danger d-block mt-1">{{ $message }}</small>
+          @enderror
+
+          <div class="d-flex align-items-center mb-4 pt-2 mt-3" style="flex-wrap: wrap;">
 
 
 
@@ -426,11 +431,11 @@
 
             <!-- Add to Cart Button -->
             @if($product->stock_status == 'out_of_stock')
-            <span class="btn btn-primary2 px-3">
+            <span class="btn btn-primary2 px-3 mb-2">
               <i class="fa fa-times-circle me-1"></i> Sold Out
             </span>
             @else
-            <button type="submit" class="btn btn-primary2 px-3">
+            <button type="submit" class="btn btn-primary2 px-3 mb-2">
               <i class="fa fa-shopping-cart mr-1"></i>
             </button>
             @endif
@@ -441,7 +446,7 @@
        'mainSlug' => $product->subCategory->mainCategory->slug,
        'subSlug' => $product->subCategory->slug,
        'productSlug' => $product->slug
-   ]) }}" class="btn btn-primary2 px-3">
+   ]) }}" class="btn btn-primary2 px-3 mb-2">
               <i class="fa fa-info-circle mr-1"></i> Enquiry
             </a>
 
@@ -450,10 +455,12 @@
        'mainSlug' => $product->subCategory->mainCategory->slug,
        'subSlug' => $product->subCategory->slug,
        'productSlug' => $product->slug
-   ]) }}" class="btn btn-primary2 px-3">
+   ]) }}" class="btn btn-primary2 px-3 mb-2">
               <i class="fa fa-pen-to-square mr-1"></i> Customize
             </a>
 
+            &nbsp;&nbsp;&nbsp;
+            <a href="#sizeChart" class="btn btn-primary2 px-3 mb-2">Size Chart</a>
 
 
           </div>
@@ -486,7 +493,7 @@
 
 
     </div>
-    <div class="row px-xl-5">
+    <div class="row px-xl-5" id="sizeChart">
       <div class="col">
         <div class="bg-light p-30">
           <div class="nav nav-tabs mb-4">
@@ -708,6 +715,29 @@
       if (errorPopup) setTimeout(() => errorPopup.remove(), 4000);
     });
   </script>
+
+
+  <!-- Size Chart -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelector('.btn.btn-primary2[href="#sizeChart"]').addEventListener("click", function(e) {
+        e.preventDefault(); // prevent default jump
+
+        // Activate the tab
+        document.querySelector('.nav-link[href="#tab-pane-3"]').click();
+
+        // Scroll to the size chart section
+        const sizeChartSection = document.querySelector('#sizeChart');
+        if (sizeChartSection) {
+          sizeChartSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+
 
   <!-- JavaScript Libraries -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

@@ -488,12 +488,19 @@ class CustomerController extends Controller
 
     public function addToCart(Request $request)
     {
+        // First find the product to know min_purchase
+        $product = Product::findOrFail($request->product_id);
+
+        // Validate using product's min_purchase
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:' . $product->min_purchase,
             'size' => 'nullable|string',
             'color' => 'nullable|string',
+        ], [
+            'quantity.min' => 'The minimum purchase quantity for this product is ' . $product->min_purchase . '.',
         ]);
+
 
         $customerId = Auth::guard('customers')->id();
 
@@ -517,6 +524,7 @@ class CustomerController extends Controller
 
         return redirect()->back()->with('success', 'Product added to cart!');
     }
+
 
     public function removeFromCart(Request $request)
     {
@@ -1078,7 +1086,7 @@ class CustomerController extends Controller
     }
 
     // Order History
-    public function ordersView()
+    public function ordersView(Request $request)
     {
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
@@ -1091,8 +1099,41 @@ class CustomerController extends Controller
         $customerId = Auth::guard('customers')->id();
         $cartCount = Cart::where('customer_id', $customerId)->count();
 
+        $products = Product::with('subCategory', 'mainCategory')->get();
+        $search = strtolower(trim($request->input('query')));
 
-        $orders = Order::where('customer_id', Auth::id())->get();
-        return view('orders', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'customer', 'orders'));
+
+        $orders = Order::where('customer_id', Auth::id())
+            ->orderBy('id', 'desc')
+            ->get();
+
+
+        return view('orders', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'customer', 'orders', 'search'));
+    }
+
+    public function orderProductDetailsView($productCode)
+    {
+
+        $product = Product::where('product_code', $productCode)->first();
+
+        // Check if product exists
+        if (!$product) {
+            return redirect()->back()->with('error', 'Product not found.');
+        }
+
+        $maincategories = MainCategory::with('subCategory')->get();
+        $subCategories = SubCategory::with('products', 'mainCategory')->get();
+        $offers = Offer::all();
+        $partners = Partner::all();
+        $socials = Social::all();
+
+        $customerId = Auth::guard('customers')->id();
+        $cartCount = Cart::where('customer_id', $customerId)->count();
+
+        $allProducts = Product::with('subCategory', 'mainCategory')
+            ->inRandomOrder()
+            ->get();
+
+        return view('order-product-details', compact('product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount'));
     }
 }
