@@ -203,7 +203,7 @@
                                 <i class="fa-solid fa-gear"></i> Profile
                             </a>
                             <a href="/customer/orders" class="dropdown-item" type="button">
-                                <i class="fa-solid fa-gear"></i> Orders
+                                <i class="fa-solid fa-boxes-stacked"></i> Orders
                             </a>
                             <a href="{{ route('customer.logout') }}" class="dropdown-item" type="button">
                                 <i class="fa-solid fa-power-off"></i> Logout
@@ -557,10 +557,10 @@
                         </div>
 
                         <div class="col-md-12 form-group">
-                            <label>Logo Size</label>
-                            <p id="logo_size_instruction" style="color: red;"></p>
+                            <!-- <label>Logo Size</label>
+                            <p id="logo_size_instruction" style="color: red;"></p> -->
 
-                            <div class="row">
+                            <!-- <div class="row">
                                 <div class="col-md-12 form-group d-flex" style="align-items: center;">
                                     <input type="number" class="form-control" id="logo_width" placeholder="Width" required>
                                     &nbsp;&nbsp;X&nbsp;&nbsp;
@@ -575,8 +575,31 @@
                                         <option value="feet">FEET</option>
                                     </select>
 
-                                    <input type="hidden" name="logo_size" id="showLogoSize" class="form-control">
+                                    <input type="text" name="logo_size" id="showLogoSize" class="form-control">
                                 </div>
+                            </div> -->
+
+
+                            <label>Logo Size</label>
+                            <p id="logo_size_instruction" style="color: red;"></p>
+                            <div class="row">
+                                <div class="col-md-12 form-group d-flex">
+                                    <input type="text" class="form-control" id="sizeInput">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <select id="sizeUnit" class="form-control">
+                                        <option value="" selected>Select Unit</option>
+                                        <option value="cm">CM</option>
+                                        <option value="inch">INCH</option>
+                                        <option value="mm">MM</option>
+                                        <option value="meter">METER</option>
+                                        <option value="feet">FEET</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="logo_size" id="showLogoSize" class="form-control" readonly>
                             </div>
                         </div>
 
@@ -666,7 +689,7 @@
                         </div>
 
                         <div class="col-md-12">
-                            <button class="btn btn-block btn-primary2 font-weight-bold py-3">
+                            <button id="submitButton" class="btn btn-block btn-primary2 font-weight-bold py-3">
                                 Send Enquiry
                             </button>
                         </div>
@@ -1078,45 +1101,107 @@
     <!-- Logo Size -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const printQuality = document.getElementById("print_quality");
+            const placementRadios = document.querySelectorAll('input[name="logo_placement"]');
+            const printQualitySelect = document.getElementById("print_quality");
             const logoInstruction = document.getElementById("logo_size_instruction");
-
-            const widthInput = document.getElementById("logo_width");
-            const heightInput = document.getElementById("logo_height");
-            const unitSelect = document.getElementById("logo_height_unit");
+            const sizeInput = document.getElementById("sizeInput");
+            const sizeUnit = document.getElementById("sizeUnit");
             const showLogoSize = document.getElementById("showLogoSize");
+            const submitButton = document.getElementById("submitButton"); // Submit button
 
-            // Instruction change based on Print Quality selection
-            printQuality.addEventListener("change", function() {
-                if (this.value === "print") {
-                    logoInstruction.textContent = "Max sizes front: 3X3 Inch, back: 12X12 Inch";
-                } else if (this.value === "embroidery") {
-                    logoInstruction.textContent = "Max sizes front: 2.5X2.5 Inch, back: 10X10 Inch";
+            const alertMsg = document.createElement("p");
+            alertMsg.style.color = "red";
+            showLogoSize.parentNode.appendChild(alertMsg);
+
+            // Store max sizes in inches
+            const maxSizes = {
+                front: {
+                    print: {
+                        w: 3,
+                        h: 3
+                    },
+                    embroidery: {
+                        w: 2.5,
+                        h: 2.5
+                    }
+                },
+                back: {
+                    print: {
+                        w: 12,
+                        h: 12
+                    },
+                    embroidery: {
+                        w: 10,
+                        h: 10
+                    }
+                }
+            };
+
+            let currentMax = {
+                w: 0,
+                h: 0
+            };
+
+            function updateInstruction() {
+                const placement = document.querySelector('input[name="logo_placement"]:checked').value;
+                const quality = printQualitySelect.value;
+
+                if (placement && quality) {
+                    currentMax = maxSizes[placement][quality];
+                    logoInstruction.textContent = `Max sizes ${placement}: ${currentMax.w}X${currentMax.h} Inch`;
                 } else {
                     logoInstruction.textContent = "";
+                    currentMax = {
+                        w: 0,
+                        h: 0
+                    };
                 }
-            });
+                validateSize();
+            }
 
-            // Function to update logo size field
-            function updateLogoSize() {
-                const width = widthInput.value.trim();
-                const height = heightInput.value.trim();
-                const unit = unitSelect.value;
+            function convertToInches(value, unit) {
+                const conversions = {
+                    cm: value / 2.54,
+                    inch: value,
+                    mm: value / 25.4,
+                    meter: value * 39.3701,
+                    feet: value * 12
+                };
+                return conversions[unit] || 0;
+            }
 
-                if (width && height && unit) {
-                    showLogoSize.value = `${width}X${height} ${unit}`;
-                } else {
+            function validateSize() {
+                const sizeVal = parseFloat(sizeInput.value);
+                const unit = sizeUnit.value;
+
+                if (!sizeVal || !unit) {
                     showLogoSize.value = "";
+                    alertMsg.textContent = "";
+                    submitButton.disabled = false; // Allow submission if empty
+                    return;
+                }
+
+                const inches = convertToInches(sizeVal, unit);
+                showLogoSize.value = inches.toFixed(2) + " Inch";
+
+                if (currentMax.w && (inches > currentMax.w || inches > currentMax.h)) {
+                    alertMsg.textContent = `⚠️ Size exceeds max allowed: ${currentMax.w}X${currentMax.h} Inch`;
+                    submitButton.disabled = true; // Disable submit
+                } else {
+                    alertMsg.textContent = "";
+                    submitButton.disabled = false; // Enable submit
                 }
             }
 
-            // Trigger update on input changes
-            [widthInput, heightInput, unitSelect].forEach(el => {
-                el.addEventListener("input", updateLogoSize);
-                el.addEventListener("change", updateLogoSize);
-            });
+            // Event listeners
+            placementRadios.forEach(r => r.addEventListener("change", updateInstruction));
+            printQualitySelect.addEventListener("change", updateInstruction);
+            sizeInput.addEventListener("input", validateSize);
+            sizeUnit.addEventListener("change", validateSize);
         });
     </script>
+
+
 
 
 
