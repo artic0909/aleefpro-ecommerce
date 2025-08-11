@@ -306,6 +306,7 @@
                                 <th>Overall Amount</th>
                                 <th>Payment Status</th>
                                 <th>Shipment Status</th>
+                                <th>Invoice</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -344,6 +345,13 @@
                                         {{ ucfirst($order->shipment_status) }}
                                     </p>
 
+                                </td>
+
+                                <td>
+                                    <a href="{{ route('customer.orders.invoice', $order->order_id) }}"
+                                        class="btn btn-sm btn-primary2">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                    </a>
                                 </td>
                             </tr>
                             @endforeach

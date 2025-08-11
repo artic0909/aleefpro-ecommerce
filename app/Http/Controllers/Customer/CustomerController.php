@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Stripe\Stripe;
 use Stripe\Charge;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Order;
 use Carbon\Carbon;
 
@@ -1135,5 +1136,25 @@ class CustomerController extends Controller
             ->get();
 
         return view('order-product-details', compact('product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount'));
+    }
+
+    public function downloadInvoice($order_id)
+    {
+        // Fetch the order
+        $order = Order::where('order_id', $order_id)->firstOrFail();
+
+        // If casted in model, product_details is already an array
+        $products = is_array($order->product_details)
+            ? $order->product_details
+            : json_decode($order->product_details, true);
+
+        // Load PDF view
+        $pdf = Pdf::loadView('invoice-download', [
+            'order' => $order,
+            'products' => $products
+        ]);
+
+        // Download file
+        return $pdf->download("Invoice-{$order->order_id}.pdf");
     }
 }

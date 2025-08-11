@@ -48,8 +48,12 @@ Route::middleware(['auth:customers'])->group(function () {
     Route::get('/customer/profile', [CustomerController::class, 'profileView'])->name('customer.profile');
     Route::get('/customer/orders', [CustomerController::class, 'ordersView'])->name('customer.profile.orders');
     Route::get('/customer/order-product/{product_code}', [CustomerController::class, 'orderProductDetailsView'])
-    ->where('product_code', '.*') // allows special chars
-    ->name('customer.product.details.code');
+        ->where('product_code', '.*') // allows special chars
+        ->name('customer.product.details.code');
+
+    Route::get('/customer/orders/{order_id}/invoice', [CustomerController::class, 'downloadInvoice'])
+        ->name('customer.orders.invoice');
+
 
 
     Route::post('/customer/profile/update', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
