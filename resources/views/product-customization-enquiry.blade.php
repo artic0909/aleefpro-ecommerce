@@ -582,10 +582,15 @@
 
                             <label>Logo Size</label>
                             <p id="logo_size_instruction" style="color: red;"></p>
+
                             <div class="row">
-                                <div class="col-md-12 form-group d-flex">
-                                    <input type="text" class="form-control" id="sizeInput">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                <div class="col-md-4 form-group">
+                                    <input type="text" class="form-control" id="widthInput" placeholder="Width">
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <input type="text" class="form-control" id="heightInput" placeholder="Height">
+                                </div>
+                                <div class="col-md-4 form-group">
                                     <select id="sizeUnit" class="form-control">
                                         <option value="" selected>Select Unit</option>
                                         <option value="cm">CM</option>
@@ -595,12 +600,13 @@
                                         <option value="feet">FEET</option>
                                     </select>
                                 </div>
-
                             </div>
 
+                            <!-- Readonly result -->
                             <div class="form-group">
                                 <input type="text" name="logo_size" id="showLogoSize" class="form-control" readonly>
                             </div>
+
                         </div>
 
 
@@ -1104,16 +1110,18 @@
             const placementRadios = document.querySelectorAll('input[name="logo_placement"]');
             const printQualitySelect = document.getElementById("print_quality");
             const logoInstruction = document.getElementById("logo_size_instruction");
-            const sizeInput = document.getElementById("sizeInput");
+
+            const widthInput = document.getElementById("widthInput");
+            const heightInput = document.getElementById("heightInput");
             const sizeUnit = document.getElementById("sizeUnit");
             const showLogoSize = document.getElementById("showLogoSize");
-            const submitButton = document.getElementById("submitButton"); // Submit button
+            const submitButton = document.getElementById("submitButton");
 
             const alertMsg = document.createElement("p");
             alertMsg.style.color = "red";
             showLogoSize.parentNode.appendChild(alertMsg);
 
-            // Store max sizes in inches
+            // Max sizes in inches
             const maxSizes = {
                 front: {
                     print: {
@@ -1148,7 +1156,7 @@
 
                 if (placement && quality) {
                     currentMax = maxSizes[placement][quality];
-                    logoInstruction.textContent = `Max sizes ${placement}: ${currentMax.w}X${currentMax.h} Inch`;
+                    logoInstruction.textContent = `Max sizes ${placement}: ${currentMax.w} X ${currentMax.h} Inch`;
                 } else {
                     logoInstruction.textContent = "";
                     currentMax = {
@@ -1171,35 +1179,43 @@
             }
 
             function validateSize() {
-                const sizeVal = parseFloat(sizeInput.value);
+                const widthVal = parseFloat(widthInput.value);
+                const heightVal = parseFloat(heightInput.value);
                 const unit = sizeUnit.value;
 
-                if (!sizeVal || !unit) {
+                if ((!widthVal && widthVal !== 0) || (!heightVal && heightVal !== 0) || !unit) {
                     showLogoSize.value = "";
                     alertMsg.textContent = "";
-                    submitButton.disabled = false; // Allow submission if empty
+                    submitButton.disabled = false;
                     return;
                 }
 
-                const inches = convertToInches(sizeVal, unit);
-                showLogoSize.value = inches.toFixed(2) + " Inch";
+                const widthInches = convertToInches(widthVal, unit);
+                const heightInches = convertToInches(heightVal, unit);
 
-                if (currentMax.w && (inches > currentMax.w || inches > currentMax.h)) {
-                    alertMsg.textContent = `⚠️ Size exceeds max allowed: ${currentMax.w}X${currentMax.h} Inch`;
-                    submitButton.disabled = true; // Disable submit
+                showLogoSize.value = `${widthInches.toFixed(2)} X ${heightInches.toFixed(2)} Inch`;
+
+                if (
+                    currentMax.w &&
+                    (widthInches > currentMax.w || heightInches > currentMax.h)
+                ) {
+                    alertMsg.textContent = `⚠️ Size exceeds max allowed: ${currentMax.w} X ${currentMax.h} Inch`;
+                    submitButton.disabled = true;
                 } else {
                     alertMsg.textContent = "";
-                    submitButton.disabled = false; // Enable submit
+                    submitButton.disabled = false;
                 }
             }
 
             // Event listeners
             placementRadios.forEach(r => r.addEventListener("change", updateInstruction));
             printQualitySelect.addEventListener("change", updateInstruction);
-            sizeInput.addEventListener("input", validateSize);
+            widthInput.addEventListener("input", validateSize);
+            heightInput.addEventListener("input", validateSize);
             sizeUnit.addEventListener("change", validateSize);
         });
     </script>
+
 
 
 
