@@ -382,6 +382,7 @@
     <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-12">
+                <img src="{{asset('./img/customize-dummy-banner.webp')}}" class="img-fluid" width="100%" alt="" />
                 <nav class="breadcrumb bg-light mb-30">
                     <a class="breadcrumb-item text-dark" href="#">{{$product->subCategory->mainCategory->main_category_name}}</a>
                     <span class="breadcrumb-item active">{{$product->subCategory->sub_category_name}}</span>

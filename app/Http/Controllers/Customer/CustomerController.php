@@ -587,7 +587,7 @@ class CustomerController extends Controller
         ];
 
         // Send email
-        Mail::to('saklindeveloper@gmail.com')->send(new CustomerCartEnquiryMail($enquiryData));
+        Mail::to('info@aleefpro.com')->send(new CustomerCartEnquiryMail($enquiryData));
 
         Mail::to($customerEmail)->send(new CustomerCartEnquiryRecieverMail($enquiryData));
 
@@ -811,7 +811,7 @@ class CustomerController extends Controller
         Mail::to($enquiry->customer_email)->send(new ProductEnquiryMail($mailData));
 
         // Send email to admin
-        Mail::to('saklindeveloper@gmail.com')->send(new ProductEnquiryMailSender($mailData));
+        Mail::to('info@aleefpro.com')->send(new ProductEnquiryMailSender($mailData));
 
         return redirect()->back()->with('success', 'Enquiry submitted and email sent successfully.');
     }
@@ -954,7 +954,7 @@ class CustomerController extends Controller
         Mail::to($validated['customer_email'])->send(new CustomizeEnquiryRecieverMail($mailData, $attachments));
 
         // Send mail to admin
-        Mail::to('saklindeveloper@gmail.com')->send(new CustomizeEnquirySenderMail($mailData, $attachments));
+        Mail::to('info@aleefpro.com')->send(new CustomizeEnquirySenderMail($mailData, $attachments));
 
         return redirect()->back()->with('success', 'Customization enquiry submitted and email sent successfully.');
     }
@@ -1075,7 +1075,7 @@ class CustomerController extends Controller
 
             // Order Placed Email
             Mail::to($customerEmail)->send(new OrderPlacedMail($order));
-            Mail::to('saklindeveloper@gmail.com')->send(new OrderPlacedMail($order));
+            Mail::to('info@aleefpro.com')->send(new OrderPlacedMail($order));
 
             // Clear cart
             Cart::where('customer_id', $customerId)->delete();
