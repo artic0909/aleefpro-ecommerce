@@ -855,8 +855,8 @@ class CustomerController extends Controller
     public function productCustomizationEnquirySend(Request $request)
     {
         $validated = $request->validate([
-            'company_logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'product_customize_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'company_logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
+            'product_customize_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
             'logo_placement'           => 'required|string|max:255',
             'logo_type'                => 'required|string|in:image,text',
             'logo_size'                => 'required|string|max:255',

@@ -395,6 +395,7 @@
 
 
     <!-- Product Customize Start -->
+    <!-- Product Customize Start -->
     <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-lg-6">
@@ -407,13 +408,11 @@
                         <button class="btn" id="ssButton"><i class="fa-solid fa-download text-org"
                                 style="font-size: 1.3rem;"></i>Download</button>
                     </div>
-                    <small>Lorem ipsum dolor sit amet consectetur adipisicing elit. At
-                        accusamus maxime fugiat sequi doloremque alias ut cum. Nobis,
-                        beatae suscipit.</small>
+                    <small>Drag, resize, and rotate your logo to position it correctly on the cap.</small>
                     <div class="border-bottom mt-3" id="screenShootArea">
                         <div class="cap-container" id="capWrapper">
                             <img id="capImage" src="{{ asset('storage/' . $product->front_customize) }}" class="img-fluid" alt="Cap" />
-                            <div id="logoContainer" class="logo-box" data-x="0" data-y="0" data-angle="0" overflow="hidden">
+                            <div id="logoContainer" class="logo-box" data-x="0" data-y="0" data-angle="0">
                                 <div id="rotateHandle" style="cursor: grab;"></div>
                                 <img id="uploadedLogo" src="" alt="Logo Preview" />
                                 <div id="textLogoPreview" style="position: absolute; display: none; font-size: 24px;">
@@ -429,8 +428,13 @@
                 <h5 class="section-title position-relative text-uppercase mb-3">
                     <span class="bg-secondary pr-3">Customization</span>
                 </h5>
-                <form action="{{route('customer.product.customize.send')}}" method="POST" enctype="multipart/form-data" class="bg-light p-30 mb-5">
+                <form action="{{route('customer.product.customize.send')}}" method="POST" enctype="multipart/form-data" class="bg-light p-30 mb-5" id="customizationForm">
                     @csrf
+                    <input type="hidden" name="logo_position_x" id="logoPositionX" value="0">
+                    <input type="hidden" name="logo_position_y" id="logoPositionY" value="0">
+                    <input type="hidden" name="logo_rotation" id="logoRotation" value="0">
+                    <input type="hidden" name="logo_width" id="logoWidth" value="100">
+                    <input type="hidden" name="logo_height" id="logoHeight" value="100">
 
                     <h6 class="section-title position-relative text-uppercase mb-3">
                         <span class="bg-secondary pr-3">Choose Side</span>
@@ -452,7 +456,6 @@
                     </h6>
 
                     <div class="row">
-
                         <div class="col-md-6 form-group">
                             <label><input type="radio" name="logo_type" value="image" checked />
                                 Add Logo</label>
@@ -462,50 +465,50 @@
                             <label><input type="radio" name="logo_type" value="text" />
                                 Add Text</label>
                         </div>
-
                     </div>
 
                     <div class="row">
                         <div class="col-md-12 form-group controls" id="logoInput">
                             <label for="logoInput">Upload Logo</label>
                             <input type="file" class="form-control" id="logoUploader" name="company_logo" accept="image/*" />
-                            <small class="text-muted">Upload high quality logo</small>
+                            <small class="text-muted">Upload high quality logo (PNG with transparent background recommended)</small>
                         </div>
 
-                        <div class="col-md-12 form-group controls" id="textInput">
+                        <div class="col-md-12 form-group controls" id="textInput" style="display: none;">
                             <label for="logoInput">Add Text</label>
 
                             <!-- Font Selector -->
                             <select name="font_name" id="fontSelector" class="form-control mb-3">
-                                <option value="Roboto">Roboto</option>
-                                <option value="Open Sans">Open Sans</option>
-                                <option value="Lobster">Lobster</option>
-                                <option value="Oswald">Oswald</option>
-                                <option value="Montserrat">Montserrat</option>
-                                <option value="Raleway">Raleway</option>
-                                <option value="Playfair Display">Playfair Display</option>
-                                <option value="Indie Flower">Indie Flower</option>
-                                <option value="Bebas Neue">Bebas Neue</option>
-                                <option value="Pacifico">Pacifico</option>
-                                <option value="Dancing Script">Dancing Script</option>
-                                <option value="Great Vibes">Great Vibes</option>
-                                <option value="Permanent Marker">Permanent Marker</option>
-                                <option value="Courier Prime">Courier Prime</option>
-                                <option value="Shadows Into Light">Shadows Into Light</option>
-                                <option value="Amatic SC">Amatic SC</option>
-                                <option value="Caveat">Caveat</option>
-                                <option value="Architects Daughter">Architects Daughter</option>
-                                <option value="Anton">Anton</option>
-                                <option value="Baloo 2">Baloo 2</option>
-                                <option value="Fredoka">Fredoka</option>
-                                <option value="Quicksand">Quicksand</option>
-                                <option value="Teko">Teko</option>
-                                <option value="Zilla Slab">Zilla Slab</option>
-                                <option value="Yanone Kaffeesatz">Yanone Kaffeesatz</option>
-                                <option value="Rubik">Rubik</option>
-                                <option value="Titillium Web">Titillium Web</option>
-                                <option value="Fira Sans">Fira Sans</option>
-                                <option value="Cabin">Cabin</option>
+                                <option value="Arial, sans-serif">Arial</option>
+                                <option value="'Roboto', sans-serif">Roboto</option>
+                                <option value="'Open Sans', sans-serif">Open Sans</option>
+                                <option value="'Lobster', cursive">Lobster</option>
+                                <option value="'Oswald', sans-serif">Oswald</option>
+                                <option value="'Montserrat', sans-serif">Montserrat</option>
+                                <option value="'Raleway', sans-serif">Raleway</option>
+                                <option value="'Playfair Display', serif">Playfair Display</option>
+                                <option value="'Indie Flower', cursive">Indie Flower</option>
+                                <option value="'Bebas Neue', cursive">Bebas Neue</option>
+                                <option value="'Pacifico', cursive">Pacifico</option>
+                                <option value="'Dancing Script', cursive">Dancing Script</option>
+                                <option value="'Great Vibes', cursive">Great Vibes</option>
+                                <option value="'Permanent Marker', cursive">Permanent Marker</option>
+                                <option value="'Courier Prime', monospace">Courier Prime</option>
+                                <option value="'Shadows Into Light', cursive">Shadows Into Light</option>
+                                <option value="'Amatic SC', cursive">Amatic SC</option>
+                                <option value="'Caveat', cursive">Caveat</option>
+                                <option value="'Architects Daughter', cursive">Architects Daughter</option>
+                                <option value="'Anton', sans-serif">Anton</option>
+                                <option value="'Baloo 2', cursive">Baloo 2</option>
+                                <option value="'Fredoka', sans-serif">Fredoka</option>
+                                <option value="'Quicksand', sans-serif">Quicksand</option>
+                                <option value="'Teko', sans-serif">Teko</option>
+                                <option value="'Zilla Slab', serif">Zilla Slab</option>
+                                <option value="'Yanone Kaffeesatz', sans-serif">Yanone Kaffeesatz</option>
+                                <option value="'Rubik', sans-serif">Rubik</option>
+                                <option value="'Titillium Web', sans-serif">Titillium Web</option>
+                                <option value="'Fira Sans', sans-serif">Fira Sans</option>
+                                <option value="'Cabin', sans-serif">Cabin</option>
                             </select>
 
                             <!-- Text input -->
@@ -523,8 +526,8 @@
                             <div class="form-group mb-3">
                                 <label for="fontSizeSlider">Font Size</label>
                                 <input type="range" class="form-control-range" id="fontSizeSlider" min="12" max="100" value="24">
+                                <span id="fontSizeValue">24px</span>
                             </div>
-
 
                             <!-- Output -->
                             <div class="form-group">
@@ -534,22 +537,19 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <hr>
 
                     <div class="row">
-
                         <div class="col-md-12 form-group controls">
-                            <label for="product_customize_image">Upload Liveshoot</label>
+                            <label for="product_customize_image">Upload Liveshoot<span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="product_customize_image" name="product_customize_image" accept="image/*" />
-                            <small class="text-muted">Upload the dowloaded preview</small>
+                            <small class="text-muted">Upload the downloaded preview</small>
                         </div>
 
-
                         <div class="col-md-12 form-group">
-                            <label>Print Quality</label>
+                            <label>Print Quality<span class="text-danger">*</span></label>
                             <select name="print_quality" id="print_quality" class="form-control">
                                 <option value="" selected>Select Print Quality</option>
                                 <option value="print">Print</option>
@@ -558,38 +558,15 @@
                         </div>
 
                         <div class="col-md-12 form-group">
-                            <!-- <label>Logo Size</label>
-                            <p id="logo_size_instruction" style="color: red;"></p> -->
-
-                            <!-- <div class="row">
-                                <div class="col-md-12 form-group d-flex" style="align-items: center;">
-                                    <input type="number" class="form-control" id="logo_width" placeholder="Width" required>
-                                    &nbsp;&nbsp;X&nbsp;&nbsp;
-                                    <input type="number" class="form-control" id="logo_height" placeholder="Height" required>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;
-                                    <select id="logo_height_unit" class="form-control">
-                                        <option value="" selected>Select Unit</option required>
-                                        <option value="cm">CM</option>
-                                        <option value="inch">INCH</option>
-                                        <option value="mm">MM</option>
-                                        <option value="meter">METER</option>
-                                        <option value="feet">FEET</option>
-                                    </select>
-
-                                    <input type="text" name="logo_size" id="showLogoSize" class="form-control">
-                                </div>
-                            </div> -->
-
-
-                            <label>Logo Size</label>
+                            <label>Logo Size<span class="text-danger">*</span></label>
                             <p id="logo_size_instruction" style="color: red;"></p>
 
                             <div class="row">
                                 <div class="col-md-4 form-group">
-                                    <input type="text" class="form-control" id="widthInput" placeholder="Width">
+                                    <input type="number" class="form-control" id="widthInput" placeholder="Width" step="0.01">
                                 </div>
                                 <div class="col-md-4 form-group">
-                                    <input type="text" class="form-control" id="heightInput" placeholder="Height">
+                                    <input type="number" class="form-control" id="heightInput" placeholder="Height" step="0.01">
                                 </div>
                                 <div class="col-md-4 form-group">
                                     <select id="sizeUnit" class="form-control">
@@ -607,27 +584,24 @@
                             <div class="form-group">
                                 <input type="text" name="logo_size" id="showLogoSize" class="form-control" readonly>
                             </div>
-
                         </div>
 
-
-
                         <div class="col-md-6 form-group">
-                            <label>Product Name</label>
+                            <label>Product Name<span class="text-danger">*</span></label>
                             <input class="form-control" name="product_name" type="text" value="{{$product->product_name}}" readonly />
                         </div>
                         <div class="col-md-6 form-group">
-                            <label>Product Code</label>
+                            <label>Product Code<span class="text-danger">*</span></label>
                             <input class="form-control" name="product_code" type="text" value="{{$product->product_code}}" readonly />
                         </div>
 
                         <div class="col-md-6 form-group">
-                            <label>Price</label>
+                            <label>Price<span class="text-danger">*</span></label>
                             <input class="form-control" name="price" type="text" value="{{$product->selling_price}}.00" readonly />
                         </div>
 
                         <div class="col-md-6 form-group">
-                            <label>Main/Sub Category</label>
+                            <label>Main/Sub Category<span class="text-danger">*</span></label>
                             <input class="form-control" name="main_sub_category" type="text" value="{{$product->subCategory->mainCategory->main_category_name}} / {{ $product->subCategory->sub_category_name}}" readonly />
                         </div>
 
@@ -638,60 +612,52 @@
 
                         <!-- Product Colors -->
                         <div class="col-md-6 form-group">
-                            <label>Add Colors</label> <br>
+                            <label>Available Colors<span class="text-danger">*</span></label> <br>
                             @foreach ($productColors as $color)
-                            <input class="mr-2 color-checkbox" type="checkbox" value="{{ $color }}" checked style="scale: 1.5;">
+                            <input class="mr-2 color-checkbox" type="checkbox" value="{{ trim($color) }}" checked style="scale: 1.5;">
                             <label>{{ $color }}</label> <br>
                             @endforeach
                         </div>
 
                         <!-- Input with comma-separated Colors -->
-                        <div class="col-md-6 form-group" style="display: none;">
-                            <label>Add Colors</label> <br>
-                            <input class="form-control" type="text" name="colors" id="colorsInput" placeholder="Enter colors(,)" value="{{ $product->colors }}">
-                        </div>
+                        <input class="form-control" type="hidden" name="colors" id="colorsInput" value="{{ $product->colors }}">
 
                         <!-- Product Sizes -->
                         <div class="col-md-6 form-group">
-                            <label>Add Sizes</label> <br>
+                            <label>Available Sizes<span class="text-danger">*</span></label> <br>
                             @foreach ($productSizes as $size)
-                            <input class="mr-2 size-checkbox" type="checkbox" value="{{ $size }}" checked style="scale: 1.5;">
+                            <input class="mr-2 size-checkbox" type="checkbox" value="{{ trim($size) }}" checked style="scale: 1.5;">
                             <label>{{ $size }}</label> <br>
                             @endforeach
                         </div>
 
                         <!-- Input with comma-separated Sizes -->
-                        <div class="col-md-6 form-group" style="display: none;">
-                            <label>Add Sizes</label>
-                            <input class="form-control" type="text" name="sizes" id="sizesInput" placeholder="Enter sizes(,)" value="{{ $product->sizes }}">
-                        </div>
+                        <input class="form-control" type="hidden" name="sizes" id="sizesInput" value="{{ $product->sizes }}">
 
                         <div class="col-md-6 form-group">
-                            <label>Required Units</label>
+                            <label>Required Units<span class="text-danger">*</span></label>
                             <input class="form-control" name="units" type="number" placeholder="Minimum 12 units" min="12" required />
                         </div>
 
-
-
                         <div class="col-md-6 form-group">
-                            <label>Your Name</label>
+                            <label>Your Name<span class="text-danger">*</span></label>
                             <input class="form-control" name="customer_name" type="text" value="{{Auth::user()->name}}" />
                         </div>
 
                         <div class="col-md-6 form-group">
-                            <label>Email</label>
+                            <label>Email<span class="text-danger">*</span></label>
                             <input class="form-control" name="customer_email" type="text" value="{{Auth::user()->email}}" />
                         </div>
                         <div class="col-md-6 form-group">
-                            <label>Mobile</label>
+                            <label>Mobile<span class="text-danger">*</span></label>
                             <input class="form-control" name="customer_mobile" type="text" value="{{Auth::user()->mobile}}" />
                         </div>
                         <div class="col-md-12 form-group">
-                            <label>Address</label>
-                            <textarea name="customer_address" id="" class="form-control" placeholder="Enter your full address" rows="3"></textarea>
+                            <label>Address<span class="text-danger">*</span></label>
+                            <textarea name="customer_address" id="" class="form-control" placeholder="Enter your full address" rows="3" required></textarea>
                         </div>
                         <div class="col-md-12 form-group">
-                            <label>Detail Enquiry</label>
+                            <label>Detail Enquiry<span class="text-danger">*</span></label>
                             <textarea name="detail_enquiry" id="" class="form-control" placeholder="Write your custom quote" rows="5"></textarea>
                         </div>
 
@@ -705,6 +671,7 @@
             </div>
         </div>
     </div>
+    <!-- Product Customize End -->
     <!-- Product Customize End -->
 
 
@@ -829,285 +796,257 @@
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 
     <script>
-        const capImage = document.getElementById("capImage");
-        const logoContainer = document.getElementById("logoContainer");
-        const uploadedLogo = document.getElementById("uploadedLogo");
-        const textLogoPreview = document.getElementById("textLogoPreview");
-
-        const companyTextLogoInput = document.querySelector("input[name='company_text_logo']");
-        const colorPicker = document.querySelector("input[name='company_text_color_code']");
-        const fontSelector = document.getElementById("fontSelector");
-        const fontSizeSlider = document.getElementById("fontSizeSlider");
-
-        // === Cap Side Toggle ===
-        document.querySelectorAll("input[name='logo_placement']").forEach((radio) => {
-            radio.addEventListener("change", function() {
-                capImage.src = this.value === "front" ?
-                    "{{ asset('storage/' . $product->front_customize) }}" :
-                    "{{ asset('storage/' . $product->back_customize) }}";
-            });
-        });
-
-        // === Logo Upload Preview ===
-        document.getElementById("logoUploader").addEventListener("change", function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    uploadedLogo.src = evt.target.result;
-                    uploadedLogo.style.display = "block";
-                    textLogoPreview.style.display = "none";
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // === Text Logo Realtime Preview ===
-        function updateTextLogo() {
-            const text = companyTextLogoInput.value;
-            const font = fontSelector.value;
-            const color = colorPicker.value;
-            const size = fontSizeSlider.value;
-
-            if (text.trim() === "") {
-                textLogoPreview.style.display = "none";
-                return;
-            }
-
-            textLogoPreview.textContent = text;
-            textLogoPreview.style.fontFamily = font;
-            textLogoPreview.style.color = color;
-            textLogoPreview.style.fontSize = `${size}px`;
-
-            textLogoPreview.style.display = "block";
-            uploadedLogo.style.display = "none";
-        }
-
-        companyTextLogoInput.addEventListener("input", updateTextLogo);
-        colorPicker.addEventListener("input", updateTextLogo);
-        fontSelector.addEventListener("change", updateTextLogo);
-        fontSizeSlider.addEventListener("input", updateTextLogo);
-
-        // === Drag and Resize for logoContainer ===
-        interact("#logoContainer")
-            .draggable({
-                modifiers: [
-                    interact.modifiers.restrictRect({
-                        restriction: "#capWrapper",
-                        endOnly: true,
-                    }),
-                ],
-                listeners: {
-                    move(event) {
-                        const target = event.target;
-                        const x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
-                        const y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
-                        const angle = parseFloat(target.getAttribute("data-angle")) || 0;
-
-                        target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-                        target.setAttribute("data-x", x);
-                        target.setAttribute("data-y", y);
-                    },
-                },
-            })
-            .resizable({
-                edges: {
-                    top: true,
-                    left: true,
-                    bottom: true,
-                    right: true
-                },
-                listeners: {
-                    move(event) {
-                        const target = event.target;
-                        let x = parseFloat(target.getAttribute("data-x")) || 0;
-                        let y = parseFloat(target.getAttribute("data-y")) || 0;
-
-                        target.style.width = `${event.rect.width}px`;
-                        target.style.height = `${event.rect.height}px`;
-
-                        x += event.deltaRect.left;
-                        y += event.deltaRect.top;
-
-                        const angle = parseFloat(target.getAttribute("data-angle")) || 0;
-                        target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-                        target.setAttribute("data-x", x);
-                        target.setAttribute("data-y", y);
-                    },
-                },
-                modifiers: [
-                    interact.modifiers.restrictEdges({
-                        outer: "#capWrapper"
-                    }),
-                    interact.modifiers.restrictSize({
-                        min: {
-                            width: 50,
-                            height: 30
-                        },
-                        max: {
-                            width: 300,
-                            height: 300
-                        },
-                    }),
-                ],
-            });
-
-        // === Rotation ===
-        const rotateHandle = document.getElementById("rotateHandle");
-        let rotating = false;
-
-        rotateHandle.addEventListener("mousedown", (e) => {
-            e.preventDefault();
-            rotating = true;
-        });
-
-        document.addEventListener("mousemove", (e) => {
-            if (!rotating) return;
-
-            const rect = logoContainer.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const angle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
-
-            logoContainer.setAttribute("data-angle", angle);
-            const x = parseFloat(logoContainer.getAttribute("data-x")) || 0;
-            const y = parseFloat(logoContainer.getAttribute("data-y")) || 0;
-
-            logoContainer.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-        });
-
-        document.addEventListener("mouseup", () => {
-            rotating = false;
-        });
-    </script>
-
-
-
-    <script>
-        document.getElementById('ssButton').addEventListener('click', function() {
-            const screenshotArea = document.getElementById('screenShootArea');
-            const controls = document.querySelectorAll('.controls, #ssButton');
-
-            // 1. Hide other controls
-            controls.forEach(el => el.style.visibility = 'hidden');
-
-            // 2. Add class to hide border and dot
-            screenshotArea.classList.add('hide-controls');
-
-            setTimeout(() => {
-                html2canvas(screenshotArea, {
-                    backgroundColor: null,
-                    scale: 2
-                }).then(canvas => {
-                    // 3. Restore everything
-                    controls.forEach(el => el.style.visibility = 'visible');
-                    screenshotArea.classList.remove('hide-controls');
-
-                    // 4. Trigger download
-                    const link = document.createElement('a');
-                    link.download = 'custom-logo-preview.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                });
-            }, 100);
-        });
-    </script>
-
-
-    <script>
+        // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
-            const successPopup = document.getElementById('successPopup');
-            const errorPopup = document.getElementById('errorPopup');
+            // Elements
+            const capImage = document.getElementById("capImage");
+            const logoContainer = document.getElementById("logoContainer");
+            const uploadedLogo = document.getElementById("uploadedLogo");
+            const textLogoPreview = document.getElementById("textLogoPreview");
+            const companyTextLogoInput = document.querySelector("input[name='company_text_logo']");
+            const colorPicker = document.querySelector("input[name='company_text_color_code']");
+            const fontSelector = document.getElementById("fontSelector");
+            const fontSizeSlider = document.getElementById("fontSizeSlider");
+            const fontSizeValue = document.getElementById("fontSizeValue");
+            const logoTypeInput = document.getElementById("logoTypeInput");
+            const logoPositionX = document.getElementById("logoPositionX");
+            const logoPositionY = document.getElementById("logoPositionY");
+            const logoRotation = document.getElementById("logoRotation");
+            const logoWidth = document.getElementById("logoWidth");
+            const logoHeight = document.getElementById("logoHeight");
 
-            if (successPopup) setTimeout(() => successPopup.remove(), 4000);
-            if (errorPopup) setTimeout(() => errorPopup.remove(), 4000);
-        });
-    </script>
-
-
-    <!-- JavaScript to update input fields on checkbox change -->
-    <script>
-        function updateCheckedValues(className, inputId) {
-            const checkboxes = document.querySelectorAll(`.${className}`);
-            const selectedValues = [];
-            checkboxes.forEach(cb => {
-                if (cb.checked) selectedValues.push(cb.value);
+            // === Cap Side Toggle ===
+            document.querySelectorAll("input[name='logo_placement']").forEach((radio) => {
+                radio.addEventListener("change", function() {
+                    capImage.src = this.value === "front" ?
+                        "{{ asset('storage/' . $product->front_customize) }}" :
+                        "{{ asset('storage/' . $product->back_customize) }}";
+                });
             });
-            document.getElementById(inputId).value = selectedValues.join(',');
-        }
 
-        // Add event listeners
-        document.querySelectorAll('.color-checkbox').forEach(cb => {
-            cb.addEventListener('change', () => updateCheckedValues('color-checkbox', 'colorsInput'));
-        });
+            // === Logo Type Toggle ===
+            document.querySelectorAll("input[name='logo_type']").forEach((radio) => {
+                radio.addEventListener("change", function() {
+                    if (this.value === "image") {
+                        document.getElementById("logoInput").style.display = "block";
+                        document.getElementById("textInput").style.display = "none";
+                    } else {
+                        document.getElementById("logoInput").style.display = "none";
+                        document.getElementById("textInput").style.display = "block";
+                        updateTextLogo();
+                    }
+                });
+            });
 
-        document.querySelectorAll('.size-checkbox').forEach(cb => {
-            cb.addEventListener('change', () => updateCheckedValues('size-checkbox', 'sizesInput'));
-        });
-    </script>
+            // === Logo Upload Preview ===
+            document.getElementById("logoUploader").addEventListener("change", function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        uploadedLogo.src = evt.target.result;
+                        uploadedLogo.style.display = "block";
+                        textLogoPreview.style.display = "none";
 
-    <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const unitsInput = document.querySelector('[name="units"]');
-            if (parseInt(unitsInput.value) < 12) {
-                e.preventDefault(); // Stop form submission
-                alert("Minimum units required is 12.");
-            }
-        });
-    </script>
-
-
-
-
-    <!-- hide / show -->
-    <script>
-        $(document).ready(function() {
-            // Initially show logo section and hide text section
-            $('#logoInput').show();
-            $('#textInput').hide();
-
-            // Handle radio button changes
-            $('input[name="logo_type"]').on('change', function() {
-                if ($(this).val() === 'image') {
-                    $('#logoInput').show();
-                    $('#textInput').hide();
-                } else if ($(this).val() === 'text') {
-                    $('#logoInput').hide();
-                    $('#textInput').show();
+                        // Set initial size for uploaded image
+                        setTimeout(() => {
+                            logoWidth.value = uploadedLogo.naturalWidth;
+                            logoHeight.value = uploadedLogo.naturalHeight;
+                        }, 100);
+                    };
+                    reader.readAsDataURL(file);
                 }
             });
-        });
-    </script>
 
+            // === Text Logo Realtime Preview ===
+            function updateTextLogo() {
+                const text = companyTextLogoInput.value;
+                const font = fontSelector.value;
+                const color = colorPicker.value;
+                const size = fontSizeSlider.value;
 
-    <script>
-        $(document).ready(function() {
-            function updatePreview() {
-                const font = $('#fontSelector').val();
-                const text = $('#textInputField').val();
-                const color = $('#colorPicker').val();
+                if (text.trim() === "") {
+                    textLogoPreview.style.display = "none";
+                    return;
+                }
 
-                $('#outputPreview').text(text);
-                $('#outputPreview').css({
-                    'font-family': font,
-                    'color': color
-                });
+                textLogoPreview.textContent = text;
+                textLogoPreview.style.fontFamily = font;
+                textLogoPreview.style.color = color;
+                textLogoPreview.style.fontSize = `${size}px`;
+
+                textLogoPreview.style.display = "block";
+                uploadedLogo.style.display = "none";
+
+                // Update text preview in the form
+                document.getElementById("outputPreview").textContent = text;
+                document.getElementById("outputPreview").style.fontFamily = font;
+                document.getElementById("outputPreview").style.color = color;
+                document.getElementById("outputPreview").style.fontSize = `${size}px`;
             }
 
-            // Bind change events
-            $('#fontSelector').on('change', updatePreview);
-            $('#textInputField').on('input', updatePreview);
-            $('#colorPicker').on('input', updatePreview);
+            companyTextLogoInput.addEventListener("input", updateTextLogo);
+            colorPicker.addEventListener("input", updateTextLogo);
+            fontSelector.addEventListener("change", updateTextLogo);
+            fontSizeSlider.addEventListener("input", function() {
+                fontSizeValue.textContent = `${this.value}px`;
+                updateTextLogo();
+            });
 
-            // Initialize on page load
-            updatePreview();
-        });
-    </script>
+            // === Drag and Resize for logoContainer ===
+            interact("#logoContainer")
+                .draggable({
+                    modifiers: [
+                        interact.modifiers.restrictRect({
+                            restriction: "#capWrapper",
+                            endOnly: true,
+                        }),
+                    ],
+                    listeners: {
+                        move(event) {
+                            const target = event.target;
+                            const x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+                            const y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+                            const angle = parseFloat(target.getAttribute("data-angle")) || 0;
 
+                            target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+                            target.setAttribute("data-x", x);
+                            target.setAttribute("data-y", y);
 
-    <!-- Logo Size -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
+                            // Update hidden form fields
+                            logoPositionX.value = x;
+                            logoPositionY.value = y;
+                        },
+                    },
+                })
+                .resizable({
+                    edges: {
+                        top: true,
+                        left: true,
+                        bottom: true,
+                        right: true
+                    },
+                    listeners: {
+                        move(event) {
+                            const target = event.target;
+                            let x = parseFloat(target.getAttribute("data-x")) || 0;
+                            let y = parseFloat(target.getAttribute("data-y")) || 0;
+
+                            target.style.width = `${event.rect.width}px`;
+                            target.style.height = `${event.rect.height}px`;
+
+                            x += event.deltaRect.left;
+                            y += event.deltaRect.top;
+
+                            const angle = parseFloat(target.getAttribute("data-angle")) || 0;
+                            target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+                            target.setAttribute("data-x", x);
+                            target.setAttribute("data-y", y);
+
+                            // Update hidden form fields
+                            logoPositionX.value = x;
+                            logoPositionY.value = y;
+                            logoWidth.value = event.rect.width;
+                            logoHeight.value = event.rect.height;
+                        },
+                    },
+                    modifiers: [
+                        interact.modifiers.restrictEdges({
+                            outer: "#capWrapper"
+                        }),
+                        interact.modifiers.restrictSize({
+                            min: {
+                                width: 50,
+                                height: 30
+                            },
+                            max: {
+                                width: 300,
+                                height: 300
+                            },
+                        }),
+                    ],
+                });
+
+            // === Rotation ===
+            const rotateHandle = document.getElementById("rotateHandle");
+            let rotating = false;
+
+            rotateHandle.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+                rotating = true;
+            });
+
+            document.addEventListener("mousemove", (e) => {
+                if (!rotating) return;
+
+                const rect = logoContainer.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const angle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
+
+                logoContainer.setAttribute("data-angle", angle);
+                const x = parseFloat(logoContainer.getAttribute("data-x")) || 0;
+                const y = parseFloat(logoContainer.getAttribute("data-y")) || 0;
+
+                logoContainer.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+
+                // Update hidden form field
+                logoRotation.value = angle;
+            });
+
+            document.addEventListener("mouseup", () => {
+                rotating = false;
+            });
+
+            // === Screenshot functionality ===
+            document.getElementById('ssButton').addEventListener('click', function() {
+                const screenshotArea = document.getElementById('screenShootArea');
+                const controls = document.querySelectorAll('.controls, #ssButton');
+
+                // 1. Hide other controls
+                controls.forEach(el => el.style.visibility = 'hidden');
+
+                // 2. Add class to hide border and dot
+                screenshotArea.classList.add('hide-controls');
+
+                setTimeout(() => {
+                    html2canvas(screenshotArea, {
+                        backgroundColor: null,
+                        scale: 2
+                    }).then(canvas => {
+                        // 3. Restore everything
+                        controls.forEach(el => el.style.visibility = 'visible');
+                        screenshotArea.classList.remove('hide-controls');
+
+                        // 4. Trigger download
+                        const link = document.createElement('a');
+                        link.download = 'custom-logo-preview.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    });
+                }, 100);
+            });
+
+            // === Update checkbox values ===
+            function updateCheckedValues(className, inputId) {
+                const checkboxes = document.querySelectorAll(`.${className}`);
+                const selectedValues = [];
+                checkboxes.forEach(cb => {
+                    if (cb.checked) selectedValues.push(cb.value);
+                });
+                document.getElementById(inputId).value = selectedValues.join(',');
+            }
+
+            // Add event listeners for colors and sizes
+            document.querySelectorAll('.color-checkbox').forEach(cb => {
+                cb.addEventListener('change', () => updateCheckedValues('color-checkbox', 'colorsInput'));
+            });
+
+            document.querySelectorAll('.size-checkbox').forEach(cb => {
+                cb.addEventListener('change', () => updateCheckedValues('size-checkbox', 'sizesInput'));
+            });
+
+            // === Logo Size Validation ===
             const placementRadios = document.querySelectorAll('input[name="logo_placement"]');
             const printQualitySelect = document.getElementById("print_quality");
             const logoInstruction = document.getElementById("logo_size_instruction");
@@ -1120,6 +1059,7 @@
 
             const alertMsg = document.createElement("p");
             alertMsg.style.color = "red";
+            alertMsg.id = "sizeAlertMsg";
             showLogoSize.parentNode.appendChild(alertMsg);
 
             // Max sizes in inches
@@ -1159,7 +1099,7 @@
                     currentMax = maxSizes[placement][quality];
                     logoInstruction.textContent = `Max sizes ${placement}: ${currentMax.w} X ${currentMax.h} Inch`;
                 } else {
-                    logoInstruction.textContent = "";
+                    logoInstruction.textContent = "Please select both placement and print quality";
                     currentMax = {
                         w: 0,
                         h: 0
@@ -1184,7 +1124,7 @@
                 const heightVal = parseFloat(heightInput.value);
                 const unit = sizeUnit.value;
 
-                if ((!widthVal && widthVal !== 0) || (!heightVal && heightVal !== 0) || !unit) {
+                if ((isNaN(widthVal) || isNaN(heightVal)) || !unit) {
                     showLogoSize.value = "";
                     alertMsg.textContent = "";
                     submitButton.disabled = false;
@@ -1208,12 +1148,46 @@
                 }
             }
 
-            // Event listeners
+            // Event listeners for size validation
             placementRadios.forEach(r => r.addEventListener("change", updateInstruction));
             printQualitySelect.addEventListener("change", updateInstruction);
             widthInput.addEventListener("input", validateSize);
             heightInput.addEventListener("input", validateSize);
             sizeUnit.addEventListener("change", validateSize);
+
+            // === Form Submission ===
+            document.getElementById('customizationForm').addEventListener('submit', function(e) {
+                // 1. Force update colors & sizes before submit
+                updateCheckedValues('color-checkbox', 'colorsInput');
+                updateCheckedValues('size-checkbox', 'sizesInput');
+
+                // 2. Validate units
+                const unitsInput = document.querySelector('[name="units"]');
+                if (parseInt(unitsInput.value) < 12) {
+                    e.preventDefault();
+                    alert("Minimum units required is 12.");
+                    return;
+                }
+
+                // 3. Validate logo size if provided
+                if (widthInput.value && heightInput.value && sizeUnit.value) {
+                    validateSize();
+                    if (submitButton.disabled) {
+                        e.preventDefault();
+                        alert("Please fix the logo size issue before submitting.");
+                        return;
+                    }
+                }
+
+                // 4. If no logo size provided, set a default
+                if (!showLogoSize.value) {
+                    showLogoSize.value = "Not specified";
+                }
+            });
+
+            // Initialize
+            updateInstruction();
+            fontSizeValue.textContent = `${fontSizeSlider.value}px`;
         });
     </script>
 
@@ -1247,6 +1221,7 @@
     </script>
 
     <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </body>
 
 </html>
