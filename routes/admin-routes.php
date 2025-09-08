@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest:admins')->group(function () {
 
-    Route::get('/admin/register', [AdminController::class, 'registerView'])->name('admin.register');
-    Route::post('/admin/register', [AdminController::class, 'register'])->name('admin.register.post');
+    // Route::get('/admin/register', [AdminController::class, 'registerView'])->name('admin.register');
+    // Route::post('/admin/register', [AdminController::class, 'register'])->name('admin.register.post');
     Route::get('/admin/login', [AdminController::class, 'loginView'])->name('admin.login');
     Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.post');
 });

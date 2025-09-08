@@ -54,9 +54,9 @@
                 </div>
 
 
-                <div class="text-center mt-4 font-weight-light">
+                <!-- <div class="text-center mt-4 font-weight-light">
                   No Account ? Don't Worry <a href="/admin/register" class="text-primary">Create</a>
-                </div>
+                </div> -->
               </form>
             </div>
           </div>
