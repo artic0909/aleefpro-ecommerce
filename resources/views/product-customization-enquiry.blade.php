@@ -42,6 +42,39 @@
 
 
     <style>
+            .upload-box {
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        background: #f9f9f9;
+        transition: 0.3s;
+        position: relative;
+    }
+
+    .upload-box:hover {
+        border-color: #666;
+        background: #f1f1f1;
+    }
+
+    .upload-box img {
+        max-width: 150px;
+        margin-bottom: 10px;
+        display: none;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .upload-text {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .upload-box input[type="file"] {
+        display: none;
+    }
+
         #logoTextPreview {
             position: absolute;
             top: 110px;
@@ -468,11 +501,21 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12 form-group controls" id="logoInput">
+                        <!-- <div class="col-md-12 form-group controls" id="logoInput">
                             <label for="logoInput">Upload Logo</label>
                             <input type="file" class="form-control" id="logoUploader" name="company_logo" accept="image/*" />
                             <small class="text-muted">Upload high quality logo (PNG with transparent background recommended)</small>
-                        </div>
+                        </div> -->
+
+                        <div class="col-md-12 form-group controls" id="logoInput">
+    <label for="logoUploader">Upload Logo</label>
+    <div class="upload-box" id="logoDropArea">
+        <img id="logoPreview" alt="Logo Preview">
+        <p class="upload-text">Drag & Drop Logo Here<br>or<br><span style="color:blue;">Browse Files</span></p>
+        <input type="file" class="form-control" id="logoUploader" name="company_logo" accept="image/*">
+    </div>
+    <small class="text-muted">Upload high quality logo (PNG with transparent background recommended)</small>
+</div>
 
                         <div class="col-md-12 form-group controls" id="textInput" style="display: none;">
                             <label for="logoInput">Add Text</label>
@@ -542,11 +585,21 @@
                     <hr>
 
                     <div class="row">
-                        <div class="col-md-12 form-group controls">
+                        <!-- <div class="col-md-12 form-group controls">
                             <label for="product_customize_image">Upload Liveshoot<span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="product_customize_image" name="product_customize_image" accept="image/*" />
                             <small class="text-muted">Upload the downloaded preview</small>
-                        </div>
+                        </div> -->
+
+                        <div class="col-md-12 form-group controls">
+    <label for="product_customize_image">Upload Liveshoot<span class="text-danger">*</span></label>
+    <div class="upload-box" id="liveDropArea">
+        <img id="livePreview" alt="Live Preview">
+        <p class="upload-text">Drag & Drop Liveshoot Here<br>or<br><span style="color:blue;">Browse Files</span></p>
+        <input type="file" class="form-control" id="product_customize_image" name="product_customize_image" accept="image/*">
+    </div>
+    <small class="text-muted">Upload the downloaded preview</small>
+</div>
 
                         <div class="col-md-12 form-group">
                             <label>Print Quality<span class="text-danger">*</span></label>
@@ -1221,6 +1274,55 @@
     </script>
 
     <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+    <script>
+    function handleFilePreview(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+
+        input.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    function enableDragDrop(dropAreaId, inputId) {
+        const dropArea = document.getElementById(dropAreaId);
+        const input = document.getElementById(inputId);
+
+        dropArea.addEventListener("click", () => input.click());
+
+        dropArea.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropArea.style.borderColor = "#000";
+        });
+
+        dropArea.addEventListener("dragleave", () => {
+            dropArea.style.borderColor = "#ccc";
+        });
+
+        dropArea.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropArea.style.borderColor = "#ccc";
+            input.files = e.dataTransfer.files;
+            input.dispatchEvent(new Event("change"));
+        });
+    }
+
+    // Enable for both fields
+    handleFilePreview("logoUploader", "logoPreview");
+    handleFilePreview("product_customize_image", "livePreview");
+    enableDragDrop("logoDropArea", "logoUploader");
+    enableDragDrop("liveDropArea", "product_customize_image");
+</script>
 
 </body>
 
