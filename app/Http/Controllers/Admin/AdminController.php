@@ -425,82 +425,96 @@ class AdminController extends Controller
 
     public function addProduct(Request $request)
     {
-        $request->validate([
-            'sub_category_id' => 'required|exists:sub_categories,id',
-            'product_name' => 'required|string|max:255',
-            'product_code' => 'required|string|max:255',
-            'images.*' => 'nullable|image',
-            'sizes' => 'nullable|string',
-            'colors' => 'nullable|string',
-            'actual_price' => 'required|numeric',
-            'selling_price' => 'required|numeric',
-            'description' => 'nullable|string',
-            'information' => 'nullable|string',
-            'size_chart_image' => 'nullable|image',
-            'front_customize' => 'nullable|image',
-            'back_customize' => 'nullable|image',
-            'min_purchase' => 'nullable|integer|min:1',
-        ]);
+        try {
+            // Validation with custom messages
+            $request->validate([
+                'sub_category_id' => 'required|exists:sub_categories,id',
+                'product_name' => 'required|string|max:255|unique:products,product_name',
+                'product_code' => 'required|string|max:255|unique:products,product_code',
+                'images.*' => 'nullable|image',
+                'sizes' => 'nullable|string',
+                'colors' => 'nullable|string',
+                'actual_price' => 'required|numeric',
+                'selling_price' => 'required|numeric',
+                'description' => 'nullable|string',
+                'information' => 'nullable|string',
+                'size_chart_image' => 'nullable|image',
+                'front_customize' => 'nullable|image',
+                'back_customize' => 'nullable|image',
+                'min_purchase' => 'nullable|integer|min:1',
+            ], [
+                'product_name.unique' => 'Product name already exists. Please use a different name like "Safety Jacket | Green | Sale Type".',
+                'product_code.unique' => 'Product code already exists. Use a unique code for this product.',
+            ]);
 
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('products/images', $filename, 'public');
-                $imagePaths[] = $path;
+            // Initialize file paths
+            $imagePaths = [];
+            $sizeChartPath = $frontCustomizePath = $backCustomizePath = null;
+
+            // Handle multiple product images
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('products/images', $filename, 'public');
+                    $imagePaths[] = $path;
+                }
             }
+
+            // Size chart image
+            if ($request->hasFile('size_chart_image')) {
+                $file = $request->file('size_chart_image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $sizeChartPath = $file->storeAs('products/size_charts', $filename, 'public');
+            }
+
+            // Front customize image
+            if ($request->hasFile('front_customize')) {
+                $file = $request->file('front_customize');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $frontCustomizePath = $file->storeAs('products/front_customize', $filename, 'public');
+            }
+
+            // Back customize image
+            if ($request->hasFile('back_customize')) {
+                $file = $request->file('back_customize');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $backCustomizePath = $file->storeAs('products/back_customize', $filename, 'public');
+            }
+
+            // Save product to database
+            Product::create([
+                'sub_category_id' => $request->sub_category_id,
+                'product_name' => $request->product_name,
+                'product_code' => $request->product_code,
+                'images' => json_encode($imagePaths),
+                'sizes' => $request->sizes,
+                'colors' => $request->colors,
+                'actual_price' => $request->actual_price,
+                'selling_price' => $request->selling_price,
+                'description' => $request->description,
+                'information' => $request->information,
+                'size_chart_image' => $sizeChartPath,
+                'slug' => Str::slug($request->product_name),
+                'front_customize' => $frontCustomizePath,
+                'back_customize' => $backCustomizePath,
+                'min_purchase' => $request->min_purchase,
+            ]);
+
+            return back()->with('success', 'Product saved successfully.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage())->withInput();
         }
-
-        $sizeChartPath = null;
-        if ($request->hasFile('size_chart_image')) {
-            $file = $request->file('size_chart_image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $sizeChartPath = $file->storeAs('products/size_charts', $filename, 'public');
-        }
-
-        $frontCustomizePath = null;
-        if ($request->hasFile('front_customize')) {
-            $file = $request->file('front_customize');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $frontCustomizePath = $file->storeAs('products/front_customize', $filename, 'public');
-        }
-
-        $backCustomizePath = null;
-        if ($request->hasFile('back_customize')) {
-            $file = $request->file('back_customize');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $backCustomizePath = $file->storeAs('products/back_customize', $filename, 'public');
-        }
-
-
-
-        Product::create([
-            'sub_category_id' => $request->sub_category_id,
-            'product_name' => $request->product_name,
-            'product_code' => $request->product_code,
-            'images' => json_encode($imagePaths),
-            'sizes' => $request->sizes,
-            'colors' => $request->colors,
-            'actual_price' => $request->actual_price,
-            'selling_price' => $request->selling_price,
-            'description' => $request->description,
-            'information' => $request->information,
-            'size_chart_image' => $sizeChartPath,
-            'slug' => Str::slug($request->product_name),
-            'front_customize' => $frontCustomizePath,
-            'back_customize' => $backCustomizePath,
-            'min_purchase' => $request->min_purchase,
-        ]);
-
-        return back()->with('success', 'Product saved successfully.');
     }
+
 
 
     public function editProduct(Request $request, $id)
     {
         $product = Product::findOrFail($id);
 
-        // Validate with unique rules and custom messages
+        // 1. Validation
         $request->validate([
             'sub_category_id' => 'required|exists:sub_categories,id',
             'product_name' => [
@@ -515,16 +529,16 @@ class AdminController extends Controller
                 'max:255',
                 Rule::unique('products', 'product_code')->ignore($product->id),
             ],
-            'images.*' => 'nullable|image',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'front_customize' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'back_customize' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'size_chart_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'sizes' => 'nullable|string',
             'colors' => 'nullable|string',
             'actual_price' => 'required|numeric',
             'selling_price' => 'required|numeric',
             'description' => 'nullable|string',
             'information' => 'nullable|string',
-            'size_chart_image' => 'nullable|image',
-            'front_customize' => 'nullable|image',
-            'back_customize' => 'nullable|image',
             'stock_status' => 'required|in:stock,out_of_stock',
             'min_purchase' => 'nullable|integer|min:1',
         ], [
@@ -532,35 +546,31 @@ class AdminController extends Controller
             'product_code.unique' => 'A product with this code already exists.',
         ]);
 
-        // Handle images
-        if ($request->hasFile('images')) {
-            $oldImages = json_decode($product->images ?? '[]', true);
-            foreach ($oldImages as $oldImage) {
-                Storage::disk('public')->delete($oldImage);
-            }
+        // 2. Handle Deleted Images
+        $deletedImages = json_decode($request->deleted_images ?? '[]', true);
+        $oldImages = json_decode($product->images ?? '[]', true);
 
-            $imagePaths = [];
+        if (!empty($deletedImages)) {
+            foreach ($deletedImages as $img) {
+                if (in_array($img, $oldImages)) {
+                    Storage::disk('public')->delete($img);
+                    $oldImages = array_diff($oldImages, [$img]);
+                }
+            }
+        }
+
+        // 3. Add New Images
+        if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $path = $file->storeAs('products/images', $filename, 'public');
-                $imagePaths[] = $path;
+                $oldImages[] = $path;
             }
-        } else {
-            $imagePaths = json_decode($product->images ?? '[]', true);
         }
 
-        // Size chart
-        $sizeChartPath = $product->size_chart_image;
-        if ($request->hasFile('size_chart_image')) {
-            if ($sizeChartPath) {
-                Storage::disk('public')->delete($sizeChartPath);
-            }
-            $file = $request->file('size_chart_image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $sizeChartPath = $file->storeAs('products/size_charts', $filename, 'public');
-        }
+        $imagePaths = array_values($oldImages); // final image array
 
-        // Front customize
+        // 4. Front Image
         $frontCustomizePath = $product->front_customize;
         if ($request->hasFile('front_customize')) {
             if ($frontCustomizePath) {
@@ -571,7 +581,7 @@ class AdminController extends Controller
             $frontCustomizePath = $file->storeAs('products/front_customize', $filename, 'public');
         }
 
-        // Back customize
+        // 5. Back Image
         $backCustomizePath = $product->back_customize;
         if ($request->hasFile('back_customize')) {
             if ($backCustomizePath) {
@@ -582,24 +592,35 @@ class AdminController extends Controller
             $backCustomizePath = $file->storeAs('products/back_customize', $filename, 'public');
         }
 
-        // Update product
+        // 6. Size Chart Image
+        $sizeChartPath = $product->size_chart_image;
+        if ($request->hasFile('size_chart_image')) {
+            if ($sizeChartPath) {
+                Storage::disk('public')->delete($sizeChartPath);
+            }
+            $file = $request->file('size_chart_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $sizeChartPath = $file->storeAs('products/size_charts', $filename, 'public');
+        }
+
+        // 7. Update Product
         $product->update([
             'sub_category_id' => $request->sub_category_id,
             'product_name' => $request->product_name,
             'product_code' => $request->product_code,
             'images' => json_encode($imagePaths),
+            'front_customize' => $frontCustomizePath,
+            'back_customize' => $backCustomizePath,
+            'size_chart_image' => $sizeChartPath,
             'sizes' => $request->sizes,
             'colors' => $request->colors,
             'actual_price' => $request->actual_price,
             'selling_price' => $request->selling_price,
             'description' => $request->description,
             'information' => $request->information,
-            'size_chart_image' => $sizeChartPath,
-            'slug' => Str::slug($request->product_name),
-            'front_customize' => $frontCustomizePath,
-            'back_customize' => $backCustomizePath,
             'stock_status' => $request->stock_status,
             'min_purchase' => $request->min_purchase,
+            'slug' => Str::slug($request->product_name),
         ]);
 
         return back()->with('success', 'Product updated successfully.');

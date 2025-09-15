@@ -31,6 +31,68 @@
             }
         }
 
+        .image-preview {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 10px;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .image-preview .remove-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .selected-image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .selected-image-preview .img-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .selected-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .selected-image-preview .remove-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+
         .float-button {
             position: fixed;
             width: 60px;
@@ -55,7 +117,8 @@
             text-decoration: none;
             color: white;
         }
-         .custom-success-popup,
+
+        .custom-success-popup,
         .custom-error-popup {
             position: fixed;
             top: 20px;
@@ -380,20 +443,33 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <div class="">
+
+                                <div class="mt-3">
                                     <label for="image" class="form-label">Product Images<span class="text-danger">*</span></label>
-                                    <input type="file" name="images[]" id="images" class="form-control" multiple required>
+                                    <input type="file" name="images[]" id="images" class="form-control d-none" multiple required> <br>
+                                    <button type="button" class="btn btn-outline-primary w-100" id="browseBtn">Choose Files</button> <br>
+                                    <span id="fileNames" class="ms-2 text-muted"></span>
                                 </div>
 
-                                <div class="">
+                                <div class="selected-image-preview mt-3"></div>
+
+
+
+                                <div class="mt-3">
                                     <label for="front_customize" class="form-label">Customize Front Image<span class="text-danger">*</span></label>
                                     <input type="file" name="front_customize" id="front_customize" class="form-control" required>
                                 </div>
 
-                                <div class="">
+                                <!-- Front Image Preview -->
+                                <div class="mb-3 mt-3" id="front-preview-container"></div>
+
+                                <div class="mt-3">
                                     <label for="back_customize" class="form-label">Customize Back Image<span class="text-danger">*</span></label>
                                     <input type="file" name="back_customize" id="back_customize" class="form-control" required>
                                 </div>
+
+                                <!-- Back Image Preview -->
+                                <div class="mb-3 mt-3" id="back-preview-container"></div>
 
                                 <div class="mt-3">
                                     <label for="main_category_name" class="form-label">Main Category<span class="text-danger">*</span></label>
@@ -438,7 +514,6 @@
                                 </div>
 
                                 <div class="mt-3" style="display: none;">
-                                    <label for="sizes" class="form-label">Sizes<span class="text-danger">*</span></label>
                                     <input type="text" name="sizes" id="sizes" class="form-control" placeholder="e.g. S,M,L" required>
                                 </div>
 
@@ -451,7 +526,6 @@
                                 </div>
 
                                 <div class="mt-3" style="display: none;">
-                                    <label for="colors" class="form-label">Colors<span class="text-danger">*</span></label>
                                     <input type="text" name="colors" id="colors" class="form-control" placeholder="e.g. Red,Blue,Green" required>
                                 </div>
 
@@ -497,17 +571,21 @@
                     </div>
                 </div>
 
+
+
                 <!-- Edit Modal -->
                 @foreach ($products as $product)
                 <div class="modal fade" id="scrollEditModal{{ $product->id }}" tabindex="-1" aria-labelledby="scrollEditModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                        <form action="{{ route('admin.product.update', $product->id) }}" method="POST" class="modal-content" enctype="multipart/form-data">
+                        <form id="form-{{ $product->id }}" action="{{ route('admin.product.update', $product->id) }}" method="POST" class="modal-content" enctype="multipart/form-data">
                             @csrf
+                            <input type="hidden" name="deleted_images" id="deleted_images_{{ $product->id }}">
 
                             <div class="modal-header">
-                                <h5 class="modal-title" id="scrollEditModalLabel">Edit Product</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <h5 class="modal-title">Edit Product</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
+
                             <div class="modal-body">
 
                                 <div class="mt-3 mb-3">
@@ -516,48 +594,53 @@
                                         <option value="stock" {{ $product->stock_status == 'stock' ? 'selected' : '' }}>In Stock</option>
                                         <option value="out_of_stock" {{ $product->stock_status == 'out_of_stock' ? 'selected' : '' }}>Out Of Stock</option>
                                     </select>
-
                                 </div>
 
-
-
-                                <div class="">
-                                    <!-- show all images -->
-                                    @php
-                                    $images = json_decode($product->images);
-                                    @endphp
-
-                                    @if ($images && count($images) > 0)
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @foreach ($images as $image)
-                                        <img src="{{ asset('storage/' . $image) }}" alt="Product Image" class="img-thumbnail" width="100" height="100">
-                                        @endforeach
+                                <!-- Existing Images with Remove Button -->
+                                <label for="existing-images-{{ $product->id }}" class="form-label">Existing images show below</label>
+                                <div id="existing-images-{{ $product->id }}" class="d-flex flex-wrap gap-2">
+                                    @php $images = json_decode($product->images); @endphp
+                                    @if($images)
+                                    @foreach($images as $img)
+                                    <div class="position-relative edit-image-wrapper">
+                                        <img src="{{ asset('storage/' . $img) }}" class="img-thumbnail" width="100" height="100">
+                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-existing" data-image="{{ $img }}">×</button>
                                     </div>
-                                    @else
-                                    <p class="text-muted">No images available.</p>
+                                    @endforeach
                                     @endif
                                 </div>
+
+                                <!-- Add More Images -->
                                 <div class="mt-3">
-                                    <label for="image" class="form-label">Product Images<span class="text-danger">*</span></label>
-                                    <input type="file" name="images[]" id="images" class="form-control" multiple>
+                                    
+                                    <label for="edit-images-{{ $product->id }}" class="form-label">Product Image<span class="text-danger">*</span></label>
+                                    <input type="file" name="images[]" id="edit-images-{{ $product->id }}" class="form-control" multiple>
+                                    <label for="edit-images-{{ $product->id }}" class="form-label">Newly added images show below</label>
+                                    <div class="d-flex flex-wrap gap-2 mt-2" id="preview-new-{{ $product->id }}"></div>
                                 </div>
 
-                                <div class="mt-3">
-                                    <img src="{{ asset('storage/' . $product->front_customize) }}" alt="" class="img-fluid" width="100" height="100">
+                                <!-- Front Image -->
+                                <div class="mt-3 mb-3">
+                                    <label for="">Front Image<span class="text-danger">*</span></label>
+                                    <input type="file" name="front_customize" id="front-input-{{ $product->id }}" class="form-control mt-2"> <br>
+                                    <div class="position-relative d-inline-block" id="front-preview-wrapper-{{ $product->id }}">
+                                        @if($product->front_customize)
+                                        <img src="{{ asset('storage/' . $product->front_customize) }}" class="img-thumbnail" width="100">
+                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-front">×</button>
+                                        @endif
+                                    </div>
                                 </div>
 
-                                <div class="mt-3">
-                                    <label for="front_customize" class="form-label">Front Image<span class="text-danger">*</span></label>
-                                    <input type="file" name="front_customize" id="front_customize" class="form-control">
-                                </div>
-
-                                <div class="mt-3">
-                                    <img src="{{ asset('storage/' . $product->back_customize) }}" alt="" class="img-fluid" width="100" height="100">
-                                </div>
-
-                                <div class="mt-3">
-                                    <label for="back_customize" class="form-label">Back Image<span class="text-danger">*</span></label>
-                                    <input type="file" name="back_customize" id="back_customize" class="form-control">
+                                <!-- Back Image -->
+                                <div class="mt-3 mb-3">
+                                    <label for="">Back Image<span class="text-danger">*</span></label>
+                                    <input type="file" name="back_customize" id="back-input-{{ $product->id }}" class="form-control mt-2"> <br>
+                                    <div class="position-relative d-inline-block" id="back-preview-wrapper-{{ $product->id }}">
+                                        @if($product->back_customize)
+                                        <img src="{{ asset('storage/' . $product->back_customize) }}" class="img-thumbnail" width="100">
+                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-back">×</button>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <div class="mt-3">
@@ -860,6 +943,14 @@
     </div>
     @endif
 
+    @if ($errors->any())
+    <div id="errorPopup" class="custom-error-popup">
+        @foreach ($errors->all() as $error)
+        <div>{{ $error }}</div>
+        @endforeach
+    </div>
+    @endif
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const successPopup = document.getElementById('successPopup');
@@ -869,6 +960,7 @@
             if (errorPopup) setTimeout(() => errorPopup.remove(), 4000);
         });
     </script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -954,6 +1046,247 @@
     <!-- Custom js for this page-->
     <script src="{{ asset('Admin/js/dashboard.js') }}"></script>
     <script src="{{ asset('Admin/js/Chart.roundedBarCharts.js') }}"></script>
+
+
+
+    <!-- Product Image Show JS -->
+
+
+    <script>
+        // Front Customize Preview
+        const frontInput = document.getElementById('front_customize');
+        const frontPreviewContainer = document.getElementById('front-preview-container');
+
+        frontInput.addEventListener('change', function() {
+            showSinglePreview(this, frontPreviewContainer);
+        });
+
+        // Back Customize Preview
+        const backInput = document.getElementById('back_customize');
+        const backPreviewContainer = document.getElementById('back-preview-container');
+
+        backInput.addEventListener('change', function() {
+            showSinglePreview(this, backPreviewContainer);
+        });
+
+        // Reusable function for single preview
+        function showSinglePreview(input, container) {
+            container.innerHTML = ""; // Clear old preview
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const wrapper = document.createElement('div');
+                wrapper.className = "image-preview";
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+
+                const removeBtn = document.createElement('span');
+                removeBtn.innerHTML = "×";
+                removeBtn.className = "remove-btn";
+
+                // On remove, clear everything
+                removeBtn.onclick = () => {
+                    container.innerHTML = "";
+                    input.value = "";
+                };
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+                container.appendChild(wrapper);
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+
+    <!-- Add Modal -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let imagesInput = document.getElementById('images');
+            let browseBtn = document.getElementById('browseBtn');
+            let fileNames = document.getElementById('fileNames');
+            const previewContainer = document.querySelector('.selected-image-preview');
+
+            let selectedFiles = [];
+
+            // Open file dialog
+            browseBtn.addEventListener('click', () => imagesInput.click());
+
+            // Handle file selection
+            imagesInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                selectedFiles = [...selectedFiles, ...files]; // keep files in array
+                updateFileNames();
+                renderPreviews();
+                // do NOT clear imagesInput.value here
+            });
+
+            function updateFileNames() {
+                fileNames.textContent = selectedFiles.length > 0 ?
+                    selectedFiles.map(f => f.name).join(", ") :
+                    "No file chosen";
+            }
+
+            function renderPreviews() {
+                previewContainer.innerHTML = "";
+                previewContainer.style.display = "flex";
+                previewContainer.style.flexWrap = "wrap";
+                previewContainer.style.gap = "10px";
+
+                selectedFiles.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const wrapper = document.createElement('div');
+                        wrapper.classList.add('position-relative');
+                        wrapper.style.width = "120px";
+                        wrapper.style.height = "120px";
+
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('img-thumbnail');
+                        img.style.width = "100%";
+                        img.style.height = "100%";
+                        img.style.objectFit = "cover";
+
+                        const removeBtn = document.createElement('span');
+                        removeBtn.innerHTML = "×";
+                        removeBtn.classList.add('position-absolute', 'top-0', 'end-0', 'bg-danger', 'text-white', 'px-2', 'rounded');
+                        removeBtn.style.cursor = "pointer";
+
+                        removeBtn.addEventListener('click', () => {
+                            selectedFiles.splice(index, 1);
+                            updateFileNames();
+                            renderPreviews();
+                        });
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(removeBtn);
+                        previewContainer.appendChild(wrapper);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // On submit attach files before sending
+            const form = document.querySelector('#scrollAddModal form');
+            form.addEventListener('submit', function(e) {
+                if (selectedFiles.length === 0) {
+                    alert("Please select at least one product image!");
+                    e.preventDefault();
+                    return;
+                }
+
+                const dataTransfer = new DataTransfer();
+                selectedFiles.forEach(file => dataTransfer.items.add(file));
+                imagesInput.files = dataTransfer.files; // re-attach files here
+            });
+        });
+    </script>
+
+    <!-- Edit Modal -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            @foreach($products as $product)
+                (function() {
+                    let deletedImages = [];
+                    let productId = "{{ $product->id }}";
+                    let deletedInput = document.getElementById("deleted_images_" + productId);
+
+                    // Remove existing images
+                    document.querySelectorAll("#existing-images-" + productId + " .remove-existing").forEach(btn => {
+                        btn.addEventListener("click", function() {
+                            let wrapper = this.closest(".edit-image-wrapper");
+                            let image = this.dataset.image;
+                            deletedImages.push(image);
+                            deletedInput.value = JSON.stringify(deletedImages);
+                            wrapper.remove();
+                        });
+                    });
+
+                    // New images preview
+                    let newImagesInput = document.getElementById("edit-images-" + productId);
+                    let previewContainer = document.getElementById("preview-new-" + productId);
+                    newImagesInput.addEventListener("change", function() {
+                        previewContainer.innerHTML = "";
+                        Array.from(this.files).forEach(file => {
+                            let reader = new FileReader();
+                            reader.onload = e => {
+                                let div = document.createElement("div");
+                                div.classList.add("position-relative");
+                                div.style.width = "100px";
+                                div.style.height = "100px";
+                                div.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="width:100%;height:100%">
+                                     <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0">×</button>`;
+                                previewContainer.appendChild(div);
+
+                                div.querySelector("button").addEventListener("click", () => div.remove());
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    });
+
+                    // Front image replace
+                    let frontInput = document.getElementById("front-input-" + productId);
+                    let frontWrapper = document.getElementById("front-preview-wrapper-" + productId);
+                    if (frontWrapper.querySelector(".remove-front")) {
+                        frontWrapper.querySelector(".remove-front").addEventListener("click", () => {
+                            frontWrapper.innerHTML = "";
+                        });
+                    }
+                    frontInput.addEventListener("change", function() {
+                        frontWrapper.innerHTML = "";
+                        let file = this.files[0];
+                        if (file) {
+                            let reader = new FileReader();
+                            reader.onload = e => {
+                                frontWrapper.innerHTML = `<div class="position-relative"><img src="${e.target.result}" class="img-thumbnail" width="100">
+                                               <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0">×</button></div>`;
+                                frontWrapper.querySelector("button").addEventListener("click", () => {
+                                    frontWrapper.innerHTML = "";
+                                    frontInput.value = "";
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    // Back image replace
+                    let backInput = document.getElementById("back-input-" + productId);
+                    let backWrapper = document.getElementById("back-preview-wrapper-" + productId);
+                    if (backWrapper.querySelector(".remove-back")) {
+                        backWrapper.querySelector(".remove-back").addEventListener("click", () => {
+                            backWrapper.innerHTML = "";
+                        });
+                    }
+                    backInput.addEventListener("change", function() {
+                        backWrapper.innerHTML = "";
+                        let file = this.files[0];
+                        if (file) {
+                            let reader = new FileReader();
+                            reader.onload = e => {
+                                backWrapper.innerHTML = `<div class="position-relative"><img src="${e.target.result}" class="img-thumbnail" width="100">
+                                              <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0">×</button></div>`;
+                                backWrapper.querySelector("button").addEventListener("click", () => {
+                                    backWrapper.innerHTML = "";
+                                    backInput.value = "";
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                })();
+            @endforeach
+        });
+    </script>
+
+
+
+
+
+
 </body>
 
 </html>
