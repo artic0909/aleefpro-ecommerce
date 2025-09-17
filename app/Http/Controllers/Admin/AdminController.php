@@ -1245,7 +1245,7 @@ class AdminController extends Controller
             ->get();
 
 
-        return view('admin.admin-orders', compact('orders'));
+        return view('Admin.admin-orders', compact('orders'));
     }
 
     public function shipmentStatusUpdate(Request $request, $id)
