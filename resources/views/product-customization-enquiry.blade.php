@@ -42,38 +42,38 @@
 
 
     <style>
-            .upload-box {
-        border: 2px dashed #ccc;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        cursor: pointer;
-        background: #f9f9f9;
-        transition: 0.3s;
-        position: relative;
-    }
+        .upload-box {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f9f9f9;
+            transition: 0.3s;
+            position: relative;
+        }
 
-    .upload-box:hover {
-        border-color: #666;
-        background: #f1f1f1;
-    }
+        .upload-box:hover {
+            border-color: #666;
+            background: #f1f1f1;
+        }
 
-    .upload-box img {
-        max-width: 150px;
-        margin-bottom: 10px;
-        display: none;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-    }
+        .upload-box img {
+            max-width: 150px;
+            margin-bottom: 10px;
+            display: none;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
 
-    .upload-text {
-        color: #333;
-        font-weight: 500;
-    }
+        .upload-text {
+            color: #333;
+            font-weight: 500;
+        }
 
-    .upload-box input[type="file"] {
-        display: none;
-    }
+        .upload-box input[type="file"] {
+            display: none;
+        }
 
         #logoTextPreview {
             position: absolute;
@@ -121,6 +121,7 @@
             touch-action: none;
             transform-origin: center center;
             z-index: 10;
+            transition: transform 0.05s linear;
         }
 
         .logo-box img {
@@ -508,14 +509,14 @@
                         </div> -->
 
                         <div class="col-md-12 form-group controls" id="logoInput">
-    <label for="logoUploader">Upload Logo</label>
-    <div class="upload-box" id="logoDropArea">
-        <img id="logoPreview" alt="Logo Preview">
-        <p class="upload-text">Drag & Drop Logo Here<br>or<br><span style="color:blue;">Browse Files</span></p>
-        <input type="file" class="form-control" id="logoUploader" name="company_logo" accept="image/*">
-    </div>
-    <small class="text-muted">Upload high quality logo (PNG with transparent background recommended)</small>
-</div>
+                            <label for="logoUploader">Upload Logo</label>
+                            <div class="upload-box" id="logoDropArea">
+                                <img id="logoPreview" alt="Logo Preview">
+                                <p class="upload-text">Drag & Drop Logo Here<br>or<br><span style="color:blue;">Browse Files</span></p>
+                                <input type="file" class="form-control" id="logoUploader" name="company_logo" accept="image/*">
+                            </div>
+                            <small class="text-muted">Upload high quality logo (PNG with transparent background recommended)</small>
+                        </div>
 
                         <div class="col-md-12 form-group controls" id="textInput" style="display: none;">
                             <label for="logoInput">Add Text</label>
@@ -592,14 +593,14 @@
                         </div> -->
 
                         <div class="col-md-12 form-group controls">
-    <label for="product_customize_image">Upload Liveshoot<span class="text-danger">*</span></label>
-    <div class="upload-box" id="liveDropArea">
-        <img id="livePreview" alt="Live Preview">
-        <p class="upload-text">Drag & Drop Liveshoot Here<br>or<br><span style="color:blue;">Browse Files</span></p>
-        <input type="file" class="form-control" id="product_customize_image" name="product_customize_image" accept="image/*">
-    </div>
-    <small class="text-muted">Upload the downloaded preview</small>
-</div>
+                            <label for="product_customize_image">Upload Liveshoot<span class="text-danger">*</span></label>
+                            <div class="upload-box" id="liveDropArea">
+                                <img id="livePreview" alt="Live Preview">
+                                <p class="upload-text">Drag & Drop Liveshoot Here<br>or<br><span style="color:blue;">Browse Files</span></p>
+                                <input type="file" class="form-control" id="product_customize_image" name="product_customize_image" accept="image/*">
+                            </div>
+                            <small class="text-muted">Upload the downloaded preview</small>
+                        </div>
 
                         <div class="col-md-12 form-group">
                             <label>Print Quality<span class="text-danger">*</span></label>
@@ -1021,35 +1022,56 @@
                 });
 
             // === Rotation ===
-            const rotateHandle = document.getElementById("rotateHandle");
-            let rotating = false;
+const rotateHandle = document.getElementById("rotateHandle");
+let rotating = false;
+let startAngle = 0;
+let initialAngle = 0;
 
-            rotateHandle.addEventListener("mousedown", (e) => {
-                e.preventDefault();
-                rotating = true;
-            });
+rotateHandle.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    rotating = true;
 
-            document.addEventListener("mousemove", (e) => {
-                if (!rotating) return;
+    const rect = logoContainer.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
 
-                const rect = logoContainer.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const angle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
+    // Calculate initial angle when rotation starts
+    initialAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    startAngle = parseFloat(logoContainer.getAttribute("data-angle")) || 0;
+});
 
-                logoContainer.setAttribute("data-angle", angle);
-                const x = parseFloat(logoContainer.getAttribute("data-x")) || 0;
-                const y = parseFloat(logoContainer.getAttribute("data-y")) || 0;
+document.addEventListener("mousemove", (e) => {
+    if (!rotating) return;
 
-                logoContainer.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+    const rect = logoContainer.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
 
-                // Update hidden form field
-                logoRotation.value = angle;
-            });
+    // Get new angle based on mouse movement
+    const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    let angle = startAngle + (currentAngle - initialAngle);
 
-            document.addEventListener("mouseup", () => {
-                rotating = false;
-            });
+    // Keep angle smooth between -180 and 180
+    if (angle > 180) angle -= 360;
+    if (angle < -180) angle += 360;
+
+    // Update attributes
+    logoContainer.setAttribute("data-angle", angle);
+
+    // Get current x, y for smooth transform
+    const x = parseFloat(logoContainer.getAttribute("data-x")) || 0;
+    const y = parseFloat(logoContainer.getAttribute("data-y")) || 0;
+
+    // Apply smooth rotation with transform
+    logoContainer.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+
+    // Update hidden field if required
+    if (logoRotation) logoRotation.value = angle;
+});
+
+document.addEventListener("mouseup", () => {
+    rotating = false;
+});
 
             // === Screenshot functionality ===
             document.getElementById('ssButton').addEventListener('click', function() {
@@ -1277,52 +1299,52 @@
 
 
     <script>
-    function handleFilePreview(inputId, previewId) {
-        const input = document.getElementById(inputId);
-        const preview = document.getElementById(previewId);
+        function handleFilePreview(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
 
-        input.addEventListener("change", function () {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                    preview.style.display = "block";
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
+            input.addEventListener("change", function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = "block";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
 
-    function enableDragDrop(dropAreaId, inputId) {
-        const dropArea = document.getElementById(dropAreaId);
-        const input = document.getElementById(inputId);
+        function enableDragDrop(dropAreaId, inputId) {
+            const dropArea = document.getElementById(dropAreaId);
+            const input = document.getElementById(inputId);
 
-        dropArea.addEventListener("click", () => input.click());
+            dropArea.addEventListener("click", () => input.click());
 
-        dropArea.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            dropArea.style.borderColor = "#000";
-        });
+            dropArea.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                dropArea.style.borderColor = "#000";
+            });
 
-        dropArea.addEventListener("dragleave", () => {
-            dropArea.style.borderColor = "#ccc";
-        });
+            dropArea.addEventListener("dragleave", () => {
+                dropArea.style.borderColor = "#ccc";
+            });
 
-        dropArea.addEventListener("drop", (e) => {
-            e.preventDefault();
-            dropArea.style.borderColor = "#ccc";
-            input.files = e.dataTransfer.files;
-            input.dispatchEvent(new Event("change"));
-        });
-    }
+            dropArea.addEventListener("drop", (e) => {
+                e.preventDefault();
+                dropArea.style.borderColor = "#ccc";
+                input.files = e.dataTransfer.files;
+                input.dispatchEvent(new Event("change"));
+            });
+        }
 
-    // Enable for both fields
-    handleFilePreview("logoUploader", "logoPreview");
-    handleFilePreview("product_customize_image", "livePreview");
-    enableDragDrop("logoDropArea", "logoUploader");
-    enableDragDrop("liveDropArea", "product_customize_image");
-</script>
+        // Enable for both fields
+        handleFilePreview("logoUploader", "logoPreview");
+        handleFilePreview("product_customize_image", "livePreview");
+        enableDragDrop("logoDropArea", "logoUploader");
+        enableDragDrop("liveDropArea", "product_customize_image");
+    </script>
 
 </body>
 
