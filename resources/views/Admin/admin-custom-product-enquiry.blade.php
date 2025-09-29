@@ -284,6 +284,24 @@
                                                 <p class="mb-1"><strong>Sizes:</strong> {{ $enquiry->sizes }}</p>
                                                 <p class="mb-1"><strong>Units:</strong> {{ $enquiry->units }}</p>
                                                 <p class="mb-1"><strong>Logo Placement:</strong> {{ $enquiry->logo_placement }}</p>
+                                                <p class="mb-1"><strong>Logo Type:</strong> {{ $enquiry->logo_type }}</p>
+                                                @if($enquiry->logo_type == 'image')
+                                                <p><strong>Logo Size:</strong> {{ $enquiry->logo_size }}</p>
+                                                <p><strong>Print Quality:</strong> {{ $enquiry->print_quality }}</p>
+
+                                                {{-- If logo type is text --}}
+                                                @elseif($enquiry->logo_type == 'text')
+                                                <p><strong>Font Name:</strong> {{ $enquiry->font_name }}</p>
+                                                <p><strong>Text Color:</strong> {{ $enquiry->company_text_color_code }}</p>
+                                                <p><strong>Print Quality:</strong> {{ $enquiry->print_quality }}</p>
+
+                                                {{-- If logo type is both --}}
+                                                @elseif($enquiry->logo_type == 'both')
+                                                <p><strong>Logo Size:</strong> {{ $enquiry->logo_size }}</p>
+                                                <p><strong>Print Quality:</strong> {{ $enquiry->print_quality }}</p>
+                                                <p><strong>Font Name:</strong> {{ $enquiry->font_name }}</p>
+                                                <p><strong>Text Color:</strong> {{ $enquiry->company_text_color_code }}</p>
+                                                @endif
                                                 <p class="mb-1"><strong>Address:</strong> {{ $enquiry->customer_address }}</p>
                                                 <p class="mb-1"><strong>Price:</strong> ${{ number_format($enquiry->price, 2) }}</p>
                                                 <p class="mb-3"><strong>Date:</strong> {{ $enquiry->enquiry_date->format('d M Y') }}</p>

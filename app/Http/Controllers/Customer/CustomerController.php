@@ -858,7 +858,7 @@ class CustomerController extends Controller
             'company_logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
             'product_customize_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
             'logo_placement'           => 'required|string|max:255',
-            'logo_type'                => 'required|string|in:image,text',
+            'logo_type'                => 'required|string|in:image,text,both', // Added 'both'
             'logo_size'                => 'required|string|max:255',
             'print_quality'            => 'required|string|max:255',
             'product_name'             => 'required|string|max:255',
@@ -876,6 +876,17 @@ class CustomerController extends Controller
             'font_name'                => 'nullable|string',
             'company_text_logo'        => 'nullable|string',
             'company_text_color_code'  => 'nullable|string',
+            // Add new fields for positioning
+            'logo_position_x'          => 'nullable|numeric',
+            'logo_position_y'          => 'nullable|numeric',
+            'logo_rotation'            => 'nullable|numeric',
+            'logo_width'               => 'nullable|numeric',
+            'logo_height'              => 'nullable|numeric',
+            'text_logo_position_x'     => 'nullable|numeric',
+            'text_logo_position_y'     => 'nullable|numeric',
+            'text_logo_rotation'       => 'nullable|numeric',
+            'text_logo_width'          => 'nullable|numeric',
+            'text_logo_height'         => 'nullable|numeric',
         ]);
 
         // Conditionally nullify fields based on logo_type
@@ -883,14 +894,27 @@ class CustomerController extends Controller
             $validated['font_name'] = null;
             $validated['company_text_logo'] = null;
             $validated['company_text_color_code'] = null;
+            // Also nullify text positioning fields
+            $validated['text_logo_position_x'] = null;
+            $validated['text_logo_position_y'] = null;
+            $validated['text_logo_rotation'] = null;
+            $validated['text_logo_width'] = null;
+            $validated['text_logo_height'] = null;
         } elseif ($validated['logo_type'] === 'text') {
             $validated['company_logo'] = null;
+            // Also nullify image positioning fields
+            $validated['logo_position_x'] = null;
+            $validated['logo_position_y'] = null;
+            $validated['logo_rotation'] = null;
+            $validated['logo_width'] = null;
+            $validated['logo_height'] = null;
         }
+        // For 'both' type, keep all fields as they are
 
         // Upload files
         $attachments = [];
 
-        if ($request->hasFile('company_logo') && $validated['logo_type'] === 'image') {
+        if ($request->hasFile('company_logo') && ($validated['logo_type'] === 'image' || $validated['logo_type'] === 'both')) {
             $file = $request->file('company_logo');
             $filename = time() . '_company_' . $file->getClientOriginalName();
             $path = $file->storeAs('enquiry/company_logos', $filename, 'public');
@@ -945,9 +969,26 @@ class CustomerController extends Controller
             'logo_type' => $validated['logo_type'],
             'logo_size' => $validated['logo_size'],
             'print_quality' => $validated['print_quality'],
-            'font_name' => $validated['font_name'],
-            'company_text_logo' => $validated['company_text_logo'],
-            'company_text_color_code' => $validated['company_text_color_code'],
+            'font_name' => $validated['font_name'] ?? null,
+            'company_text_logo' => $validated['company_text_logo'] ?? null,
+            'company_text_color_code' => $validated['company_text_color_code'] ?? null,
+            // Add positioning data to mail data if needed
+            'logo_position_data' => [
+                'image' => [
+                    'x' => $validated['logo_position_x'] ?? null,
+                    'y' => $validated['logo_position_y'] ?? null,
+                    'rotation' => $validated['logo_rotation'] ?? null,
+                    'width' => $validated['logo_width'] ?? null,
+                    'height' => $validated['logo_height'] ?? null,
+                ],
+                'text' => [
+                    'x' => $validated['text_logo_position_x'] ?? null,
+                    'y' => $validated['text_logo_position_y'] ?? null,
+                    'rotation' => $validated['text_logo_rotation'] ?? null,
+                    'width' => $validated['text_logo_width'] ?? null,
+                    'height' => $validated['text_logo_height'] ?? null,
+                ]
+            ]
         ];
 
         // Send mail to customer

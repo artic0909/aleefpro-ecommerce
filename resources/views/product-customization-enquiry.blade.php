@@ -42,6 +42,28 @@
 
 
     <style>
+        .hide-controls .logo-box {
+            border: none !important;
+        }
+
+        .hide-controls .rotateHandle {
+            display: none !important;
+        }
+
+        /* Ensure text content is visible in screenshot */
+        .hide-controls #textLogoPreview {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Make sure both containers are properly positioned in screenshot */
+        .hide-controls #logoContainer,
+        .hide-controls #textContainer {
+            pointer-events: none;
+            /* Prevent interaction during screenshot */
+        }
+
         .upload-box {
             border: 2px dashed #ccc;
             border-radius: 10px;
@@ -151,6 +173,19 @@
             transform: translateX(-50%);
             cursor: grab;
         }
+
+        .rotateHandle {
+            width: 12px;
+            height: 12px;
+            background: orange;
+            border-radius: 50%;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: grab;
+        }
+
 
         .radio-group {
             margin-bottom: 10px;
@@ -445,15 +480,23 @@
                     <small>Drag, resize, and rotate your logo to position it correctly on the cap.</small>
                     <div class="border-bottom mt-3" id="screenShootArea">
                         <div class="cap-container" id="capWrapper">
-                            <img id="capImage" src="{{ asset('storage/' . $product->front_customize) }}" class="img-fluid" alt="Cap" />
+                            <img id="capImage" src="{{ asset('storage/' . $product->front_customize) }}" class="img-fluid" alt="Cap" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;" style="pointer-events: none; user-select: none;" />
+
+                            <!-- Logo Container -->
                             <div id="logoContainer" class="logo-box" data-x="0" data-y="0" data-angle="0">
-                                <div id="rotateHandle" style="cursor: grab;"></div>
+                                <div id="rotateHandle" class="rotateHandle"></div>
                                 <img id="uploadedLogo" src="" alt="Logo Preview" />
-                                <div id="textLogoPreview" style="position: absolute; display: none; font-size: 24px;">
+                            </div>
+
+                            <!-- Text Container -->
+                            <div id="textContainer" class="logo-box" data-x="0" data-y="0" data-angle="0" style="display:none;">
+                                <div id="rotateHandleText" class="rotateHandle"></div>
+                                <div id="textLogoPreview" style="position: absolute; font-size: 24px; color:black;">
                                     Sample
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -469,6 +512,13 @@
                     <input type="hidden" name="logo_rotation" id="logoRotation" value="0">
                     <input type="hidden" name="logo_width" id="logoWidth" value="100">
                     <input type="hidden" name="logo_height" id="logoHeight" value="100">
+
+                    <!-- Add these hidden fields for text logo positioning -->
+                    <input type="hidden" name="text_logo_position_x" id="textLogoPositionX" value="0">
+                    <input type="hidden" name="text_logo_position_y" id="textLogoPositionY" value="0">
+                    <input type="hidden" name="text_logo_rotation" id="textLogoRotation" value="0">
+                    <input type="hidden" name="text_logo_width" id="textLogoWidth" value="100">
+                    <input type="hidden" name="text_logo_height" id="textLogoHeight" value="60">
 
                     <h6 class="section-title position-relative text-uppercase mb-3">
                         <span class="bg-secondary pr-3">Choose Side</span>
@@ -498,6 +548,11 @@
                         <div class="col-md-6 form-group">
                             <label><input type="radio" name="logo_type" value="text" />
                                 Add Text</label>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label><input type="radio" name="logo_type" value="both" />
+                                Both Logo & Text</label>
                         </div>
                     </div>
 
@@ -593,7 +648,7 @@
                         </div> -->
 
                         <div class="col-md-12 form-group controls">
-                            <label for="product_customize_image">Upload Liveshoot<span class="text-danger">*</span></label>
+                            <label for="product_customize_image">Upload Download Image<span class="text-danger">*</span></label>
                             <div class="upload-box" id="liveDropArea">
                                 <img id="livePreview" alt="Live Preview">
                                 <p class="upload-text">Drag & Drop Liveshoot Here<br>or<br><span style="color:blue;">Browse Files</span></p>
@@ -855,6 +910,7 @@
             // Elements
             const capImage = document.getElementById("capImage");
             const logoContainer = document.getElementById("logoContainer");
+            const textContainer = document.getElementById("textContainer");
             const uploadedLogo = document.getElementById("uploadedLogo");
             const textLogoPreview = document.getElementById("textLogoPreview");
             const companyTextLogoInput = document.querySelector("input[name='company_text_logo']");
@@ -879,16 +935,47 @@
             });
 
             // === Logo Type Toggle ===
+            // === Logo Type Toggle ===
             document.querySelectorAll("input[name='logo_type']").forEach((radio) => {
                 radio.addEventListener("change", function() {
                     if (this.value === "image") {
                         document.getElementById("logoInput").style.display = "block";
                         document.getElementById("textInput").style.display = "none";
-                    } else {
+                        logoContainer.style.display = "block";
+                        textContainer.style.display = "none";
+                        uploadedLogo.style.display = "block";
+                        textLogoPreview.style.display = "none";
+                    } else if (this.value === "text") {
                         document.getElementById("logoInput").style.display = "none";
                         document.getElementById("textInput").style.display = "block";
+                        logoContainer.style.display = "none";
+                        textContainer.style.display = "block";
+                        uploadedLogo.style.display = "none";
+                        textLogoPreview.style.display = "block";
+                        updateTextLogo();
+                    } else if (this.value === "both") {
+                        document.getElementById("logoInput").style.display = "block";
+                        document.getElementById("textInput").style.display = "block";
+                        logoContainer.style.display = "block";
+                        textContainer.style.display = "block";
+
+                        // Show content based on what's available
+                        if (uploadedLogo.src) {
+                            uploadedLogo.style.display = "block";
+                        } else {
+                            uploadedLogo.style.display = "none";
+                        }
+
+                        if (companyTextLogoInput.value.trim() !== "") {
+                            textLogoPreview.style.display = "block";
+                        } else {
+                            textLogoPreview.style.display = "none";
+                        }
                         updateTextLogo();
                     }
+
+                    // Update the hidden field
+                    logoTypeInput.value = this.value;
                 });
             });
 
@@ -900,7 +987,12 @@
                     reader.onload = function(evt) {
                         uploadedLogo.src = evt.target.result;
                         uploadedLogo.style.display = "block";
-                        textLogoPreview.style.display = "none";
+
+                        // If in "both" mode, don't hide text
+                        const currentLogoType = document.querySelector('input[name="logo_type"]:checked').value;
+                        if (currentLogoType !== "both") {
+                            textLogoPreview.style.display = "none";
+                        }
 
                         // Set initial size for uploaded image
                         setTimeout(() => {
@@ -913,14 +1005,22 @@
             });
 
             // === Text Logo Realtime Preview ===
+            // === Text Logo Realtime Preview ===
             function updateTextLogo() {
                 const text = companyTextLogoInput.value;
                 const font = fontSelector.value;
                 const color = colorPicker.value;
                 const size = fontSizeSlider.value;
 
+                const currentLogoType = document.querySelector('input[name="logo_type"]:checked').value;
+
                 if (text.trim() === "") {
-                    textLogoPreview.style.display = "none";
+                    // In "both" mode, don't completely hide, just don't show text
+                    if (currentLogoType === "both") {
+                        textLogoPreview.style.visibility = "hidden";
+                    } else {
+                        textLogoPreview.style.display = "none";
+                    }
                     return;
                 }
 
@@ -929,8 +1029,14 @@
                 textLogoPreview.style.color = color;
                 textLogoPreview.style.fontSize = `${size}px`;
 
+                // Always make visible if there's text
                 textLogoPreview.style.display = "block";
-                uploadedLogo.style.display = "none";
+                textLogoPreview.style.visibility = "visible";
+
+                // In "both" mode, don't hide the uploaded logo
+                if (currentLogoType !== "both") {
+                    uploadedLogo.style.display = "none";
+                }
 
                 // Update text preview in the form
                 document.getElementById("outputPreview").textContent = text;
@@ -947,131 +1053,153 @@
                 updateTextLogo();
             });
 
-            // === Drag and Resize for logoContainer ===
-            interact("#logoContainer")
-                .draggable({
-                    modifiers: [
-                        interact.modifiers.restrictRect({
-                            restriction: "#capWrapper",
-                            endOnly: true,
-                        }),
-                    ],
-                    listeners: {
-                        move(event) {
-                            const target = event.target;
-                            const x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
-                            const y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
-                            const angle = parseFloat(target.getAttribute("data-angle")) || 0;
+            // === Make both containers draggable and resizable ===
+            function setupInteract(element, positionXField, positionYField, widthField, heightField) {
+                interact(element)
+                    .draggable({
+                        modifiers: [
+                            interact.modifiers.restrictRect({
+                                restriction: "#capWrapper",
+                                endOnly: true,
+                            }),
+                        ],
+                        listeners: {
+                            move(event) {
+                                const target = event.target;
+                                const x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+                                const y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+                                const angle = parseFloat(target.getAttribute("data-angle")) || 0;
 
-                            target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-                            target.setAttribute("data-x", x);
-                            target.setAttribute("data-y", y);
+                                target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+                                target.setAttribute("data-x", x);
+                                target.setAttribute("data-y", y);
 
-                            // Update hidden form fields
-                            logoPositionX.value = x;
-                            logoPositionY.value = y;
-                        },
-                    },
-                })
-                .resizable({
-                    edges: {
-                        top: true,
-                        left: true,
-                        bottom: true,
-                        right: true
-                    },
-                    listeners: {
-                        move(event) {
-                            const target = event.target;
-                            let x = parseFloat(target.getAttribute("data-x")) || 0;
-                            let y = parseFloat(target.getAttribute("data-y")) || 0;
-
-                            target.style.width = `${event.rect.width}px`;
-                            target.style.height = `${event.rect.height}px`;
-
-                            x += event.deltaRect.left;
-                            y += event.deltaRect.top;
-
-                            const angle = parseFloat(target.getAttribute("data-angle")) || 0;
-                            target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-                            target.setAttribute("data-x", x);
-                            target.setAttribute("data-y", y);
-
-                            // Update hidden form fields
-                            logoPositionX.value = x;
-                            logoPositionY.value = y;
-                            logoWidth.value = event.rect.width;
-                            logoHeight.value = event.rect.height;
-                        },
-                    },
-                    modifiers: [
-                        interact.modifiers.restrictEdges({
-                            outer: "#capWrapper"
-                        }),
-                        interact.modifiers.restrictSize({
-                            min: {
-                                width: 50,
-                                height: 30
+                                // Update hidden form fields
+                                positionXField.value = x;
+                                positionYField.value = y;
                             },
-                            max: {
-                                width: 300,
-                                height: 300
+                        },
+                    })
+                    .resizable({
+                        edges: {
+                            top: true,
+                            left: true,
+                            bottom: true,
+                            right: true
+                        },
+                        listeners: {
+                            move(event) {
+                                const target = event.target;
+                                let x = parseFloat(target.getAttribute("data-x")) || 0;
+                                let y = parseFloat(target.getAttribute("data-y")) || 0;
+
+                                target.style.width = `${event.rect.width}px`;
+                                target.style.height = `${event.rect.height}px`;
+
+                                x += event.deltaRect.left;
+                                y += event.deltaRect.top;
+
+                                const angle = parseFloat(target.getAttribute("data-angle")) || 0;
+                                target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+                                target.setAttribute("data-x", x);
+                                target.setAttribute("data-y", y);
+
+                                // Update hidden form fields
+                                positionXField.value = x;
+                                positionYField.value = y;
+                                widthField.value = event.rect.width;
+                                heightField.value = event.rect.height;
                             },
-                        }),
-                    ],
+                        },
+                        modifiers: [
+                            interact.modifiers.restrictEdges({
+                                outer: "#capWrapper"
+                            }),
+                            interact.modifiers.restrictSize({
+                                min: {
+                                    width: 50,
+                                    height: 30
+                                },
+                                max: {
+                                    width: 300,
+                                    height: 300
+                                },
+                            }),
+                        ],
+                    });
+            }
+
+            // Setup interact for both containers
+            setupInteract("#logoContainer",
+                document.getElementById("logoPositionX"),
+                document.getElementById("logoPositionY"),
+                document.getElementById("logoWidth"),
+                document.getElementById("logoHeight")
+            );
+
+            setupInteract("#textContainer",
+                document.getElementById("textLogoPositionX"),
+                document.getElementById("textLogoPositionY"),
+                document.getElementById("textLogoWidth"),
+                document.getElementById("textLogoHeight")
+            );
+
+            // === Rotation for both containers ===
+            function setupRotation(container, rotateHandle, rotationField) {
+                let rotating = false;
+                let startAngle = 0;
+                let initialAngle = 0;
+
+                rotateHandle.addEventListener("mousedown", (e) => {
+                    e.preventDefault();
+                    rotating = true;
+
+                    const rect = container.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    // Calculate initial angle when rotation starts
+                    initialAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+                    startAngle = parseFloat(container.getAttribute("data-angle")) || 0;
                 });
 
-            // === Rotation ===
-const rotateHandle = document.getElementById("rotateHandle");
-let rotating = false;
-let startAngle = 0;
-let initialAngle = 0;
+                document.addEventListener("mousemove", (e) => {
+                    if (!rotating) return;
 
-rotateHandle.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    rotating = true;
+                    const rect = container.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
 
-    const rect = logoContainer.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+                    // Get new angle based on mouse movement
+                    const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+                    let angle = startAngle + (currentAngle - initialAngle);
 
-    // Calculate initial angle when rotation starts
-    initialAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
-    startAngle = parseFloat(logoContainer.getAttribute("data-angle")) || 0;
-});
+                    // Keep angle smooth between -180 and 180
+                    if (angle > 180) angle -= 360;
+                    if (angle < -180) angle += 360;
 
-document.addEventListener("mousemove", (e) => {
-    if (!rotating) return;
+                    // Update attributes
+                    container.setAttribute("data-angle", angle);
 
-    const rect = logoContainer.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+                    // Get current x, y for smooth transform
+                    const x = parseFloat(container.getAttribute("data-x")) || 0;
+                    const y = parseFloat(container.getAttribute("data-y")) || 0;
 
-    // Get new angle based on mouse movement
-    const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
-    let angle = startAngle + (currentAngle - initialAngle);
+                    // Apply smooth rotation with transform
+                    container.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
 
-    // Keep angle smooth between -180 and 180
-    if (angle > 180) angle -= 360;
-    if (angle < -180) angle += 360;
+                    // Update hidden field if required
+                    if (rotationField) rotationField.value = angle;
+                });
 
-    // Update attributes
-    logoContainer.setAttribute("data-angle", angle);
+                document.addEventListener("mouseup", () => {
+                    rotating = false;
+                });
+            }
 
-    // Get current x, y for smooth transform
-    const x = parseFloat(logoContainer.getAttribute("data-x")) || 0;
-    const y = parseFloat(logoContainer.getAttribute("data-y")) || 0;
-
-    // Apply smooth rotation with transform
-    logoContainer.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-
-    // Update hidden field if required
-    if (logoRotation) logoRotation.value = angle;
-});
-
-document.addEventListener("mouseup", () => {
-    rotating = false;
-});
+            // Setup rotation for both containers
+            setupRotation(logoContainer, document.getElementById("rotateHandle"), document.getElementById("logoRotation"));
+            setupRotation(textContainer, document.getElementById("rotateHandleText"), document.getElementById("textLogoRotation"));
 
             // === Screenshot functionality ===
             document.getElementById('ssButton').addEventListener('click', function() {

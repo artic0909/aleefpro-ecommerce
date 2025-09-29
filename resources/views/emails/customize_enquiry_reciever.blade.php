@@ -54,11 +54,32 @@
 
                                 <h4 style="margin-top:30px;">Logo Placement : {{$data['logo_placement']}}</h4>
                                 <h4>Logo Type : {{$data['logo_type']}}</h4>
-                                @if($data['logo_type'] == 'text')
-                                <h4>Font Name : {{$data['font_name']}}</h4>
-                                <h4>Logo Text : {{$data['company_text_logo']}}</h4>
-                                <h4>Logo Color Code : {{$data['company_text_color_code']}}</h4>
+                                <p><strong>Logo Type:</strong> {{ $data['logo_type'] }}</p>
+
+                                {{-- If logo type is image --}}
+                                @if($data['logo_type'] == 'image')
+                                <h4>Logo Size : {{ $data['logo_size'] }}</h4>
+                                <h4>Print Quality : {{ $data['print_quality'] }}</h4>
+
+                                {{-- If logo type is text --}}
+                                @elseif($data['logo_type'] == 'text')
+                                <h4>Font Name : {{ $data['font_name'] }}</h4>
+                                <h4>Logo Text : {{ $data['company_text_logo'] }}</h4>
+                                <h4>Logo Color Code : {{ $data['company_text_color_code'] }}</h4>
+                                <h4>Print Quality : {{ $data['print_quality'] }}</h4>
+
+                                {{-- If logo type is both --}}
+                                @elseif($data['logo_type'] == 'both')
+                                {{-- Image info --}}
+                                <h4>Logo Size : {{ $data['logo_size'] }}</h4>
+                                <h4>Print Quality : {{ $data['print_quality'] }}</h4>
+
+                                {{-- Text info --}}
+                                <h4>Font Name : {{ $data['font_name'] }}</h4>
+                                <h4>Logo Text : {{ $data['company_text_logo'] }}</h4>
+                                <h4>Logo Color Code : {{ $data['company_text_color_code'] }}</h4>
                                 @endif
+
                                 <br>
 
                                 <h4 style="margin-top:30px;">Customer Information</h4>
