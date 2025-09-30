@@ -292,6 +292,7 @@
                                                 {{-- If logo type is text --}}
                                                 @elseif($enquiry->logo_type == 'text')
                                                 <p><strong>Font Name:</strong> {{ $enquiry->font_name }}</p>
+                                                <p><strong>Print Text : {{ $enquiry->company_text_logo }}</strong></p>
                                                 <p><strong>Text Color:</strong> {{ $enquiry->company_text_color_code }}</p>
                                                 <p><strong>Print Quality:</strong> {{ $enquiry->print_quality }}</p>
 
@@ -299,7 +300,7 @@
                                                 @elseif($enquiry->logo_type == 'both')
                                                 <p><strong>Logo Size:</strong> {{ $enquiry->logo_size }}</p>
                                                 <p><strong>Print Quality:</strong> {{ $enquiry->print_quality }}</p>
-                                                <p><strong>Font Name:</strong> {{ $enquiry->font_name }}</p>
+                                                <p><strong>Font Name:</strong> {{ $enquiry->font_name }}</p><p><strong>Print Text : {{ $enquiry->company_text_logo }}</strong></p>
                                                 <p><strong>Text Color:</strong> {{ $enquiry->company_text_color_code }}</p>
                                                 @endif
                                                 <p class="mb-1"><strong>Address:</strong> {{ $enquiry->customer_address }}</p>

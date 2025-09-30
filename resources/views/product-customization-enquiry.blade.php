@@ -706,7 +706,9 @@
 
                         <div class="col-md-6 form-group">
                             <label>Price<span class="text-danger">*</span></label>
-                            <input class="form-control" name="price" type="text" value="{{$product->selling_price}}.00" readonly />
+                            <input class="form-control" name="price" type="number" step="0.01"
+       value="{{ number_format($product->selling_price, 2, '.', '') }}" readonly />
+
                         </div>
 
                         <div class="col-md-6 form-group">

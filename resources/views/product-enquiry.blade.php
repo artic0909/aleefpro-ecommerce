@@ -316,7 +316,7 @@
 
                         <div class="col-md-6 form-group">
                             <label>Price</label>
-                            <input class="form-control" type="text" name="price" value="{{$product->selling_price}}.00" readonly>
+                            <input class="form-control" type="number" name="price" value="{{$product->selling_price}}" readonly>
                         </div>
 
                         <div class="col-md-6 form-group">

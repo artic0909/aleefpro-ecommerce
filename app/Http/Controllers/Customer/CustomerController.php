@@ -852,13 +852,22 @@ class CustomerController extends Controller
         ));
     }
 
-    public function productCustomizationEnquirySend(Request $request)
-    {
+public function productCustomizationEnquirySend(Request $request)
+{
+    // Normalize numeric-like inputs BEFORE validation
+    // Remove commas, currency symbols and spaces from price
+    if ($request->has('price')) {
+        $priceRaw = (string) $request->input('price');
+        $normalizedPrice = str_replace([',', '₹', '$', ' '], '', $priceRaw);
+        $request->merge(['price' => $normalizedPrice]);
+    }
+
+    try {
         $validated = $request->validate([
             'company_logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
             'product_customize_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
             'logo_placement'           => 'required|string|max:255',
-            'logo_type'                => 'required|string|in:image,text,both', // Added 'both'
+            'logo_type'                => 'required|string|in:image,text,both',
             'logo_size'                => 'required|string|max:255',
             'print_quality'            => 'required|string|max:255',
             'product_name'             => 'required|string|max:255',
@@ -876,7 +885,6 @@ class CustomerController extends Controller
             'font_name'                => 'nullable|string',
             'company_text_logo'        => 'nullable|string',
             'company_text_color_code'  => 'nullable|string',
-            // Add new fields for positioning
             'logo_position_x'          => 'nullable|numeric',
             'logo_position_y'          => 'nullable|numeric',
             'logo_rotation'            => 'nullable|numeric',
@@ -894,7 +902,6 @@ class CustomerController extends Controller
             $validated['font_name'] = null;
             $validated['company_text_logo'] = null;
             $validated['company_text_color_code'] = null;
-            // Also nullify text positioning fields
             $validated['text_logo_position_x'] = null;
             $validated['text_logo_position_y'] = null;
             $validated['text_logo_rotation'] = null;
@@ -902,14 +909,12 @@ class CustomerController extends Controller
             $validated['text_logo_height'] = null;
         } elseif ($validated['logo_type'] === 'text') {
             $validated['company_logo'] = null;
-            // Also nullify image positioning fields
             $validated['logo_position_x'] = null;
             $validated['logo_position_y'] = null;
             $validated['logo_rotation'] = null;
             $validated['logo_width'] = null;
             $validated['logo_height'] = null;
         }
-        // For 'both' type, keep all fields as they are
 
         // Upload files
         $attachments = [];
@@ -972,7 +977,6 @@ class CustomerController extends Controller
             'font_name' => $validated['font_name'] ?? null,
             'company_text_logo' => $validated['company_text_logo'] ?? null,
             'company_text_color_code' => $validated['company_text_color_code'] ?? null,
-            // Add positioning data to mail data if needed
             'logo_position_data' => [
                 'image' => [
                     'x' => $validated['logo_position_x'] ?? null,
@@ -991,14 +995,20 @@ class CustomerController extends Controller
             ]
         ];
 
-        // Send mail to customer
         Mail::to($validated['customer_email'])->send(new CustomizeEnquiryRecieverMail($mailData, $attachments));
-
-        // Send mail to admin
         Mail::to('info@aleefpro.com')->send(new CustomizeEnquirySenderMail($mailData, $attachments));
 
         return redirect()->back()->with('success', 'Customization enquiry submitted and email sent successfully.');
+
+    } catch (ValidationException $ve) {
+        // Return validation errors to the form so @error / $errors work
+        return redirect()->back()->withErrors($ve->validator)->withInput();
+    } catch (\Throwable $e) {
+        // Log the error (very useful in production)
+        \Log::error('Customization enquiry error: '.$e->getMessage(), ['exception' => $e]);
+        return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
+}
 
 
     public function searchProducts(Request $request)
