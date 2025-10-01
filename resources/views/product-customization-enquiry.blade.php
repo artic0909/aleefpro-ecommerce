@@ -42,6 +42,27 @@
 
 
     <style>
+        /* Blue border overlay */
+        #blueBorder {
+            position: absolute;
+            top: 80px;
+            /* spacing from top */
+            left: 80px;
+            /* spacing from left */
+            right: 80px;
+            /* spacing from right */
+            bottom: 80px;
+            /* spacing from bottom */
+            border: 2px dashed blue;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Hide during screenshot */
+        .hide-controls #blueBorder {
+            display: none;
+        }
+
         .hide-controls .logo-box {
             border: none !important;
         }
@@ -482,6 +503,8 @@
                         <div class="cap-container" id="capWrapper">
                             <img id="capImage" src="{{ asset('storage/' . $product->front_customize) }}" class="img-fluid" alt="Cap" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;" style="pointer-events: none; user-select: none;" />
 
+                            <!-- Blue Border Overlay -->
+                            <div id="blueBorder"></div>
                             <!-- Logo Container -->
                             <div id="logoContainer" class="logo-box" data-x="0" data-y="0" data-angle="0">
                                 <div id="rotateHandle" class="rotateHandle"></div>
@@ -707,7 +730,7 @@
                         <div class="col-md-6 form-group">
                             <label>Price<span class="text-danger">*</span></label>
                             <input class="form-control" name="price" type="number" step="0.01"
-       value="{{ number_format($product->selling_price, 2, '.', '') }}" readonly />
+                                value="{{ number_format($product->selling_price, 2, '.', '') }}" readonly />
 
                         </div>
 
@@ -1204,33 +1227,32 @@
             setupRotation(textContainer, document.getElementById("rotateHandleText"), document.getElementById("textLogoRotation"));
 
             // === Screenshot functionality ===
-            document.getElementById('ssButton').addEventListener('click', function() {
-                const screenshotArea = document.getElementById('screenShootArea');
-                const controls = document.querySelectorAll('.controls, #ssButton');
+           document.getElementById('ssButton').addEventListener('click', function() {
+    const screenshotArea = document.getElementById('screenShootArea');
+    const controls = document.querySelectorAll('.controls, #ssButton');
 
-                // 1. Hide other controls
-                controls.forEach(el => el.style.visibility = 'hidden');
+    // Hide controls
+    controls.forEach(el => el.style.visibility = 'hidden');
+    screenshotArea.classList.add('hide-controls');
 
-                // 2. Add class to hide border and dot
-                screenshotArea.classList.add('hide-controls');
+    setTimeout(() => {
+        html2canvas(screenshotArea, {
+            backgroundColor: null,
+            scale: 2
+        }).then(canvas => {
+            // Restore controls
+            controls.forEach(el => el.style.visibility = 'visible');
+            screenshotArea.classList.remove('hide-controls');
 
-                setTimeout(() => {
-                    html2canvas(screenshotArea, {
-                        backgroundColor: null,
-                        scale: 2
-                    }).then(canvas => {
-                        // 3. Restore everything
-                        controls.forEach(el => el.style.visibility = 'visible');
-                        screenshotArea.classList.remove('hide-controls');
+            // Download
+            const link = document.createElement('a');
+            link.download = 'custom-logo-preview.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }, 100);
+});
 
-                        // 4. Trigger download
-                        const link = document.createElement('a');
-                        link.download = 'custom-logo-preview.png';
-                        link.href = canvas.toDataURL('image/png');
-                        link.click();
-                    });
-                }, 100);
-            });
 
             // === Update checkbox values ===
             function updateCheckedValues(className, inputId) {

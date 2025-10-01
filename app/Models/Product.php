@@ -22,6 +22,8 @@ class Product extends Model
         'selling_price',
         'size_chart_image',
         'slug',
+        'front_selected_cords',
+        'back_selected_cords',
         'front_customize',
         'back_customize',
         'stock_status',
