@@ -13,6 +13,9 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+
+Route::get('/catalogue/download/{id}', [CustomerController::class, 'download'])->name('catalogue.download');
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 

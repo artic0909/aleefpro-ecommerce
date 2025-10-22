@@ -47,9 +47,27 @@ use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
+
+
+    public function download($id)
+    {
+        $catalogue = Catelogue::findOrFail($id);
+
+        // File path inside storage/app/public
+        $filePath = storage_path('app/public/' . $catalogue->catelogue);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'File not found.');
+        }
+
+        // View PDF in browser
+        return response()->file($filePath);
+    }
+
     // Handles customer login and registration=========================================>
     public function loginView()
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -57,11 +75,12 @@ class CustomerController extends Controller
         $socials = Social::all();
         $abouts = About::all();
 
-        return view('login', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts'));
+        return view('login', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'catalogue'));
     }
 
     public function registerView()
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -69,7 +88,7 @@ class CustomerController extends Controller
         $socials = Social::all();
         $abouts = About::all();
 
-        return view('register', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts'));
+        return view('register', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'catalogue'));
     }
 
     public function register(Request $request)
@@ -153,6 +172,7 @@ class CustomerController extends Controller
     // About Page=======================================================>
     public function aboutView()
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -166,11 +186,12 @@ class CustomerController extends Controller
         $cartCount = Cart::where('customer_id', $customerId)->count();
 
 
-        return view('about', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'user', 'cartCount'));
+        return view('about', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'user', 'cartCount', 'catalogue'));
     }
 
     public function homeView()
     {
+        $catalogue = Catelogue::first();
         $scrollingBanners = ScrollBanners::all();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
@@ -193,13 +214,14 @@ class CustomerController extends Controller
 
 
         if (Auth::guard('customers')->check()) {
-            return view('customer-home', compact('scrollingBanners', 'offers', 'maincategories', 'subCategories', 'products', 'partners', 'socials', 'cartCount'));
+            return view('customer-home', compact('scrollingBanners', 'offers', 'maincategories', 'subCategories', 'products', 'partners', 'socials', 'cartCount', 'catalogue'));
         }
-        return view('home', compact('scrollingBanners', 'offers', 'maincategories', 'subCategories', 'products', 'partners', 'socials', 'cartCount'));
+        return view('home', compact('scrollingBanners', 'offers', 'maincategories', 'subCategories', 'products', 'partners', 'socials', 'cartCount', 'catalogue'));
     }
 
     public function allProductsView(Request $request, $mainSlug, $subSlug)
     {
+        $catalogue = Catelogue::first();
         $mainCategory = MainCategory::where('slug', $mainSlug)->firstOrFail();
         $subCategory = SubCategory::where('slug', $subSlug)
             ->where('main_category_id', $mainCategory->id)
@@ -265,14 +287,15 @@ class CustomerController extends Controller
             'subCategories',
             'cartCount',
             'uniqueColors',
-            'uniqueSizes'
+            'uniqueSizes',
+            'catalogue'
         ));
     }
 
 
     public function productDetailsView($mainSlug, $subSlug, $productSlug)
     {
-
+        $catalogue = Catelogue::first();
         $mainCategory = MainCategory::where('slug', $mainSlug)->first();
         if (!$mainCategory) {
             abort(404, "Main category not found");
@@ -307,11 +330,12 @@ class CustomerController extends Controller
             ->inRandomOrder()
             ->get();
 
-        return view('product-details', compact('mainCategory', 'subCategory', 'product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount'));
+        return view('product-details', compact('mainCategory', 'subCategory', 'product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount', 'catalogue'));
     }
 
     public function productCategoriesViews(Request $request)
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -343,13 +367,15 @@ class CustomerController extends Controller
             'socials',
             'abouts',
             'cartCount',
-            'products'
+            'products',
+            'catalogue'
         ));
     }
 
 
     public function blogsView()
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -362,11 +388,12 @@ class CustomerController extends Controller
         $customerId = Auth::guard('customers')->id();
         $cartCount = Cart::where('customer_id', $customerId)->count();
 
-        return view('blogs', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'blogs', 'lastOneBlog', 'cartCount'));
+        return view('blogs', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'blogs', 'lastOneBlog', 'cartCount', 'catalogue'));
     }
 
     public function blogDetailsView($blogSlug)
     {
+        $catalogue = Catelogue::first();
         $blog = Blog::where('slug', $blogSlug)->first();
         if (!$blog) {
             abort(404, "Blog not found");
@@ -384,11 +411,12 @@ class CustomerController extends Controller
         $customerId = Auth::guard('customers')->id();
         $cartCount = Cart::where('customer_id', $customerId)->count();
 
-        return view('blog-details', compact('blog', 'maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'lastOneBlog', 'blogs', 'cartCount'));
+        return view('blog-details', compact('blog', 'maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'lastOneBlog', 'blogs', 'cartCount', 'catalogue'));
     }
 
     public function faqView()
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -402,11 +430,12 @@ class CustomerController extends Controller
         $customerId = Auth::guard('customers')->id();
         $cartCount = Cart::where('customer_id', $customerId)->count();
 
-        return view('faq', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'lastOneBlog', 'blogs', 'faqs', 'cartCount'));
+        return view('faq', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'lastOneBlog', 'blogs', 'faqs', 'cartCount', 'catalogue'));
     }
 
     public function contactView()
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -417,7 +446,7 @@ class CustomerController extends Controller
         $customerId = Auth::guard('customers')->id();
         $cartCount = Cart::where('customer_id', $customerId)->count();
 
-        return view('contact', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount'));
+        return view('contact', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'catalogue'));
     }
 
 
@@ -440,6 +469,7 @@ class CustomerController extends Controller
 
     public function cartView()
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -482,7 +512,8 @@ class CustomerController extends Controller
             'customer',
             'totalQuantity',
             'totalRate',
-            'totalAmount'
+            'totalAmount',
+            'catalogue'
         ));
     }
 
@@ -599,6 +630,7 @@ class CustomerController extends Controller
 
     public function profileView()
     {
+        $catalogue = Catalogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -620,7 +652,8 @@ class CustomerController extends Controller
             'socials',
             'abouts',
             'customer',
-            'cartCount'
+            'cartCount',
+            'catalogue'
         ));
     }
 
@@ -680,6 +713,7 @@ class CustomerController extends Controller
 
     public function resetPasswordView()
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -687,7 +721,7 @@ class CustomerController extends Controller
         $socials = Social::all();
         $abouts = About::all();
 
-        return view('reset-password', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts'));
+        return view('reset-password', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'catalogue'));
     }
 
     public function sendOtp(Request $request)
@@ -733,6 +767,7 @@ class CustomerController extends Controller
 
     public function productEnquiryView($mainSlug, $subSlug, $productSlug)
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -766,7 +801,8 @@ class CustomerController extends Controller
             'cartCount',
             'product',
             'customer',
-            'colors'
+            'colors',
+            'catalogue'
         ));
     }
 
@@ -818,6 +854,7 @@ class CustomerController extends Controller
 
     public function productCustomizationEnquiryView($mainSlug, $subSlug, $productSlug)
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -848,172 +885,172 @@ class CustomerController extends Controller
             'abouts',
             'cartCount',
             'customer',
-            'product'
+            'product',
+            'catalogue'
         ));
     }
 
-public function productCustomizationEnquirySend(Request $request)
-{
-    // Normalize numeric-like inputs BEFORE validation
-    // Remove commas, currency symbols and spaces from price
-    if ($request->has('price')) {
-        $priceRaw = (string) $request->input('price');
-        $normalizedPrice = str_replace([',', '₹', '$', ' '], '', $priceRaw);
-        $request->merge(['price' => $normalizedPrice]);
-    }
-
-    try {
-        $validated = $request->validate([
-            'company_logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
-            'product_customize_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
-            'logo_placement'           => 'required|string|max:255',
-            'logo_type'                => 'required|string|in:image,text,both',
-            'logo_size'                => 'required|string|max:255',
-            'print_quality'            => 'required|string|max:255',
-            'product_name'             => 'required|string|max:255',
-            'product_code'             => 'required|string|max:255',
-            'price'                    => 'required|numeric',
-            'main_sub_category'        => 'required|string|max:255',
-            'colors'                   => 'nullable|string',
-            'sizes'                    => 'nullable|string',
-            'units'                    => 'required|numeric',
-            'customer_name'            => 'required|string|max:255',
-            'customer_email'           => 'required|email',
-            'customer_mobile'          => 'required|string|max:15',
-            'customer_address'         => 'required|string',
-            'detail_enquiry'           => 'nullable|string',
-            'font_name'                => 'nullable|string',
-            'company_text_logo'        => 'nullable|string',
-            'company_text_color_code'  => 'nullable|string',
-            'logo_position_x'          => 'nullable|numeric',
-            'logo_position_y'          => 'nullable|numeric',
-            'logo_rotation'            => 'nullable|numeric',
-            'logo_width'               => 'nullable|numeric',
-            'logo_height'              => 'nullable|numeric',
-            'text_logo_position_x'     => 'nullable|numeric',
-            'text_logo_position_y'     => 'nullable|numeric',
-            'text_logo_rotation'       => 'nullable|numeric',
-            'text_logo_width'          => 'nullable|numeric',
-            'text_logo_height'         => 'nullable|numeric',
-        ]);
-
-        // Conditionally nullify fields based on logo_type
-        if ($validated['logo_type'] === 'image') {
-            $validated['font_name'] = null;
-            $validated['company_text_logo'] = null;
-            $validated['company_text_color_code'] = null;
-            $validated['text_logo_position_x'] = null;
-            $validated['text_logo_position_y'] = null;
-            $validated['text_logo_rotation'] = null;
-            $validated['text_logo_width'] = null;
-            $validated['text_logo_height'] = null;
-        } elseif ($validated['logo_type'] === 'text') {
-            $validated['company_logo'] = null;
-            $validated['logo_position_x'] = null;
-            $validated['logo_position_y'] = null;
-            $validated['logo_rotation'] = null;
-            $validated['logo_width'] = null;
-            $validated['logo_height'] = null;
+    public function productCustomizationEnquirySend(Request $request)
+    {
+        // Normalize numeric-like inputs BEFORE validation
+        // Remove commas, currency symbols and spaces from price
+        if ($request->has('price')) {
+            $priceRaw = (string) $request->input('price');
+            $normalizedPrice = str_replace([',', '₹', '$', ' '], '', $priceRaw);
+            $request->merge(['price' => $normalizedPrice]);
         }
 
-        // Upload files
-        $attachments = [];
+        try {
+            $validated = $request->validate([
+                'company_logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
+                'product_customize_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5048',
+                'logo_placement'           => 'required|string|max:255',
+                'logo_type'                => 'required|string|in:image,text,both',
+                'logo_size'                => 'required|string|max:255',
+                'print_quality'            => 'required|string|max:255',
+                'product_name'             => 'required|string|max:255',
+                'product_code'             => 'required|string|max:255',
+                'price'                    => 'required|numeric',
+                'main_sub_category'        => 'required|string|max:255',
+                'colors'                   => 'nullable|string',
+                'sizes'                    => 'nullable|string',
+                'units'                    => 'required|numeric',
+                'customer_name'            => 'required|string|max:255',
+                'customer_email'           => 'required|email',
+                'customer_mobile'          => 'required|string|max:15',
+                'customer_address'         => 'required|string',
+                'detail_enquiry'           => 'nullable|string',
+                'font_name'                => 'nullable|string',
+                'company_text_logo'        => 'nullable|string',
+                'company_text_color_code'  => 'nullable|string',
+                'logo_position_x'          => 'nullable|numeric',
+                'logo_position_y'          => 'nullable|numeric',
+                'logo_rotation'            => 'nullable|numeric',
+                'logo_width'               => 'nullable|numeric',
+                'logo_height'              => 'nullable|numeric',
+                'text_logo_position_x'     => 'nullable|numeric',
+                'text_logo_position_y'     => 'nullable|numeric',
+                'text_logo_rotation'       => 'nullable|numeric',
+                'text_logo_width'          => 'nullable|numeric',
+                'text_logo_height'         => 'nullable|numeric',
+            ]);
 
-        if ($request->hasFile('company_logo') && ($validated['logo_type'] === 'image' || $validated['logo_type'] === 'both')) {
-            $file = $request->file('company_logo');
-            $filename = time() . '_company_' . $file->getClientOriginalName();
-            $path = $file->storeAs('enquiry/company_logos', $filename, 'public');
-            $validated['company_logo'] = $path;
+            // Conditionally nullify fields based on logo_type
+            if ($validated['logo_type'] === 'image') {
+                $validated['font_name'] = null;
+                $validated['company_text_logo'] = null;
+                $validated['company_text_color_code'] = null;
+                $validated['text_logo_position_x'] = null;
+                $validated['text_logo_position_y'] = null;
+                $validated['text_logo_rotation'] = null;
+                $validated['text_logo_width'] = null;
+                $validated['text_logo_height'] = null;
+            } elseif ($validated['logo_type'] === 'text') {
+                $validated['company_logo'] = null;
+                $validated['logo_position_x'] = null;
+                $validated['logo_position_y'] = null;
+                $validated['logo_rotation'] = null;
+                $validated['logo_width'] = null;
+                $validated['logo_height'] = null;
+            }
 
-            $attachments[] = [
-                'file' => storage_path('app/public/' . $path),
-                'options' => [
-                    'as' => basename($path),
-                    'mime' => $file->getMimeType() ?? 'image/webp'
+            // Upload files
+            $attachments = [];
+
+            if ($request->hasFile('company_logo') && ($validated['logo_type'] === 'image' || $validated['logo_type'] === 'both')) {
+                $file = $request->file('company_logo');
+                $filename = time() . '_company_' . $file->getClientOriginalName();
+                $path = $file->storeAs('enquiry/company_logos', $filename, 'public');
+                $validated['company_logo'] = $path;
+
+                $attachments[] = [
+                    'file' => storage_path('app/public/' . $path),
+                    'options' => [
+                        'as' => basename($path),
+                        'mime' => $file->getMimeType() ?? 'image/webp'
+                    ]
+                ];
+            }
+
+            if ($request->hasFile('product_customize_image')) {
+                $file = $request->file('product_customize_image');
+                $filename = time() . '_customize_' . $file->getClientOriginalName();
+                $path = $file->storeAs('enquiry/company_logos', $filename, 'public');
+                $validated['product_customize_image'] = $path;
+
+                $attachments[] = [
+                    'file' => storage_path('app/public/' . $path),
+                    'options' => [
+                        'as' => basename($path),
+                        'mime' => $file->getMimeType() ?? 'image/webp'
+                    ]
+                ];
+            }
+
+            $validated['enquiry_date'] = now();
+
+            $enquiry = CustomEnquiry::create($validated);
+
+            $mailData = [
+                'product_name'     => $validated['product_name'],
+                'product_code'     => $validated['product_code'],
+                'main_sub_category' => $validated['main_sub_category'],
+                'product_color'    => $validated['colors'] ?? '-',
+                'enquiry_size'     => $validated['sizes'] ?? '-',
+                'product_rate'     => $validated['price'],
+                'product_quantity' => $validated['units'],
+                'total_amount'     => $validated['price'] * $validated['units'],
+                'customer_name'    => $validated['customer_name'],
+                'customer_email'   => $validated['customer_email'],
+                'customer_mobile'  => $validated['customer_mobile'],
+                'customer_address' => $validated['customer_address'],
+                'detail_enquiry'   => $validated['detail_enquiry'] ?? 'N/A',
+
+                'company_logo' => $validated['company_logo'] ?? null,
+                'product_customize_image' => $validated['product_customize_image'] ?? null,
+                'logo_placement' => $validated['logo_placement'],
+                'logo_type' => $validated['logo_type'],
+                'logo_size' => $validated['logo_size'],
+                'print_quality' => $validated['print_quality'],
+                'font_name' => $validated['font_name'] ?? null,
+                'company_text_logo' => $validated['company_text_logo'] ?? null,
+                'company_text_color_code' => $validated['company_text_color_code'] ?? null,
+                'logo_position_data' => [
+                    'image' => [
+                        'x' => $validated['logo_position_x'] ?? null,
+                        'y' => $validated['logo_position_y'] ?? null,
+                        'rotation' => $validated['logo_rotation'] ?? null,
+                        'width' => $validated['logo_width'] ?? null,
+                        'height' => $validated['logo_height'] ?? null,
+                    ],
+                    'text' => [
+                        'x' => $validated['text_logo_position_x'] ?? null,
+                        'y' => $validated['text_logo_position_y'] ?? null,
+                        'rotation' => $validated['text_logo_rotation'] ?? null,
+                        'width' => $validated['text_logo_width'] ?? null,
+                        'height' => $validated['text_logo_height'] ?? null,
+                    ]
                 ]
             ];
+
+            Mail::to($validated['customer_email'])->send(new CustomizeEnquiryRecieverMail($mailData, $attachments));
+            Mail::to('info@aleefpro.com')->send(new CustomizeEnquirySenderMail($mailData, $attachments));
+
+            return redirect()->back()->with('success', 'Customization enquiry submitted and email sent successfully.');
+        } catch (ValidationException $ve) {
+            // Return validation errors to the form so @error / $errors work
+            return redirect()->back()->withErrors($ve->validator)->withInput();
+        } catch (\Throwable $e) {
+            // Log the error (very useful in production)
+            \Log::error('Customization enquiry error: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
-
-        if ($request->hasFile('product_customize_image')) {
-            $file = $request->file('product_customize_image');
-            $filename = time() . '_customize_' . $file->getClientOriginalName();
-            $path = $file->storeAs('enquiry/company_logos', $filename, 'public');
-            $validated['product_customize_image'] = $path;
-
-            $attachments[] = [
-                'file' => storage_path('app/public/' . $path),
-                'options' => [
-                    'as' => basename($path),
-                    'mime' => $file->getMimeType() ?? 'image/webp'
-                ]
-            ];
-        }
-
-        $validated['enquiry_date'] = now();
-
-        $enquiry = CustomEnquiry::create($validated);
-
-        $mailData = [
-            'product_name'     => $validated['product_name'],
-            'product_code'     => $validated['product_code'],
-            'main_sub_category' => $validated['main_sub_category'],
-            'product_color'    => $validated['colors'] ?? '-',
-            'enquiry_size'     => $validated['sizes'] ?? '-',
-            'product_rate'     => $validated['price'],
-            'product_quantity' => $validated['units'],
-            'total_amount'     => $validated['price'] * $validated['units'],
-            'customer_name'    => $validated['customer_name'],
-            'customer_email'   => $validated['customer_email'],
-            'customer_mobile'  => $validated['customer_mobile'],
-            'customer_address' => $validated['customer_address'],
-            'detail_enquiry'   => $validated['detail_enquiry'] ?? 'N/A',
-
-            'company_logo' => $validated['company_logo'] ?? null,
-            'product_customize_image' => $validated['product_customize_image'] ?? null,
-            'logo_placement' => $validated['logo_placement'],
-            'logo_type' => $validated['logo_type'],
-            'logo_size' => $validated['logo_size'],
-            'print_quality' => $validated['print_quality'],
-            'font_name' => $validated['font_name'] ?? null,
-            'company_text_logo' => $validated['company_text_logo'] ?? null,
-            'company_text_color_code' => $validated['company_text_color_code'] ?? null,
-            'logo_position_data' => [
-                'image' => [
-                    'x' => $validated['logo_position_x'] ?? null,
-                    'y' => $validated['logo_position_y'] ?? null,
-                    'rotation' => $validated['logo_rotation'] ?? null,
-                    'width' => $validated['logo_width'] ?? null,
-                    'height' => $validated['logo_height'] ?? null,
-                ],
-                'text' => [
-                    'x' => $validated['text_logo_position_x'] ?? null,
-                    'y' => $validated['text_logo_position_y'] ?? null,
-                    'rotation' => $validated['text_logo_rotation'] ?? null,
-                    'width' => $validated['text_logo_width'] ?? null,
-                    'height' => $validated['text_logo_height'] ?? null,
-                ]
-            ]
-        ];
-
-        Mail::to($validated['customer_email'])->send(new CustomizeEnquiryRecieverMail($mailData, $attachments));
-        Mail::to('info@aleefpro.com')->send(new CustomizeEnquirySenderMail($mailData, $attachments));
-
-        return redirect()->back()->with('success', 'Customization enquiry submitted and email sent successfully.');
-
-    } catch (ValidationException $ve) {
-        // Return validation errors to the form so @error / $errors work
-        return redirect()->back()->withErrors($ve->validator)->withInput();
-    } catch (\Throwable $e) {
-        // Log the error (very useful in production)
-        \Log::error('Customization enquiry error: '.$e->getMessage(), ['exception' => $e]);
-        return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
-}
 
 
     public function searchProducts(Request $request)
     {
-
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -1040,7 +1077,7 @@ public function productCustomizationEnquirySend(Request $request)
             })
             ->get();
 
-        return view('search-products', compact('products', 'search', 'maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'customer'));
+        return view('search-products', compact('products', 'search', 'maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'customer', 'catalogue'));
     }
 
     public function downloadCatelogue()
@@ -1140,6 +1177,7 @@ public function productCustomizationEnquirySend(Request $request)
     // Order History
     public function ordersView(Request $request)
     {
+        $catalogue = Catelogue::first();
         $maincategories = MainCategory::with('subCategory')->get();
         $subCategories = SubCategory::with('products', 'mainCategory')->get();
         $offers = Offer::all();
@@ -1160,12 +1198,13 @@ public function productCustomizationEnquirySend(Request $request)
             ->get();
 
 
-        return view('orders', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'customer', 'orders', 'search'));
+        return view('orders', compact('maincategories', 'subCategories', 'offers', 'partners', 'socials', 'abouts', 'cartCount', 'customer', 'orders', 'search', 'products', 'catalogue'));
     }
 
     public function orderProductDetailsView($productCode)
     {
 
+        $catalogue = Catelogue::first();
         $product = Product::where('product_code', $productCode)->first();
 
         // Check if product exists
@@ -1186,7 +1225,7 @@ public function productCustomizationEnquirySend(Request $request)
             ->inRandomOrder()
             ->get();
 
-        return view('order-product-details', compact('product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount'));
+        return view('order-product-details', compact('product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount', 'catalogue'));
     }
 
     public function downloadInvoice($order_id)

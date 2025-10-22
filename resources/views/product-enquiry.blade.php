@@ -85,7 +85,7 @@
                 <div class="d-inline-flex align-items-center h-100">
                     <a class="text-body mr-3" href="/about">About</a>
                     <a class="text-body mr-3" href="/contact">Contact</a>
-                    <a class="text-body mr-3" href="/faq">FAQs</a>
+                    <a class="text-body mr-3" href="{{ route('catalogue.download', $catalogue->id) }}" target="_blank">Catalogue</a>
                 </div>
             </div>
 
