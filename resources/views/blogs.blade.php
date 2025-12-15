@@ -167,7 +167,7 @@
         <div class="col-lg-4 col-6 text-right">
             <p class="m-0">Customer Service</p>
             @foreach ($socials as $social)
-            <h6 class="m-0">+{{ $social->mobile }}</h6>
+            <h6 class="m-0">{{ $social->mobile }}</h6>
             @endforeach
         </div>
     </div>

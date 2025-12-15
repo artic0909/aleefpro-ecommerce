@@ -191,7 +191,7 @@
             <div class="col-lg-4 col-6 text-right">
                 <p class="m-0">Customer Service</p>
                 @foreach ($socials as $social)
-                <h6 class="m-0">+{{ $social->mobile }}</h6>
+                <h6 class="m-0">{{ $social->mobile }}</h6>
                 @endforeach
             </div>
         </div>
@@ -335,7 +335,7 @@
                 <div class="bg-light p-30 mb-3">
                     <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>{{$social->address}}</p>
                     <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>{{$social->email}}</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt text-primary mr-3"></i>+{{$social->mobile}}</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt text-primary mr-3"></i>{{$social->mobile}}</p>
                 </div>
                 @endforeach
             </div>
