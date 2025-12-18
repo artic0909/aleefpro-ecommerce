@@ -238,7 +238,7 @@
                     </div>
 
                     <div class="row">
-                        <img src="{{asset('./img/logo1.jpg')}}" alt="logo" style="width:100%;">
+                        <img src="{{ asset('storage/' . $about->footer_logo) }}" alt="logo" style="width:100%;">
                     </div>
 
 

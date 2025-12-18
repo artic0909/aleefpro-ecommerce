@@ -115,8 +115,9 @@ class AdminController extends Controller
     public function dashboardView()
     {
         $catelogue = Catelogue::first();
+        $about = About::first();
 
-        return view('Admin.admin-dashboard', compact('catelogue'));
+        return view('Admin.admin-dashboard', compact('catelogue', 'about'));
     }
 
     // Scroll Banners==============================================================>

@@ -355,7 +355,9 @@
         <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
                 <a href="/" class="text-decoration-none d-flex align-items-center">
-                    <img src="{{asset('img/logo1.webp')}}" class="img-fluid" width="55" alt="logo" />
+                    @foreach($abouts as $about)
+                    <img src="{{ asset('storage/' . $about->header_logo) }}" class="img-fluid" width="55" alt="logo" />
+                    @endforeach
                     <div class="">
                         <span class="h1 text-uppercase text-white bg-org px-2">Aleef</span>
                         <span class="h1 text-uppercase text-white bg-blue px-2 ml-n1">Pro</span>
