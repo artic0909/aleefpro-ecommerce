@@ -69,6 +69,12 @@
                 transform: translateY(-10px);
             }
         }
+
+        @media (min-width: 992px) {
+            #top-bar-desk {
+                display: none !important;
+            }
+        }
     </style>
 
 </head>
@@ -76,7 +82,7 @@
 <body>
     <!-- Topbar Start -->
     <div class="container-fluid">
-        <div class="row bg-secondary py-1 px-xl-5">
+        <div class="row bg-secondary py-1 px-xl-5" id="top-bar-desk">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center h-100">
                     <a class="text-body mr-3" href="/about">About</a>
@@ -453,7 +459,7 @@
     </div>
     <!-- Footer End -->
 
-        <!-- Back to Top -->
+    <!-- Back to Top -->
     <a href="{{ route('catalogue.download', $catalogue->id) }}" target="_blank" class="btn btn-primary2 back-to-top1"><i class="fa fa-file"></i></a>
 
 

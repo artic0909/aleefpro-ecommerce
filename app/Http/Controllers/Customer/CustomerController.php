@@ -200,6 +200,7 @@ class CustomerController extends Controller
         $socials = Social::all();
         $customerId = Auth::guard('customers')->id();
         $cartCount = Cart::where('customer_id', $customerId)->count();
+        $abouts = About::all();
 
 
         $products = Product::with('subCategory', 'mainCategory')
@@ -214,9 +215,9 @@ class CustomerController extends Controller
 
 
         if (Auth::guard('customers')->check()) {
-            return view('customer-home', compact('scrollingBanners', 'offers', 'maincategories', 'subCategories', 'products', 'partners', 'socials', 'cartCount', 'catalogue'));
+            return view('customer-home', compact('scrollingBanners', 'offers', 'maincategories', 'subCategories', 'products', 'partners', 'socials', 'cartCount', 'catalogue', 'abouts'));
         }
-        return view('home', compact('scrollingBanners', 'offers', 'maincategories', 'subCategories', 'products', 'partners', 'socials', 'cartCount', 'catalogue'));
+        return view('home', compact('scrollingBanners', 'offers', 'maincategories', 'subCategories', 'products', 'partners', 'socials', 'cartCount', 'catalogue', 'abouts'));
     }
 
     public function allProductsView(Request $request, $mainSlug, $subSlug)

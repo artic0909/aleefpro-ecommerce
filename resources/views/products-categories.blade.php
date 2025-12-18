@@ -57,11 +57,19 @@
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/serach-responsive.css') }}" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('./img/logo1.webp') }}" />
+
+    <style>
+        @media (min-width: 992px) {
+            #top-bar-desk {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 
 <!-- Topbar Start -->
 <div class="container-fluid">
-    <div class="row bg-secondary py-1 px-xl-5">
+    <div class="row bg-secondary py-1 px-xl-5" id="top-bar-desk">
         <div class="col-lg-6 d-none d-lg-block">
             <div class="d-inline-flex align-items-center h-100">
                 <a class="text-body mr-3" href="/about">About</a>
@@ -148,8 +156,8 @@
         <div class="col-lg-4">
             <a href="/" class="text-decoration-none d-flex align-items-center">
                 @foreach($abouts as $about)
-                    <img src="{{ asset('storage/' . $about->header_logo) }}" class="img-fluid" width="55" alt="logo" />
-                    @endforeach
+                <img src="{{ asset('storage/' . $about->header_logo) }}" class="img-fluid" width="55" alt="logo" />
+                @endforeach
                 <div class="">
                     <span class="h1 text-uppercase text-white bg-org px-2">Aleef</span>
                     <span class="h1 text-uppercase text-white bg-blue px-2 ml-n1">Pro</span>
@@ -405,80 +413,80 @@
 </div>
 <!-- Shop End -->
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-blue text-secondary mt-5 pt-5">
-        <div class="row px-xl-5 pt-5">
-            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                @foreach($abouts as $about)
-                <img src="{{ asset('storage/' . $about->footer_logo) }}" class="img-fluid fade-edges" width="400" alt="logo" />
-                @endforeach
+<!-- Footer Start -->
+<div class="container-fluid bg-blue text-secondary mt-5 pt-5">
+    <div class="row px-xl-5 pt-5">
+        <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+            @foreach($abouts as $about)
+            <img src="{{ asset('storage/' . $about->footer_logo) }}" class="img-fluid fade-edges" width="400" alt="logo" />
+            @endforeach
 
-                @foreach($socials as $social)
-                <p class="mb-2 mt-2">
-                    <i class="fa fa-map-marker-alt text-primary mr-3"></i>{{$social->address}}
-                </p>
-                <p class="mb-2">
-                    <i class="fa fa-envelope text-primary mr-3"></i>{{$social->email}}
-                </p>
-                <p class="mb-0">
-                    <i class="fa fa-phone text-primary mr-3"></i>{{$social->mobile}}
-                </p>
-                @endforeach
-            </div>
-            <div class="col-lg-8 col-md-12">
-                <div class="row">
-                    <div class="col-md-6 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Direct Links</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="/faq"><i class="fa fa-angle-right mr-2"></i>FAQs</a>
-                            <a class="text-secondary mb-2" href="/blogs"><i class="fa fa-angle-right mr-2"></i>Blogs</a>
-                            <a class="text-secondary mb-2" href="/about"><i class="fa fa-angle-right mr-2"></i>About US</a>
-                            <a class="text-secondary mb-2" href="/contact"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-                            <a class="text-secondary mb-2" href="/product-categories"><i class="fa fa-angle-right mr-2"></i>Product Categories</a>
-                        </div>
+            @foreach($socials as $social)
+            <p class="mb-2 mt-2">
+                <i class="fa fa-map-marker-alt text-primary mr-3"></i>{{$social->address}}
+            </p>
+            <p class="mb-2">
+                <i class="fa fa-envelope text-primary mr-3"></i>{{$social->email}}
+            </p>
+            <p class="mb-0">
+                <i class="fa fa-phone text-primary mr-3"></i>{{$social->mobile}}
+            </p>
+            @endforeach
+        </div>
+        <div class="col-lg-8 col-md-12">
+            <div class="row">
+                <div class="col-md-6 mb-5">
+                    <h5 class="text-secondary text-uppercase mb-4">Direct Links</h5>
+                    <div class="d-flex flex-column justify-content-start">
+                        <a class="text-secondary mb-2" href="/faq"><i class="fa fa-angle-right mr-2"></i>FAQs</a>
+                        <a class="text-secondary mb-2" href="/blogs"><i class="fa fa-angle-right mr-2"></i>Blogs</a>
+                        <a class="text-secondary mb-2" href="/about"><i class="fa fa-angle-right mr-2"></i>About US</a>
+                        <a class="text-secondary mb-2" href="/contact"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        <a class="text-secondary mb-2" href="/product-categories"><i class="fa fa-angle-right mr-2"></i>Product Categories</a>
                     </div>
+                </div>
 
-                    <div class="col-md-6 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
-                        <p>Send us your email &amp; get latest updates!</p>
-                        <form action="">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Your Email Address" />
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary2">SEND</button>
-                                </div>
+                <div class="col-md-6 mb-5">
+                    <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
+                    <p>Send us your email &amp; get latest updates!</p>
+                    <form action="">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Your Email Address" />
+                            <div class="input-group-append">
+                                <button class="btn btn-primary2">SEND</button>
                             </div>
-                        </form>
-                        <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
-                        <div class="d-flex">
-                            @foreach($socials as $social)
-                            <a class="btn btn-primary2 btn-square mr-2" href="{{$social->twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-primary2 btn-square mr-2" href="{{$social->fb}}" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary2 btn-square mr-2" href="{{$social->linkedin}}" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                            <a class="btn btn-primary2 btn-square" href="{{$social->insta}}" target="_blank"><i class="fab fa-instagram"></i></a>
-                            @endforeach
                         </div>
+                    </form>
+                    <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
+                    <div class="d-flex">
+                        @foreach($socials as $social)
+                        <a class="btn btn-primary2 btn-square mr-2" href="{{$social->twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-primary2 btn-square mr-2" href="{{$social->fb}}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-primary2 btn-square mr-2" href="{{$social->linkedin}}" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-primary2 btn-square" href="{{$social->insta}}" target="_blank"><i class="fab fa-instagram"></i></a>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, 0.1) !important">
-            <div class="col-md-6 px-xl-0">
-                <p class="mb-md-0 text-center text-md-left text-secondary">
-                    &copy; <a class="text-primary" href="#">Domain</a>. All Rights
-                    Reserved. Designed by
-                    <a class="text-primary" href="">Aleef Pro Factory Showroom</a>
-                </p>
-            </div>
-            <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="" />
-            </div>
+    </div>
+    <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, 0.1) !important">
+        <div class="col-md-6 px-xl-0">
+            <p class="mb-md-0 text-center text-md-left text-secondary">
+                &copy; <a class="text-primary" href="#">Domain</a>. All Rights
+                Reserved. Designed by
+                <a class="text-primary" href="">Aleef Pro Factory Showroom</a>
+            </p>
+        </div>
+        <div class="col-md-6 px-xl-0 text-center text-md-right">
+            <img class="img-fluid" src="img/payments.png" alt="" />
         </div>
     </div>
-    <!-- Footer End -->
+</div>
+<!-- Footer End -->
 
-    <!-- Back to Top -->
-    <a href="{{ route('catalogue.download', $catalogue->id) }}" target="_blank" class="btn btn-primary2 back-to-top1"><i class="fa fa-file"></i></a>
+<!-- Back to Top -->
+<a href="{{ route('catalogue.download', $catalogue->id) }}" target="_blank" class="btn btn-primary2 back-to-top1"><i class="fa fa-file"></i></a>
 
 
 <!-- JavaScript Libraries -->

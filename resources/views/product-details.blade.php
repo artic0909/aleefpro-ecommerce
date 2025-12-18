@@ -104,6 +104,12 @@
         transform: translateY(-10px);
       }
     }
+
+    @media (min-width: 992px) {
+      #top-bar-desk {
+        display: none !important;
+      }
+    }
   </style>
 
 
@@ -113,7 +119,7 @@
 <body>
   <!-- Topbar Start -->
   <div class="container-fluid">
-    <div class="row bg-secondary py-1 px-xl-5">
+    <div class="row bg-secondary py-1 px-xl-5" id="top-bar-desk">
       <div class="col-lg-6 d-none d-lg-block">
         <div class="d-inline-flex align-items-center h-100">
           <a class="text-body mr-3" href="/about">About</a>
@@ -200,8 +206,8 @@
       <div class="col-lg-4">
         <a href="/" class="text-decoration-none d-flex align-items-center">
           @foreach($abouts as $about)
-                    <img src="{{ asset('storage/' . $about->header_logo) }}" class="img-fluid" width="55" alt="logo" />
-                    @endforeach
+          <img src="{{ asset('storage/' . $about->header_logo) }}" class="img-fluid" width="55" alt="logo" />
+          @endforeach
           <div class="">
             <span class="h1 text-uppercase text-white bg-org px-2">Aleef</span>
             <span class="h1 text-uppercase text-white bg-blue px-2 ml-n1">Pro</span>
