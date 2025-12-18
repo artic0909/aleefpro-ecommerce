@@ -359,7 +359,14 @@
        'mainSlug' => $product->subCategory->mainCategory->slug,
        'subSlug' => $product->subCategory->slug,
        'productSlug' => $product->slug
-   ]) }}" style="text-align: start;">{{$product->product_name}}</a>
+   ]) }}" style="
+   text-align: start;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+   ">{{$product->product_name}}</a>
                             <div class="d-flex align-items-center justify-content-start mt-2">
                                 <h6>Price: ${{$product->selling_price}}</h6>
                                 <h6 class="text-muted ml-2"><del>${{$product->actual_price}}</del></h6>

@@ -304,7 +304,8 @@
        'mainSlug' => $product->subCategory->mainCategory->slug,
        'subSlug' => $product->subCategory->slug,
        'productSlug' => $product->slug
-   ]) }}" style="text-align: start;" style="
+   ]) }}"style="
+   text-align: start;
         display: block;
         white-space: nowrap;
         overflow: hidden;
