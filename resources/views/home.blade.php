@@ -329,7 +329,7 @@
        'subSlug' => $product->subCategory->slug,
        'productSlug' => $product->slug
    ]) }}">
-              <img class="img-fluid w-100" src="{{ asset('storage/' . $product->image) }}" alt="" />
+              <img class="img-fluid w-100" src="{{ asset('storage/' . $product->image) }}" alt="" style="aspect-ratio: 4/3; object-fit: cover"/>
             </a>
 
 
