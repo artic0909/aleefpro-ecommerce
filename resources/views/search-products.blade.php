@@ -293,7 +293,7 @@
        'productSlug' => $product->slug
    ]) }}">
                                 @if ($firstImage)
-                                <img class="img-fluid w-100" src="{{ asset('storage/' . $firstImage) }}" alt="{{ $product->product_name }}" />
+                                <img class="img-fluid w-100" src="{{ asset('storage/' . $firstImage) }}" alt="{{ $product->product_name }}" style="aspect-ratio: 4/3; object-fit: cover"/>
                                 @endif
 
                             </a>
