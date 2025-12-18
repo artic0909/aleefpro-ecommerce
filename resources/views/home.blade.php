@@ -52,11 +52,31 @@
   <link href="{{ asset('css/style.css') }}" rel="stylesheet" />
   <link href="{{ asset('css/serach-responsive.css') }}" rel="stylesheet">
   <link rel="shortcut icon" href="{{ asset('./img/logo1.webp') }}" />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+  <style>
+    .cat-item {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .cat-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    @media (min-width: 992px) {
+      #top-bar-desk {
+        display: none !important;
+      }
+    }
+  </style>
+
+
 </head>
 
 <body>
   <!-- Topbar Start -->
-  <div class="container-fluid">
+  <div class="container-fluid" id="top-bar-desk">
     <div class="row bg-secondary py-1 px-xl-5">
       <div class="col-lg-6 d-none d-lg-block">
         <div class="d-inline-flex align-items-center h-100">
@@ -290,99 +310,6 @@
   </div>
   <!-- Carousel End -->
 
-  <!-- Featured Start -->
-  <div class="container-fluid pt-5">
-    <div class="row px-xl-5 pb-3">
-      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-        <div class="d-flex align-items-center bg-blue mb-4" style="padding: 30px">
-          <h1 class="text-primary m-0 mr-3">
-            <i class="fa-solid fa-medal"></i>
-          </h1>
-          <h5 class="font-weight-semi-bold text-white m-0">
-            Certified Apparel
-          </h5>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-        <div class="d-flex align-items-center bg-blue mb-4" style="padding: 30px">
-          <h1 class="text-primary m-0 mr-2">
-            <i class="fa-solid fa-boxes-stacked"></i>
-          </h1>
-          <h5 class="font-weight-semi-bold text-white m-0">Bulk Inquiry</h5>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6 col-sm-12 pb-1" id="catelogueDownload" style="cursor: pointer;">
-        <div class="d-flex align-items-center bg-blue mb-4" style="padding: 30px">
-          <h1 class="text-primary m-0 mr-3">
-            <i class="fa-solid fa-file"></i>
-          </h1>
-          <h5 class="font-weight-semi-bold text-white m-0">
-            Product Catalogue
-          </h5>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-        <div class="d-flex align-items-center bg-blue mb-4" style="padding: 30px">
-          <h1 class="text-primary m-0 mr-3">
-            <i class="fa-solid fa-pen-to-square"></i>
-          </h1>
-          <h5 class="font-weight-semi-bold text-white m-0">
-            Custom Branding
-          </h5>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Featured End -->
-
-  <!-- Categories Start -->
-  <div class="container-fluid pt-5">
-    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">
-      <span class="bg-secondary pr-3">Categories</span>
-    </h2>
-    <div class="row px-xl-5 pb-3">
-
-      @foreach($subCategories as $sub)
-      <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-        <a class="text-decoration-none" href="{{ route('customer.all-products', ['mainSlug' => $sub->mainCategory->slug, 'subSlug' => $sub->slug]) }}">
-          <div class="cat-item d-flex align-items-center mb-4" style="box-shadow: 0 0 10px #d8d8d8">
-            <div class="overflow-hidden" style="width: 100px; height: 100px">
-              <img class="img-fluid" src="img/category.webp" alt="" />
-            </div>
-            <div class="flex-fill pl-3">
-              <h4 class="m-0 p-0">{{$sub->sub_category_name}}</h4>
-              <small>{{$sub->mainCategory->main_category_name}}</small>
-              <p class="text-body p-0 m-0">{{$sub->products->count()}} Products</p>
-            </div>
-          </div>
-        </a>
-      </div>
-      @endforeach
-
-
-    </div>
-  </div>
-  <!-- Categories End -->
-
-  <!-- Offer Start -->
-  <div class="container-fluid pt-5 pb-3">
-    <div class="row px-xl-5">
-      @foreach($offers as $offer)
-      <div class="col-md-6">
-        <div class="product-offer mb-30" style="height: 300px">
-          <img class="img-fluid" src="{{ asset('storage/' . $offer->image) }}" alt="" />
-          <div class="offer-text">
-            <h6 class="text-white text-uppercase">Save {{$offer->offer_percentage}}</h6>
-            <h3 class="text-white mb-3">Special Offer</h3>
-            <a href="{{$offer->link}}" class="btn btn-primary2">Shop Now</a>
-          </div>
-        </div>
-      </div>
-      @endforeach
-    </div>
-  </div>
-  <!-- Offer End -->
-
   <!-- Products Start -->
   <div class="container-fluid pt-5 pb-3">
     <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">
@@ -448,6 +375,118 @@
   </div>
   <!-- Products End -->
 
+  <!-- Featured Start -->
+  <div class="container-fluid pt-5">
+    <div class="row px-xl-5 pb-3">
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-blue mb-4" style="padding: 30px">
+          <h1 class="text-primary m-0 mr-3">
+            <i class="fa-solid fa-medal"></i>
+          </h1>
+          <h5 class="font-weight-semi-bold text-white m-0">
+            Certified Apparel
+          </h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-blue mb-4" style="padding: 30px">
+          <h1 class="text-primary m-0 mr-2">
+            <i class="fa-solid fa-boxes-stacked"></i>
+          </h1>
+          <h5 class="font-weight-semi-bold text-white m-0">Bulk Inquiry</h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1" id="catelogueDownload" style="cursor: pointer;">
+        <div class="d-flex align-items-center bg-blue mb-4" style="padding: 30px">
+          <h1 class="text-primary m-0 mr-3">
+            <i class="fa-solid fa-file"></i>
+          </h1>
+          <h5 class="font-weight-semi-bold text-white m-0">
+            Product Catalogue
+          </h5>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+        <div class="d-flex align-items-center bg-blue mb-4" style="padding: 30px">
+          <h1 class="text-primary m-0 mr-3">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </h1>
+          <h5 class="font-weight-semi-bold text-white m-0">
+            Custom Branding
+          </h5>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Featured End -->
+
+  <!-- Categories Start -->
+  <div class="container-fluid pt-5">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">
+      <span class="bg-secondary pr-3">Categories</span>
+    </h2>
+
+    <div class="px-xl-5">
+      <div class="swiper categorySwiper">
+        <div class="swiper-wrapper">
+
+          @foreach($subCategories as $sub)
+          <div class="swiper-slide">
+            <a class="text-decoration-none"
+              href="{{ route('customer.all-products', ['mainSlug' => $sub->mainCategory->slug, 'subSlug' => $sub->slug]) }}">
+
+              <div class="cat-item d-flex align-items-center"
+                style="box-shadow: 0 0 10px #d8d8d8; border-radius:8px; padding:10px;">
+
+                <div class="overflow-hidden"
+                  style="width: 90px; height: 90px;">
+                  <img class="img-fluid"
+                    src="{{ asset('storage/' . $sub->image) }}" alt="">
+                </div>
+
+                <div class="flex-fill pl-3">
+                  <h6 class="m-0">{{$sub->sub_category_name}}</h6>
+                  <small>{{$sub->mainCategory->main_category_name}}</small>
+                  <p class="text-body m-0">{{$sub->products->count()}} Products</p>
+                </div>
+              </div>
+
+            </a>
+          </div>
+          @endforeach
+
+        </div>
+
+        <!-- Navigation -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories End -->
+
+  <!-- Offer Start -->
+  <div class="container-fluid pt-5 pb-3">
+    <div class="row px-xl-5">
+      @foreach($offers as $offer)
+      <div class="col-md-6">
+        <div class="product-offer mb-30" style="height: 300px">
+          <img class="img-fluid" src="{{ asset('storage/' . $offer->image) }}" alt="" />
+          <div class="offer-text">
+            <h6 class="text-white text-uppercase">Save {{$offer->offer_percentage}}</h6>
+            <h3 class="text-white mb-3">Special Offer</h3>
+            <a href="{{$offer->link}}" class="btn btn-primary2">Shop Now</a>
+          </div>
+        </div>
+      </div>
+      @endforeach
+    </div>
+  </div>
+  <!-- Offer End -->
+
+
+
 
 
   <!-- Vendor Start -->
@@ -468,11 +507,14 @@
 
 
   <!-- Footer Start -->
-  @foreach($socials as $social)
   <div class="container-fluid bg-blue text-secondary mt-5 pt-5">
     <div class="row px-xl-5 pt-5">
       <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-        <img src="{{ asset('img/logo1.jpg') }}" class="img-fluid fade-edges" width="400" alt="logo" />
+        @foreach($abouts as $about)
+        <img src="{{ asset('storage/' . $about->footer_logo) }}" class="img-fluid fade-edges" width="400" alt="logo" />
+        @endforeach
+
+        @foreach($socials as $social)
         <p class="mb-2 mt-2">
           <i class="fa fa-map-marker-alt text-primary mr-3"></i>{{$social->address}}
         </p>
@@ -482,6 +524,7 @@
         <p class="mb-0">
           <i class="fa fa-phone text-primary mr-3"></i>{{$social->mobile}}
         </p>
+        @endforeach
       </div>
       <div class="col-lg-8 col-md-12">
         <div class="row">
@@ -509,10 +552,12 @@
             </form>
             <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
             <div class="d-flex">
+              @foreach($socials as $social)
               <a class="btn btn-primary2 btn-square mr-2" href="{{$social->twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
               <a class="btn btn-primary2 btn-square mr-2" href="{{$social->fb}}" target="_blank"><i class="fab fa-facebook-f"></i></a>
               <a class="btn btn-primary2 btn-square mr-2" href="{{$social->linkedin}}" target="_blank"><i class="fab fa-linkedin-in"></i></a>
               <a class="btn btn-primary2 btn-square" href="{{$social->insta}}" target="_blank"><i class="fab fa-instagram"></i></a>
+              @endforeach
             </div>
           </div>
         </div>
@@ -531,11 +576,10 @@
       </div>
     </div>
   </div>
-  @endforeach
   <!-- Footer End -->
 
-    <!-- Back to Top -->
-    <a href="{{ route('catalogue.download', $catalogue->id) }}" target="_blank" class="btn btn-primary2 back-to-top1"><i class="fa fa-file"></i></a>
+  <!-- Back to Top -->
+  <a href="{{ route('catalogue.download', $catalogue->id) }}" target="_blank" class="btn btn-primary2 back-to-top1"><i class="fa fa-file"></i></a>
 
 
   <!-- JavaScript Libraries -->
@@ -587,6 +631,39 @@
           alert("Catalogue could not be downloaded.");
           console.error(error);
         });
+    });
+  </script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <script>
+    new Swiper(".categorySwiper", {
+      slidesPerView: 4,
+      spaceBetween: 20,
+      loop: true,
+      speed: 700,
+      autoplay: {
+        delay: 2500,
+        disableOnInteraction: false,
+      },
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+      breakpoints: {
+        0: {
+          slidesPerView: 1,
+        },
+        576: {
+          slidesPerView: 2,
+        },
+        768: {
+          slidesPerView: 3,
+        },
+        992: {
+          slidesPerView: 4,
+        },
+      }
     });
   </script>
 

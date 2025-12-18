@@ -380,11 +380,14 @@
 
 
     <!-- Footer Start -->
-    @foreach($socials as $social)
     <div class="container-fluid bg-blue text-secondary mt-5 pt-5">
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                <img src="{{ asset('img/logo1.jpg') }}" class="img-fluid fade-edges" width="400" alt="logo" />
+                @foreach($abouts as $about)
+                <img src="{{ asset('storage/' . $about->footer_logo) }}" class="img-fluid fade-edges" width="400" alt="logo" />
+                @endforeach
+
+                @foreach($socials as $social)
                 <p class="mb-2 mt-2">
                     <i class="fa fa-map-marker-alt text-primary mr-3"></i>{{$social->address}}
                 </p>
@@ -394,6 +397,7 @@
                 <p class="mb-0">
                     <i class="fa fa-phone text-primary mr-3"></i>{{$social->mobile}}
                 </p>
+                @endforeach
             </div>
             <div class="col-lg-8 col-md-12">
                 <div class="row">
@@ -421,10 +425,12 @@
                         </form>
                         <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
                         <div class="d-flex">
+                            @foreach($socials as $social)
                             <a class="btn btn-primary2 btn-square mr-2" href="{{$social->twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
                             <a class="btn btn-primary2 btn-square mr-2" href="{{$social->fb}}" target="_blank"><i class="fab fa-facebook-f"></i></a>
                             <a class="btn btn-primary2 btn-square mr-2" href="{{$social->linkedin}}" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                             <a class="btn btn-primary2 btn-square" href="{{$social->insta}}" target="_blank"><i class="fab fa-instagram"></i></a>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -443,7 +449,6 @@
             </div>
         </div>
     </div>
-    @endforeach
     <!-- Footer End -->
 
         <!-- Back to Top -->

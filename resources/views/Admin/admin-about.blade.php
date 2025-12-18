@@ -257,10 +257,13 @@
                                         <thead>
                                             <tr>
                                                 <th>SL</th>
+                                                <th>Header Logo</th>
+                                                <th>Footer Logo</th>
                                                 <th>Breadcrumb Image</th>
                                                 <th>Side Image</th>
                                                 <th>Our Moto</th>
                                                 <th>Our Vision</th>
+                                                <th>View Map Iframe</th>
                                                 <th>Edit</th>
                                                 <th>Delete</th>
                                             </tr>
@@ -269,11 +272,15 @@
                                             @foreach($abouts as $about)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
+                                                <td><img src="{{ asset('storage/' . $about->header_logo) }}" class="img-fluid" alt=""></td>
+                                                <td><img src="{{ asset('storage/' . $about->footer_logo) }}" class="img-fluid" alt=""></td>
                                                 <td><img src="{{ asset('storage/' . $about->breadcrumb) }}" class="img-fluid" alt=""></td>
                                                 <td><img src="{{ asset('storage/' . $about->side_image) }}" class="img-fluid" alt=""></td>
 
-                                                <td><button data-bs-toggle="modal" data-bs-target="#scrollDescriptionModal{{ $about->id }}" class="btn btn-warning">Moto</button></td>
+                                                <td><button data-bs-toggle="modal" data-bs-target="#scrollDescriptionModal{{ $about->id }}" class="btn btn-primary">Moto</button></td>
                                                 <td><button data-bs-toggle="modal" data-bs-target="#scrollVisionModal{{ $about->id }}" class="btn btn-warning">Vision</button></td>
+
+                                                <td><button data-bs-toggle="modal" data-bs-target="#scrollIframeViewModal{{ $about->id }}" class="btn btn-info">Map View</button></td>
                                                 <td><button data-bs-toggle="modal" data-bs-target="#scrollEditModal{{ $about->id }}" class="btn btn-success">Edit</button></td>
                                                 <td><button data-bs-toggle="modal" data-bs-target="#scrollDeleteModal{{ $about->id }}" class="btn btn-danger">Delete</button></td>
                                             </tr>
@@ -305,18 +312,28 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div>
-                                        <label for="breadcrumb" class="form-label">Breadcrumb Image<span class="text-danger">*</span></label>
-                                        <input type="file" name="breadcrumb" id="breadcrumb" class="form-control" required>
+                                    <div class="mb-3">
+                                        <label for="header_logo" class="form-label">Header Image<span class="text-danger">*</span></label>
+                                        <input type="file" name="header_logo" id="header_logo" class="form-control" required>
                                     </div>
 
-                                    <div>
+                                    <div class="mb-3">
+                                        <label for="footer_logo" class="form-label">Footer Image<span class="text-danger">*</span></label>
+                                        <input type="file" name="footer_logo" id="footer_logo" class="form-control" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="map_iframe_view" class="form-label">Map Iframe Link<span class="text-danger">*</span></label>
+                                        <input type="text" name="map_iframe_view" id="map_iframe_view" class="form-control" required>
+                                    </div>
+
+                                    <div class="mb-3">
                                         <label for="side_image" class="form-label">Side Image<span class="text-danger">*</span></label>
                                         <input type="file" name="side_image" id="side_image" class="form-control" required>
                                     </div>
 
 
-                                    <div>
+                                    <div class="mb-3">
                                         <label for="moto" class="form-label">Moto<span class="text-danger">*</span></label>
                                         <textarea name="moto" id="moto" class="form-control" required rows="5"></textarea>
                                     </div>
@@ -348,6 +365,26 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
+
+                                    <img src="{{ asset('storage/' . $about->header_logo) }}" class="img-fluid" alt="">
+
+                                    <div class="mb-3">
+                                        <label for="header_logo" class="form-label">Header Image<span class="text-danger">*</span></label>
+                                        <input type="file" name="header_logo" id="header_logo" class="form-control">
+                                    </div>
+
+                                    <img src="{{ asset('storage/' . $about->footer_logo) }}" class="img-fluid" alt="">
+
+                                    <div class="mb-3">
+                                        <label for="footer_logo" class="form-label">Footer Image<span class="text-danger">*</span></label>
+                                        <input type="file" name="footer_logo" id="footer_logo" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="map_iframe_view" class="form-label">Map Iframe Link<span class="text-danger">*</span></label>
+                                        <input type="text" name="map_iframe_view" id="map_iframe_view" class="form-control" value="{{$about->map_iframe_view}}">
+                                    </div>
+
                                     <img src="{{ asset('storage/' . $about->breadcrumb) }}" class="img-fluid" alt="">
 
                                     <div class="mb-3">
@@ -418,6 +455,34 @@
 
                                         <h4 class="mb-3 text-danger">Our Moto:</h4>
                                         <h5>{{ $about->moto }}</h5>
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+
+                    <!-- Iframe Map View Modal -->
+                    @foreach($abouts as $about)
+                    <div class="modal fade" id="scrollIframeViewModal{{ $about->id }}" tabindex="-1" aria-labelledby="scrollDescriptionModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="scrollIframeViewModalLabel">Iframe Map View</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div>
+
+                                        <h4 class="mb-3 text-danger">MAP</h4>
+
+                                        <iframe style="width: 100%; height: 250px;"
+                                            src="{{ $about->map_iframe_view }}"
+                                            frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
 
                                     </div>
                                 </div>

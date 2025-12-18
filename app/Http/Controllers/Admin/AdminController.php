@@ -806,16 +806,22 @@ class AdminController extends Controller
     public function addAboutUs(Request $request)
     {
         $request->validate([
+            'header_logo' => 'nullable|image|mimes:jpeg,png,jpg,webp',
+            'footer_logo' => 'nullable|image|mimes:jpeg,png,jpg,webp',
             'breadcrumb' => 'nullable|image|mimes:jpeg,png,jpg,webp',
             'side_image' => 'nullable|image|mimes:jpeg,png,jpg,webp',
+            'map_iframe_view' => 'required',
             'moto' => 'required',
             'vision' => 'required',
         ]);
 
 
         About::create([
+            'header_logo' => $request->hasFile('header_logo') ? $request->file('header_logo')->store('abouts', 'public') : null,
+            'footer_logo' => $request->hasFile('footer_logo') ? $request->file('footer_logo')->store('abouts', 'public') : null,
             'breadcrumb' => $request->hasFile('breadcrumb') ? $request->file('breadcrumb')->store('abouts', 'public') : null,
             'side_image' => $request->hasFile('side_image') ? $request->file('side_image')->store('abouts', 'public') : null,
+            'map_iframe_view' => $request->map_iframe_view,
             'moto' => $request->moto,
             'vision' => $request->vision,
 
@@ -828,11 +834,28 @@ class AdminController extends Controller
         $about = About::findOrFail($id);
 
         $request->validate([
+            'header_logo' => 'nullable|image|mimes:jpeg,png,jpg,webp',
+            'footer_logo' => 'nullable|image|mimes:jpeg,png,jpg,webp',
             'breadcrumb' => 'nullable|image|mimes:jpeg,png,jpg,webp',
             'side_image' => 'nullable|image|mimes:jpeg,png,jpg,webp',
+            'map_iframe_view' => 'required',
             'moto' => 'required',
             'vision' => 'required',
         ]);
+
+        if ($request->hasFile('header_logo')) {
+            if ($about->header_logo && Storage::disk('public')->exists($about->header_logo)) {
+                Storage::disk('public')->delete($about->header_logo);
+            }
+            $about->header_logo = $request->file('header_logo')->store('abouts', 'public');
+        }
+
+        if ($request->hasFile('footer_logo')) {
+            if ($about->footer_logo && Storage::disk('public')->exists($about->footer_logo)) {
+                Storage::disk('public')->delete($about->footer_logo);
+            }
+            $about->footer_logo = $request->file('footer_logo')->store('abouts', 'public');
+        }
 
         if ($request->hasFile('breadcrumb')) {
             if ($about->breadcrumb && Storage::disk('public')->exists($about->breadcrumb)) {
@@ -848,6 +871,7 @@ class AdminController extends Controller
             $about->side_image = $request->file('side_image')->store('abouts', 'public');
         }
 
+        $about->map_iframe_view = $request->map_iframe_view;
         $about->moto = $request->moto;
         $about->vision = $request->vision;
         $about->save();
@@ -858,6 +882,13 @@ class AdminController extends Controller
     public function deleteAboutUs($id)
     {
         $about = About::findOrFail($id);
+
+        if ($about->header_logo && Storage::disk('public')->exists($about->header_logo)) {
+            Storage::disk('public')->delete($about->header_logo);
+        }
+        if ($about->footer_logo && Storage::disk('public')->exists($about->footer_logo)) {
+            Storage::disk('public')->delete($about->footer_logo);
+        }
         if ($about->breadcrumb && Storage::disk('public')->exists($about->breadcrumb)) {
             Storage::disk('public')->delete($about->breadcrumb);
         }

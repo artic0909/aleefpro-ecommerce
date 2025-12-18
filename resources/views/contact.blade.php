@@ -178,7 +178,9 @@
         <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
                 <a href="/" class="text-decoration-none d-flex align-items-center">
-                    <img src="{{asset('img/logo1.webp')}}" class="img-fluid" width="55" alt="logo" />
+                    @foreach($abouts as $about)
+                    <img src="{{ asset('storage/' . $about->header_logo) }}" class="img-fluid" width="55" alt="logo" />
+                    @endforeach
                     <div class="">
                         <span class="h1 text-uppercase text-white bg-org px-2">Aleef</span>
                         <span class="h1 text-uppercase text-white bg-blue px-2 ml-n1">Pro</span>
@@ -345,11 +347,13 @@
                 </div>
             </div>
             <div class="col-lg-5 mb-5">
+                @foreach($abouts as $about)
                 <div class="bg-light p-30 mb-30">
                     <iframe style="width: 100%; height: 250px;"
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
+                        src="{{ $about->map_iframe_view }}"
                         frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                 </div>
+                @endforeach
                 @foreach($socials as $social)
                 <div class="bg-light p-30 mb-3">
                     <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>{{$social->address}}</p>
@@ -381,11 +385,14 @@
 
 
     <!-- Footer Start -->
-    @foreach($socials as $social)
     <div class="container-fluid bg-blue text-secondary mt-5 pt-5">
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                <img src="{{ asset('img/logo1.jpg') }}" class="img-fluid fade-edges" width="400" alt="logo" />
+                @foreach($abouts as $about)
+                <img src="{{ asset('storage/' . $about->footer_logo) }}" class="img-fluid fade-edges" width="400" alt="logo" />
+                @endforeach
+
+                @foreach($socials as $social)
                 <p class="mb-2 mt-2">
                     <i class="fa fa-map-marker-alt text-primary mr-3"></i>{{$social->address}}
                 </p>
@@ -395,6 +402,7 @@
                 <p class="mb-0">
                     <i class="fa fa-phone text-primary mr-3"></i>{{$social->mobile}}
                 </p>
+                @endforeach
             </div>
             <div class="col-lg-8 col-md-12">
                 <div class="row">
@@ -422,10 +430,12 @@
                         </form>
                         <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
                         <div class="d-flex">
+                            @foreach($socials as $social)
                             <a class="btn btn-primary2 btn-square mr-2" href="{{$social->twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
                             <a class="btn btn-primary2 btn-square mr-2" href="{{$social->fb}}" target="_blank"><i class="fab fa-facebook-f"></i></a>
                             <a class="btn btn-primary2 btn-square mr-2" href="{{$social->linkedin}}" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                             <a class="btn btn-primary2 btn-square" href="{{$social->insta}}" target="_blank"><i class="fab fa-instagram"></i></a>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -444,7 +454,6 @@
             </div>
         </div>
     </div>
-    @endforeach
     <!-- Footer End -->
 
     <!-- Back to Top -->
