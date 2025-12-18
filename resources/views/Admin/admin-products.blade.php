@@ -418,11 +418,54 @@
                                             </tr>
                                             @endforeach
                                         </tbody>
+
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- pagination -->
+                    @if ($products->hasPages())
+                    <tfoot>
+                        <tr>
+                            <td colspan="100%">
+                                <div class="d-flex justify-content-center align-items-center gap-2 mt-3">
+
+                                    <!-- Prev -->
+                                    <a href="{{ $products->previousPageUrl() }}"
+                                        class="btn btn-primary {{ $products->onFirstPage() ? 'disabled' : '' }}">
+                                        Prev
+                                    </a>
+
+                                    <!-- Page info -->
+                                    <div class="d-flex align-items-center gap-1">
+                                        <input type="text"
+                                            class="form-control form-control-sm text-center"
+                                            value="{{ $products->currentPage() }}"
+                                            readonly
+                                            style="width: 45px">
+
+                                        <span>/</span>
+
+                                        <input type="text"
+                                            class="form-control form-control-sm text-center"
+                                            value="{{ $products->lastPage() }}"
+                                            readonly
+                                            style="width: 45px">
+                                    </div>
+
+                                    <!-- Next -->
+                                    <a href="{{ $products->nextPageUrl() }}"
+                                        class="btn btn-primary {{ $products->hasMorePages() ? '' : 'disabled' }}">
+                                        Next
+                                    </a>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                    @endif
 
                 </div>
 
@@ -612,7 +655,7 @@
 
                                 <!-- Add More Images -->
                                 <div class="mt-3">
-                                    
+
                                     <label for="edit-images-{{ $product->id }}" class="form-label">Product Image<span class="text-danger">*</span></label>
                                     <input type="file" name="images[]" id="edit-images-{{ $product->id }}" class="form-control" multiple>
                                     <label for="edit-images-{{ $product->id }}" class="form-label">Newly added images show below</label>
@@ -849,7 +892,7 @@
 
                 <!-- content-wrapper ends -->
                 <!-- partial:partials/_footer.html -->
-                
+
                 <!-- partial -->
             </div>
             <!-- main-panel ends -->

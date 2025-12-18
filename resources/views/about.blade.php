@@ -448,8 +448,8 @@
     </div>
     <!-- Footer End -->
 
-    <!-- Back to Top -->
-    <a href="{{ route('catalogue.download', $catalogue->id) }}" target="_blank" class="btn btn-primary2 back-to-top1"><i class="fa fa-file"></i></a>
+    <!-- Catelogue View btn -->
+    <a href="{{ route('catalogue.download', $catalogue->id) }}" target="_blank" class="btn btn-primary2 back-to-top1 catalogue-btn"><i class="fa fa-file"></i></a>
 
 
     <!-- JavaScript Libraries -->

@@ -222,6 +222,7 @@ class CustomerController extends Controller
 
     public function allProductsView(Request $request, $mainSlug, $subSlug)
     {
+        $abouts = About::all();
         $catalogue = Catelogue::first();
         $mainCategory = MainCategory::where('slug', $mainSlug)->firstOrFail();
         $subCategory = SubCategory::where('slug', $subSlug)
@@ -289,13 +290,15 @@ class CustomerController extends Controller
             'cartCount',
             'uniqueColors',
             'uniqueSizes',
-            'catalogue'
+            'catalogue',
+            'abouts'
         ));
     }
 
 
     public function productDetailsView($mainSlug, $subSlug, $productSlug)
     {
+        $abouts = About::all();
         $catalogue = Catelogue::first();
         $mainCategory = MainCategory::where('slug', $mainSlug)->first();
         if (!$mainCategory) {
@@ -331,7 +334,7 @@ class CustomerController extends Controller
             ->inRandomOrder()
             ->get();
 
-        return view('product-details', compact('mainCategory', 'subCategory', 'product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount', 'catalogue'));
+        return view('product-details', compact('mainCategory', 'subCategory', 'product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount', 'catalogue', 'abouts'));
     }
 
     public function productCategoriesViews(Request $request)
@@ -369,7 +372,7 @@ class CustomerController extends Controller
             'abouts',
             'cartCount',
             'products',
-            'catalogue'
+            'catalogue',
         ));
     }
 
@@ -1205,6 +1208,7 @@ class CustomerController extends Controller
     public function orderProductDetailsView($productCode)
     {
 
+        $abouts = About::all();
         $catalogue = Catelogue::first();
         $product = Product::where('product_code', $productCode)->first();
 
@@ -1226,7 +1230,7 @@ class CustomerController extends Controller
             ->inRandomOrder()
             ->get();
 
-        return view('order-product-details', compact('product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount', 'catalogue'));
+        return view('order-product-details', compact('product', 'offers', 'partners', 'socials', 'maincategories', 'subCategories', 'allProducts', 'cartCount', 'catalogue', 'abouts'));
     }
 
     public function downloadInvoice($order_id)

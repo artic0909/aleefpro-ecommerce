@@ -63,6 +63,52 @@
   <link rel="shortcut icon" href="{{ asset('./img/logo1.webp') }}" />
 
   <style>
+    .thumbnail-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+
+      /* Hide scrollbar */
+      scrollbar-width: none;
+      /* Firefox */
+      -ms-overflow-style: none;
+      /* IE & Edge */
+    }
+
+    .thumbnail-scroll::-webkit-scrollbar {
+      display: none;
+      /* Chrome, Safari */
+    }
+
+    .thumb-box {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+      cursor: pointer;
+      flex: 0 0 auto;
+      padding: 3px;
+      background: #fff;
+      transition: all 0.2s ease;
+    }
+
+    .thumb-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .thumb-box:hover {
+      border-color: #999;
+    }
+
+    .thumb-box.active-thumb {
+      border-color: #ff6600;
+      box-shadow: 0 0 0 1px rgba(255, 102, 0, 0.3);
+    }
+
+
     .custom-success-popup,
     .custom-error-popup {
       position: fixed;
@@ -339,17 +385,22 @@
     <div class="row px-xl-5">
       <div class="col-lg-5 mb-30">
         <div id="product-carousel" class="carousel slide" data-ride="carousel">
+
           @php
           $images = json_decode($product->images, true);
           @endphp
 
+          <!-- Main Image Slider -->
           <div class="carousel-inner bg-light">
             @foreach ($images as $key => $img)
             <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-              <img class="w-100 h-100" src="{{ asset('storage/' . str_replace('\/', '/', $img)) }}" alt="{{ $product->product_name }}" />
+              <img class="w-100"
+                src="{{ asset('storage/' . str_replace('\/', '/', $img)) }}"
+                alt="{{ $product->product_name }}">
             </div>
             @endforeach
           </div>
+
           <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
             <i class="fa fa-2x fa-angle-left text-dark"></i>
           </a>
@@ -357,7 +408,23 @@
             <i class="fa fa-2x fa-angle-right text-dark"></i>
           </a>
         </div>
+
+        <!-- Thumbnails -->
+        <div class="product-thumbnails mt-3">
+          <div class="d-flex thumbnail-scroll">
+            @foreach ($images as $key => $img)
+            <div class="thumb-box {{ $key == 0 ? 'active-thumb' : '' }}"
+              data-target="#product-carousel"
+              data-slide-to="{{ $key }}">
+              <img
+                src="{{ asset('storage/' . str_replace('\/', '/', $img)) }}"
+                alt="thumb">
+            </div>
+            @endforeach
+          </div>
+        </div>
       </div>
+
 
       <form action="{{ route('customer.cart.add') }}" method="POST" class="col-lg-7 h-auto mb-30">
         @csrf
@@ -762,6 +829,33 @@
   </script>
 
   <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <script>
+    const slider = document.querySelector('.thumbnail-scroll');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      slider.classList.add('active');
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+
+    slider.addEventListener('mouseleave', () => isDown = false);
+    slider.addEventListener('mouseup', () => isDown = false);
+
+    slider.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      slider.scrollLeft = scrollLeft - walk;
+    });
+  </script>
+
+
 </body>
 
 </html>

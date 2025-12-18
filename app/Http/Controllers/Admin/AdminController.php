@@ -416,7 +416,7 @@ class AdminController extends Controller
 
         $mainCategories = MainCategory::with('subCategories')->get();
         $subCategories = SubCategory::with('mainCategory')->get();
-        $products = Product::with('subCategory')->get();
+        $products = Product::with('subCategory')->orderBy('id', 'desc')->paginate(8);
         $colors = Color::all();
         $sizes = Size::all();
 
@@ -438,8 +438,6 @@ class AdminController extends Controller
                 'actual_price' => 'required|numeric',
                 'selling_price' => 'required|numeric',
                 'description' => 'nullable|string',
-                'front_selected_cords' => 'nullable|string',
-                'back_selected_cords' => 'nullable|string',
                 'information' => 'nullable|string',
                 'size_chart_image' => 'nullable|image',
                 'front_customize' => 'nullable|image',
@@ -495,8 +493,6 @@ class AdminController extends Controller
                 'actual_price' => $request->actual_price,
                 'selling_price' => $request->selling_price,
                 'description' => $request->description,
-                'front_selected_cords' => $request->front_selected_cords,
-                'back_selected_cords' => $request->back_selected_cords,
                 'information' => $request->information,
                 'size_chart_image' => $sizeChartPath,
                 'slug' => Str::slug($request->product_name),
