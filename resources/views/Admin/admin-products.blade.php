@@ -1243,9 +1243,21 @@
                     // New images preview
                     let newImagesInput = document.getElementById("edit-images-" + productId);
                     let previewContainer = document.getElementById("preview-new-" + productId);
+                    let selectedNewFiles = []; // Track selected files
+
                     newImagesInput.addEventListener("change", function() {
-                        previewContainer.innerHTML = "";
-                        Array.from(this.files).forEach(file => {
+                        // Append newly selected files
+                        const newFiles = Array.from(this.files);
+                        selectedNewFiles = [...selectedNewFiles, ...newFiles];
+                        
+                        // Re-render all previews
+                        renderNewImagePreviews();
+                    });
+
+                    function renderNewImagePreviews() {
+                        previewContainer.innerHTML = ""; // Clear and re-render all
+                        
+                        selectedNewFiles.forEach((file, index) => {
                             let reader = new FileReader();
                             reader.onload = e => {
                                 let div = document.createElement("div");
@@ -1256,10 +1268,24 @@
                                      <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0">×</button>`;
                                 previewContainer.appendChild(div);
 
-                                div.querySelector("button").addEventListener("click", () => div.remove());
+                                div.querySelector("button").addEventListener("click", () => {
+                                    // Remove from array
+                                    selectedNewFiles.splice(index, 1);
+                                    renderNewImagePreviews();
+                                });
                             };
                             reader.readAsDataURL(file);
                         });
+                    }
+
+                    // On form submit, attach accumulated files to input
+                    let editForm = document.getElementById("form-" + productId);
+                    editForm.addEventListener("submit", function(e) {
+                        if (selectedNewFiles.length > 0) {
+                            const dataTransfer = new DataTransfer();
+                            selectedNewFiles.forEach(file => dataTransfer.items.add(file));
+                            newImagesInput.files = dataTransfer.files;
+                        }
                     });
 
                     // Front image replace
